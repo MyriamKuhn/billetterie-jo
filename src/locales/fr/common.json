@@ -1,0 +1,9 @@
+{
+  "welcome": "Bienvenue dans l’application de billetterie JO !",
+  "home": "Accueil",
+  "products": "Produits",
+  "signIn": "Se connecter",
+  "signUp": "S’inscrire",
+  "darkMode": "Mode sombre",
+  "lightMode": "Mode clair"
+}
