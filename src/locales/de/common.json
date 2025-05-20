@@ -1,9 +1,23 @@
 {
-  "welcome": "Willkommen",
-  "home": "Startseite",
-  "products": "Produkte",
-  "signIn": "Anmelden",
-  "signUp": "Registrieren",
-  "darkMode": "Dunkelmodus",
-  "lightMode": "Hellmodus"
+  "navbar": {
+    "menu": "Menü öffnen",
+    "home": "Startseite",
+    "tickets": "Tickets",
+    "cart": "Einkaufskorb",
+    "login": "Anmelden",
+    "language": "Sprache",
+    "logoJO": "Olympische Spiele Logo",
+    "logoParis": "Paris 2024 Logo",
+    "toggleTheme": "Thema wechseln"
+  },
+  "cart": {
+    "empty": "Ihr Einkaufskorb ist leer",
+    "total": "Gesamt",
+    "view": "Einkaufskorb anzeigen"
+  },
+  "seo": {
+    "title": "Buchen Sie Ihre Tickets – Olympischer Ticketverkauf Paris 2024",
+    "description": "Bachelor-Projekt: Online-Ticketreservierungsseite für die Olympischen Spiele Paris 2024. Reservieren Sie ganz einfach Ihre Plätze, verwalten Sie Ihren Warenkorb und genießen Sie eine moderne, mehrsprachige Oberfläche.",
+    "keywords": "Ticketverkauf, Olympische Spiele, Paris 2024, Ticketreservierung, Buchungsseite, moderne Oberfläche, mehrsprachig, React, Webentwicklung, Warenkorbverwaltung, Benutzererfahrung"
+  }
 }

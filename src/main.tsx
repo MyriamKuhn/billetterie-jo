@@ -5,6 +5,8 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import App from './App';
 import { getAppTheme } from './theme';
+import { useLanguageStore } from './stores/useLanguageStore';
+import { HelmetProvider } from 'react-helmet-async';
 
 function Root() {
   // Detection of the user's preferred color scheme
@@ -17,22 +19,23 @@ function Root() {
   }, [prefersDarkMode]);
 
   // Detection of the user's language
+  const lang = useLanguageStore(state => state.lang);
   React.useEffect(() => {
-    const navLang = navigator.language; // ex: "fr-FR" ou "en-US"
-    const shortLang = navLang.split('-')[0]; // "fr" ou "en"
-    i18n.changeLanguage(shortLang);
-  }, []);
+    i18n.changeLanguage(lang);
+  }, [lang]);
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <ThemeProvider theme={getAppTheme(mode)}>
-        <CssBaseline />
-        <App 
-          mode={mode} 
-          toggleMode={() => setMode(m => m === 'light' ? 'dark' : 'light')}
-        />
-      </ThemeProvider>
-    </I18nextProvider>
+    <HelmetProvider>
+      <I18nextProvider i18n={i18n}>
+        <ThemeProvider theme={getAppTheme(mode)}>
+          <CssBaseline />
+          <App 
+            mode={mode} 
+            toggleMode={() => setMode(m => m === 'light' ? 'dark' : 'light')}
+          />
+        </ThemeProvider>
+      </I18nextProvider>
+    </HelmetProvider>
   );
 }
 

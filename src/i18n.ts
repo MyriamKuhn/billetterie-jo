@@ -1,4 +1,5 @@
 import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 
 // 1) On importe les JSON
@@ -13,12 +14,17 @@ const resources = {
 };
 
 i18n
+  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    resources,
-    lng: 'fr',            // default language
     fallbackLng: 'en',
-    ns: ['common'],       // namespace common declaration
+    supportedLngs: ['fr','en','de'],
+    detection: {
+      order: ['querystring', 'cookie', 'navigator'],
+      caches: ['cookie'],
+    },
+    resources,
+    ns: ['common'],    
     defaultNS: 'common',
     interpolation: { escapeValue: false },
     react: { useSuspense: false },

@@ -10,8 +10,10 @@ const brandColors = {
   success:   '#009739',  // vert anneau
 };
 
-export const getAppTheme = (mode: 'light' | 'dark') =>
-  createTheme({
+export const getAppTheme = (mode: 'light' | 'dark') => {
+  const isLight = mode === 'light';
+
+  return createTheme({
     palette: {
       mode,
       primary: { main: brandColors.primary },
@@ -21,14 +23,14 @@ export const getAppTheme = (mode: 'light' | 'dark') =>
       info: { main: brandColors.info },
       success: { main: brandColors.success },
       background: {
-        default: mode === 'light' ? '#F4F4F4' : '#121212',
-        paper: mode === 'light' ? '#FFFFFF' : '#0C1F2B',
+        default: isLight ? '#F4F4F4' : '#121212',
+        paper:   isLight ? '#FFFFFF' : '#0C1F2B',
       },
       text: {
-        primary: mode === 'light' ? '#0C1F2B' : '#F9E8C4', 
-        secondary: mode === 'light' ? '#576271' : '#C0C0C0',
+        primary:   isLight ? '#0C1B2B' : '#F9E8C4',
+        secondary: isLight ? '#576271' : '#C0C0C0',
       },
-      divider: mode === 'light' ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)',
+      divider: isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)',
     },
     shape: { borderRadius: 10 },   
     shadows: [
@@ -63,6 +65,9 @@ export const getAppTheme = (mode: 'light' | 'dark') =>
       h1: { fontSize: '2.5rem', fontWeight: 700 },
       h2: { fontSize: '2rem', fontWeight: 700 },
       body1: { fontSize: '1rem', fontWeight: 400 },
+      body2: { fontSize: '0.875rem', fontWeight: 400 },
+      subtitle1: { fontSize: '1rem', fontWeight: 400 },
+      subtitle2: { fontSize: '0.875rem', fontWeight: 500 },
     },
     components: {
       MuiCard: {
@@ -81,8 +86,45 @@ export const getAppTheme = (mode: 'light' | 'dark') =>
             backgroundColor: brandColors.primary,
             color: '#0B1B2B',
             '&:hover': { backgroundColor: '#57A5A2' }
-          }
+          },
+          ...(isLight && {
+            outlinedPrimary: {
+              borderColor:     brandColors.secondary,  
+              color:           brandColors.secondary,
+              '&:hover': {
+                borderColor:     brandColors.secondary,
+                backgroundColor: `${brandColors.secondary}10`, 
+              },
+            }
+          })
         }
+      },
+      MuiIconButton: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            color: isLight ? theme.palette.info.main : theme.palette.text.primary,
+          }),
+        },
+      },
+      MuiListItemIcon: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            color: isLight ? theme.palette.info.main : theme.palette.text.primary,
+          }),
+        },
+      },
+      MuiBadge: {
+        styleOverrides: {
+          badge: ({ theme }) => ({
+            backgroundColor: isLight ? theme.palette.text.primary : theme.palette.info.main,
+            color:           '#fff',
+            minWidth:        16,
+            height:          16,
+            fontSize:        '0.625rem',
+            borderRadius:    '50%',
+            transform:       'translate(35%, 35%)',
+          }),
+        },
       },
       MuiLink: {
         styleOverrides: {
@@ -93,3 +135,4 @@ export const getAppTheme = (mode: 'light' | 'dark') =>
       },
     }                    
   });
+};

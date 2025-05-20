@@ -1,171 +1,136 @@
 import React from 'react';
 import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Box,
-  Button,
-  Badge,
-  Select,
-  MenuItem,
-  type SelectChangeEvent,
-  useMediaQuery,
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
+  AppBar, Toolbar, IconButton, Box, Divider,
+  Badge, Drawer, List, ListItemButton,
+  ListItemIcon, ListItemText, useMediaQuery 
 } from '@mui/material';
 import {
-  Menu as MenuIcon,
-  Home as HomeIcon,
-  ConfirmationNumber as TicketIcon,
-  ShoppingCart,
-  LightMode,
-  DarkMode,
-  Login as LoginIcon,
+  Menu as MenuIcon, ShoppingCart, Login as LoginIcon
 } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
-import { useCartStore } from '../../store/cartStore';
-import logoSrc from '../../assets/jo_logo.png';
-// 👇 Import du composant Flag
-import Flag from 'react-world-flags';
+import { useTranslation } from 'react-i18next';
+import { useCartStore } from '../../stores/cartStore';
+import logoSrc from '../../assets/logo_arcs.png';
+import logoParis from '../../assets/logo_paris.png';
+import { LanguageSwitcher } from '../LanguageSwitcher';
+import { ThemeToggle } from '../ThemeToggle';
+import { NavLinkList } from './NavLinkList';
+import { CartPreview } from '../Cart/CartPreview';
+import { ActiveLink } from '../ActiveLink';
+import { ActiveButton } from '../ActiveButton';
 
 interface NavbarProps {
   mode: 'light' | 'dark';
   toggleMode: () => void;
-  currentLang: string;
-  onLanguageChange: (lang: string) => void;
 }
 
-export function Navbar({ mode, toggleMode, currentLang, onLanguageChange }: NavbarProps) {
+export function Navbar({ mode, toggleMode }: NavbarProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const cartCount = useCartStore(s => s.items.reduce((sum, i) => sum + i.quantity, 0));
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = () => setOpen(o => !o);
-  const handleLangChange = (e: SelectChangeEvent) => onLanguageChange(e.target.value);
-
-  // Liste des langues supportées
-  const languages = [
-    { lang: 'fr', country: 'FR', label: 'Français' },
-    { lang: 'en', country: 'US', label: 'English' },
-    { lang: 'de', country: 'DE', label: 'Deutsch' },
-  ];
 
   return (
     <>
-      <AppBar
-        position="fixed"
-        color="inherit"
-        elevation={0}
-        sx={{ borderBottom: '1px solid', borderColor: 'divider' }}
-      >
+      <AppBar position="fixed" color="inherit" elevation={0}
+        sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
         <Toolbar variant="dense" sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {isMobile && (
-              <IconButton edge="start" onClick={toggleDrawer} aria-label="menu">
+
+          {isMobile ? (
+            // ────────── BARRE MOBILE ──────────
+            <>
+              {/* menu burger */}
+              <IconButton edge="start" onClick={toggleDrawer} aria-label={t('navbar.menu')}>
                 <MenuIcon />
               </IconButton>
-            )}
-            <Box component="img" src={logoSrc} alt="Logo JO" sx={{ height: 32, mr: 1 }} />
-            <Typography variant="h6" noWrap>
-              Billetterie JO
-            </Typography>
-          </Box>
+          
+              {/* logos centrés */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box component="img" src={logoSrc} alt={t('navbar.logoJO')} sx={{ height: 32 }} />
+                <Box component="img" src={logoParis} alt={t('navbar.logoParis')} sx={{ height: 32 }} />
+              </Box>
 
-          {!isMobile ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Button color="inherit" href="/">Accueil</Button>
-              <Button color="inherit" href="/tickets">Billets</Button>
-
-              {/* Sélecteur de langue avec drapeaux */}
-              <Select
-                value={currentLang}
-                onChange={handleLangChange}
-                size="small"
-                renderValue={value => {
-                  const cfg = languages.find(l => l.lang === value);
-                  return cfg ? <Flag code={cfg.country} style={{ width: 24, height: 16 }} /> : null;
-                }}
-                sx={{ minWidth: 60 }}
-              >
-                {languages.map(({ lang, country, label }) => (
-                  <MenuItem key={lang} value={lang}>
-                    <Flag code={country} style={{ width: 24, height: 16, marginRight: 8 }} />
-                    {label}
-                  </MenuItem>
-                ))}
-              </Select>
-
-              <IconButton color="inherit" href="/cart">
-                <Badge badgeContent={cartCount} color="error">
-                  <ShoppingCart />
-                </Badge>
-              </IconButton>
-
-              <Button color="primary" variant="outlined" href="/login">Se connecter</Button>
-
-              <IconButton color="inherit" onClick={toggleMode} aria-label="toggle theme">
-                {mode === 'light' ? <DarkMode /> : <LightMode />}
-              </IconButton>
-            </Box>
+              {/* mini-panier */}
+              <CartPreview />
+            </>
           ) : (
-            <IconButton color="inherit" onClick={toggleMode}>
-              {mode === 'light' ? <DarkMode /> : <LightMode />}
-            </IconButton>
+            // ────────── BARRE DESKTOP ──────────
+            <>
+              {/* logos + nav principale */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 1 }}>
+                  <Box component="img" src={logoSrc} alt={t('navbar.logoJO')} sx={{ height: 32 }} />
+                  <Box component="img" src={logoParis} alt={t('navbar.logoParis')} sx={{ height: 32 }} />
+                </Box>
+                <NavLinkList isMobile={false} />
+              </Box>
+
+              {/* utilitaires */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <ThemeToggle
+                  mode={mode}
+                  toggleMode={toggleMode}
+                  aria-label={t('navbar.toggleTheme')}
+                />
+                <LanguageSwitcher />
+                <ActiveButton to="/login" aria-label={t('navbar.login')}>
+                  {t('navbar.login')}
+                </ActiveButton>
+                <CartPreview />
+              </Box>
+            </>
           )}
         </Toolbar>
       </AppBar>
 
-      {/* Drawer mobile */}
+      {/* ────────── DRAWER MOBILE ────────── */}
       <Drawer anchor="left" open={open} onClose={toggleDrawer}>
-        <List sx={{ width: 250 }}>
-          <ListItemButton component="a" href="/">
-            <ListItemIcon><HomeIcon /></ListItemIcon>
-            <ListItemText primary="Accueil" />
-          </ListItemButton>
-          <ListItemButton component="a" href="/tickets">
-            <ListItemIcon><TicketIcon /></ListItemIcon>
-            <ListItemText primary="Billets" />
-          </ListItemButton>
+        <Box sx={{ width: 250, height: '100%', display: 'flex', flexDirection: 'column' }}>
 
-          <Box sx={{ px: 2, py: 1 }}>
-            <Typography variant="body2" sx={{ mb: 1 }}>Langue</Typography>
-            <Select
-              value={currentLang}
-              onChange={handleLangChange}
-              size="small"
-              renderValue={value => {
-                const cfg = languages.find(l => l.lang === value);
-                return cfg ? <Flag code={cfg.country} style={{ width: 24, height: 16 }} /> : null;
-              }}
-              sx={{ minWidth: 60 }}
-            >
-              {languages.map(({ lang, country, label }) => (
-                <MenuItem key={lang} value={lang}>
-                  <Flag code={country} style={{ width: 24, height: 16, marginRight: 8 }} />
-                  {label}
-                </MenuItem>
-              ))}
-            </Select>
+          {/* En-tête logos centré */}
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, p: 2 }}>
+            <Box component="img" src={logoSrc} alt={t('navbar.logoJO')} sx={{ height: 32 }} />
+            <Box component="img" src={logoParis} alt={t('navbar.logoParis')} sx={{ height: 32 }} />
           </Box>
 
-          <ListItemButton component="a" href="/cart">
-            <ListItemIcon>
-              <Badge badgeContent={cartCount} color="error">
-                <ShoppingCart />
-              </Badge>
-            </ListItemIcon>
-            <ListItemText primary="Panier" />
-          </ListItemButton>
-          <ListItemButton component="a" href="/login">
-            <ListItemIcon><LoginIcon /></ListItemIcon>
-            <ListItemText primary="Se connecter" />
-          </ListItemButton>
-        </List>
+          {/* Liens principaux */}
+          <List>
+            <NavLinkList isMobile onNavigate={toggleDrawer} />
+
+            <ListItemButton key="cart" component={ActiveLink} to="/cart" onClick={toggleDrawer} aria-label={t('navbar.cart')}>
+                <ListItemIcon>
+                  <Badge
+                    badgeContent={cartCount}
+                    color="info"
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  >
+                    <ShoppingCart />
+                  </Badge>
+                </ListItemIcon>
+              <ListItemText primary={t('navbar.cart')} />
+            </ListItemButton>
+
+            <Divider sx={{ my: 1 }} />
+
+            <ListItemButton key="login" component={ActiveLink} to="/login" onClick={toggleDrawer} aria-label={t('navbar.login')}>
+              <ListItemIcon><LoginIcon /></ListItemIcon>
+              <ListItemText primary={t('navbar.login')} />
+            </ListItemButton>
+          </List>
+
+          {/* Pied de drawer : langue + thème */}
+          <Box sx={{ mt: 'auto', p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <LanguageSwitcher />
+              <ThemeToggle
+                mode={mode}
+                toggleMode={toggleMode}
+                aria-label={t('navbar.toggleTheme')}
+              />
+          </Box>
+        </Box>
       </Drawer>
     </>
   );

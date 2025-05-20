@@ -1,9 +1,12 @@
+import React from 'react';
 import { Navbar } from './components/Navbar';
 import { Toolbar } from '@mui/material';
 import HomePage from './pages/HomePage';
-import ProductsPage from './pages/ProductsPage';
-import { useTranslation } from 'react-i18next';
+import TicketsPage from './pages/TicketsPage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useLanguageStore } from './stores/useLanguageStore';
+import i18n from './i18n';
+//import { DevAddTestItem } from './components/Cart/DevAddTestItem';
 
 interface AppProps {
   mode: 'light' | 'dark';
@@ -11,24 +14,34 @@ interface AppProps {
 }
 
 export default function App({ mode, toggleMode }: AppProps) {
-  const { i18n } = useTranslation();
+  const lang = useLanguageStore(state => state.lang);
+
+  React.useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
+
+  React.useEffect(() => {
+    if (i18n.language.split('-')[0] !== lang) {
+      i18n.changeLanguage(lang);
+    }
+  }, [lang]);
 
   return (
     <BrowserRouter>
       <Navbar 
         mode={mode}
         toggleMode={toggleMode}
-        currentLang={i18n.language}
-        onLanguageChange={lang => i18n.changeLanguage(lang)} 
       />
       <Toolbar variant="dense" />
 
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/tickets" element={<TicketsPage />} />
       </Routes>
 
-      { /* Ajouter le footer */}
+      { /* <Footer /> */ }
+      { /* Dev: bouton pour remplir le panier */ }
+      { /* <DevAddTestItem /> */ }
     </BrowserRouter>
   );
 }

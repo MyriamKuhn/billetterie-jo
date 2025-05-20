@@ -1,9 +1,23 @@
 {
-  "welcome": "Welcome to the J.O. Ticketing App!",
-  "home": "Home",
-  "products": "Products",
-  "signIn": "Sign in",
-  "signUp": "Sign up",
-  "darkMode": "Dark mode",
-  "lightMode": "Light mode"
+  "navbar": {
+    "menu": "Open menu",
+    "home": "Home",
+    "tickets": "Tickets",
+    "cart": "Cart",
+    "login": "Log in",
+    "language": "Language",
+    "logoJO": "Olympic Games logo",
+    "logoParis": "Paris 2024 logo",
+    "toggleTheme": "Toggle theme"
+  },
+  "cart": {
+    "empty": "Your cart is empty",
+    "total": "Total",
+    "view": "View cart"
+  },
+  "seo": {
+    "title": "Reserve your tickets – Paris 2024 Olympic ticketing",
+    "description": "Bachelor’s project: online ticket reservation site for the Paris 2024 Olympic Games. Easily book your seats, manage your cart and enjoy a modern, multilingual interface.",
+    "keywords": "ticketing, Olympic Games, Paris 2024, ticket reservation, booking site, modern interface, multilingual, React, web development, cart management, user experience"
+  }
 }
