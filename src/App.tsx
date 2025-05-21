@@ -6,7 +6,6 @@ import TicketsPage from './pages/TicketsPage';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useLanguageStore } from './stores/useLanguageStore';
 import i18n from './i18n';
-//import { DevAddTestItem } from './components/Cart/DevAddTestItem';
 
 interface AppProps {
   mode: 'light' | 'dark';
@@ -40,8 +39,7 @@ export default function App({ mode, toggleMode }: AppProps) {
       </Routes>
 
       { /* <Footer /> */ }
-      { /* Dev: bouton pour remplir le panier */ }
-      { /* <DevAddTestItem /> */ }
+
     </BrowserRouter>
   );
 }
