@@ -19,5 +19,12 @@
     "title": "Reserve your tickets – Paris 2024 Olympic ticketing",
     "description": "Bachelor’s project: online ticket reservation site for the Paris 2024 Olympic Games. Easily book your seats, manage your cart and enjoy a modern, multilingual interface.",
     "keywords": "ticketing, Olympic Games, Paris 2024, ticket reservation, booking site, modern interface, multilingual, React, web development, cart management, user experience"
+  },
+  "footer": {
+    "contact": "Contact us",
+    "legalMentions":  "Legal mentions",
+    "terms": "Terms and conditions",
+    "privacy": "Privacy policy",
+    "copy": "© {{year}} Paris 2024 Olympic Ticketing — Created by Myriam Kühn"
   }
 }

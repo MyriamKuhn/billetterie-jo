@@ -19,5 +19,12 @@
     "title": "Buchen Sie Ihre Tickets – Olympischer Ticketverkauf Paris 2024",
     "description": "Bachelor-Projekt: Online-Ticketreservierungsseite für die Olympischen Spiele Paris 2024. Reservieren Sie ganz einfach Ihre Plätze, verwalten Sie Ihren Warenkorb und genießen Sie eine moderne, mehrsprachige Oberfläche.",
     "keywords": "Ticketverkauf, Olympische Spiele, Paris 2024, Ticketreservierung, Buchungsseite, moderne Oberfläche, mehrsprachig, React, Webentwicklung, Warenkorbverwaltung, Benutzererfahrung"
+  },
+  "footer": {
+    "contact": "Kontaktieren Sie uns",
+    "legalMentions":  "Rechtliche Hinweise",
+    "terms": "AGB",
+    "privacy": "Datenschutzbestimmungen",
+    "copy": "© {{year}} Olympischer Ticketverkauf Paris 2024 — Erstellt von Myriam Kühn"
   }
 }
