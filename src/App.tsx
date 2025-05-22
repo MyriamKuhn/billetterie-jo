@@ -1,6 +1,8 @@
 import React, { Suspense, useEffect } from 'react';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Toolbar from '@mui/material/Toolbar';
+import BackToTop from './components/BackToTop';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useLanguageStore } from './stores/useLanguageStore';
 import i18n from './i18n';
@@ -42,17 +44,29 @@ export default function App({ mode, toggleMode }: AppProps) {
 
   return (
     <BrowserRouter>
-      <Navbar mode={mode} toggleMode={toggleMode} />
-      <Toolbar variant="dense" />
+      <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
+        <Navbar mode={mode} toggleMode={toggleMode} />
+        <Toolbar id="back-to-top-anchor" variant="dense" />
 
-        <Suspense fallback={<Loader />}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/tickets" element={<TicketsPage />} />
-          </Routes>
-        </Suspense>
+        <Box sx={{ flex: 1 }}>
+          <Suspense fallback={<Loader />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/tickets" element={<TicketsPage />} />
+              <Route path="/cart" element={<HomePage />} />
+              <Route path="/contact" element={<HomePage />} />
+              <Route path="/legal-mentions" element={<HomePage />} />
+              <Route path="/terms" element={<HomePage />} />
+              <Route path="/privacy-policy" element={<HomePage />} />
+              <Route path="/login" element={<HomePage />} />
+            </Routes>
+          </Suspense>
+        </Box>
 
-      { /* <Footer /> */ }
+        <BackToTop />
+
+        <Footer />
+      </Box>
     </BrowserRouter>
   );
 }
