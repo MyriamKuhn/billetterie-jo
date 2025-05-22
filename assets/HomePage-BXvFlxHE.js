@@ -1,0 +1,5 @@
+import{j as e}from"./react-Dx1Prv24.js";import{S as i,P as a}from"./Seo-r0eJCuB2.js";import{i as t,e as s,h as o}from"./mui-core-BJxwacnZ.js";import"./helmet-B1hmP2rP.js";import"./vendor-tlgfy-q6.js";import"./i18n-react-CLnszlJt.js";const u=`
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. 
+Cras venenatis euismod malesuada. Nullam ac erat ante. Sed vehicula mauris sit amet neque ultricies, 
+a interdum tortor scelerisque. Integer pretium posuere felis, vitae tristique lacus blandit at.
+`;function g(){return e.jsxs(e.Fragment,{children:[e.jsx(i,{}),e.jsxs(a,{children:[e.jsx(t,{variant:"h4",gutterBottom:!0,children:"Welcome to the JO Ticketing App!"}),e.jsx(t,{paragraph:!0,children:"Ici tu pourras naviguer entre les pages d’accueil, de présentation des produits, la gestion du panier, etc."}),[...Array(10)].map((n,r)=>e.jsxs(s,{mb:4,children:[e.jsxs(t,{variant:"h5",gutterBottom:!0,children:["Section de test #",r+1]}),e.jsx(t,{paragraph:!0,children:u}),e.jsx(o,{})]},r))]})]})}export{g as default};
