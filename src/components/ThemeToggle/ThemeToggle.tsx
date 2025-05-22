@@ -6,7 +6,7 @@ interface ThemeToggleProps {
   toggleMode: () => void;
 }
 
-export function ThemeToggle({ mode, toggleMode }: ThemeToggleProps) {
+function ThemeToggle({ mode, toggleMode }: ThemeToggleProps) {
   return (
     <IconButton
       color="inherit"
@@ -17,3 +17,5 @@ export function ThemeToggle({ mode, toggleMode }: ThemeToggleProps) {
     </IconButton>
   );
 }
+
+export default ThemeToggle;

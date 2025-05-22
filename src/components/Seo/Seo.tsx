@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
+import { makeJsonLd } from '../../utils/seo';
 
 const BASE_URL = 'https://jo2024.mkcodecreations.dev';
 
@@ -9,28 +10,14 @@ interface SeoProps {
   noIndex?: boolean;
 }
 
-export function Seo({ title, description, noIndex }: SeoProps) {
+function Seo({ title, description, noIndex }: SeoProps) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language;           
   const url    = `${BASE_URL}/`;
 
   const defaultTitle       = t('seo.title');
   const defaultDescription = t('seo.description');
-
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type":    "WebSite",
-    "name":     t('seo.title'),
-    "url":      BASE_URL,
-    "logo":     `${BASE_URL}/assets/jo_logo.png"`,
-    "description": t('seo.description'),
-    "contactPoint": [{
-      "@type": "ContactPoint",
-      "contactType": "Developer",
-      "areaServed": "FR, DE, EN",
-      "availableLanguage": ["French","English","German"]
-    }],
-  };
+  const jsonLd             = makeJsonLd(t);
 
   return (
     <Helmet>
@@ -67,3 +54,5 @@ export function Seo({ title, description, noIndex }: SeoProps) {
     </Helmet>
   );
 }
+
+export default Seo;

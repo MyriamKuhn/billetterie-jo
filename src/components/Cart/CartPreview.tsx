@@ -1,21 +1,22 @@
 import React from 'react';
-import {
-  IconButton,
-  Badge,
-  Popover,
-  List,
-  ListItem,
-  ListItemText,
-  Button,
-  Typography,
-  Box
-} from '@mui/material';
-import { ShoppingCart } from '@mui/icons-material';
+
+import IconButton    from '@mui/material/IconButton';
+import Badge         from '@mui/material/Badge';
+import Popover       from '@mui/material/Popover';
+import List          from '@mui/material/List';
+import ListItem      from '@mui/material/ListItem';
+import ListItemText  from '@mui/material/ListItemText';
+import Button        from '@mui/material/Button';
+import Typography    from '@mui/material/Typography';
+import Box           from '@mui/material/Box';
+
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+
 import { useCartStore } from '../../stores/cartStore';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-export function CartPreview() {
+function CartPreview() {
   const { t } = useTranslation();
   const items = useCartStore(s => s.items);
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
@@ -44,7 +45,7 @@ export function CartPreview() {
           color="info"
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         >
-          <ShoppingCart />
+          <ShoppingCartIcon />
         </Badge>
       </IconButton>
 
@@ -93,3 +94,5 @@ export function CartPreview() {
     </>
   );
 }
+
+export default CartPreview;

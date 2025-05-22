@@ -13,7 +13,9 @@ const StyledNavLink = styled(NavLink)(({ theme }) => ({
   }
 }));
 
-export function ActiveLink(props: NavLinkProps) {
+function ActiveLink(props: NavLinkProps) {
   // NavLink injecte automatiquement la class "active" quand la route matche
   return <StyledNavLink {...props} />;
 }
+
+export default ActiveLink;

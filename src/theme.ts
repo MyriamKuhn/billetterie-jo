@@ -1,17 +1,41 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, type Theme, type PaletteMode, type Shadows } from '@mui/material/styles';
 
 const brandColors = {
-  primary:   '#68B9B5',  // turquoise logo
-  secondary: '#0B1B2B',  // bleu nuit
-  accent:    '#F8E1B0',  // crème flamme
-  info:      '#0085C7',  // bleu anneau
-  warning:   '#FFCD00',  // jaune anneau
-  error:     '#E31937',  // rouge anneau
-  success:   '#009739',  // vert anneau
+  primary:   '#68B9B5',  
+  secondary: '#0B1B2B',  
+  accent:    '#F8E1B0',  
+  info:      '#0085C7',  
+  warning:   '#FFCD00',  
+  error:     '#E31937',  
+  success:   '#009739',  
 };
 
-export const getAppTheme = (mode: 'light' | 'dark') => {
+const backgroundDefaults = {
+  light: { default: '#F4F4F4', paper: '#FFFFFF' },
+  dark:  { default: '#121212', paper: '#0C1F2B' },
+};
+
+const textDefaults = {
+  light:   { primary: '#0C1B2B', secondary: '#576271' },
+  dark:    { primary: '#F9E8C4', secondary: '#C0C0C0' },
+};
+
+const customShadows: Partial<Record<number, string>> = {
+  1: '0px 1px 3px rgba(0,0,0,0.2)',
+  2: '0px 1px 5px rgba(0,0,0,0.14)',
+  3: '0px 1px 8px rgba(0,0,0,0.12)',
+  4: '0px 2px 4px rgba(0,0,0,0.12)',
+};
+
+export const getAppTheme = (mode: PaletteMode): Theme => {
   const isLight = mode === 'light';
+
+  const defaultTheme = createTheme();
+  const defaultShadows: Shadows = defaultTheme.shadows;
+
+  const shadows: Shadows = defaultShadows.map((sh, idx) =>
+    customShadows[idx] ?? sh
+  ) as Shadows;
 
   return createTheme({
     palette: {
@@ -22,44 +46,12 @@ export const getAppTheme = (mode: 'light' | 'dark') => {
       warning: { main: brandColors.warning },
       info: { main: brandColors.info },
       success: { main: brandColors.success },
-      background: {
-        default: isLight ? '#F4F4F4' : '#121212',
-        paper:   isLight ? '#FFFFFF' : '#0C1F2B',
-      },
-      text: {
-        primary:   isLight ? '#0C1B2B' : '#F9E8C4',
-        secondary: isLight ? '#576271' : '#C0C0C0',
-      },
+      background: backgroundDefaults[mode],
+      text:       textDefaults[mode],
       divider: isLight ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.12)',
     },
     shape: { borderRadius: 10 },   
-    shadows: [
-      'none',
-      '0px 1px 3px rgba(0,0,0,0.2)',
-      '0px 1px 5px rgba(0,0,0,0.14)',
-      '0px 1px 8px rgba(0,0,0,0.12)',
-      '0px 2px 4px rgba(0,0,0,0.12)',
-      '0px 3px 5px rgba(0,0,0,0.12)',
-      '0px 3px 5px rgba(0,0,0,0.14)',
-      '0px 4px 5px rgba(0,0,0,0.14)',
-      '0px 5px 5px rgba(0,0,0,0.14)',
-      '0px 6px 5px rgba(0,0,0,0.14)',
-      '0px 7px 5px rgba(0,0,0,0.14)',
-      '0px 8px 5px rgba(0,0,0,0.14)',
-      '0px 9px 5px rgba(0,0,0,0.14)',
-      '0px 10px 5px rgba(0,0,0,0.14)',
-      '0px 11px 5px rgba(0,0,0,0.14)',
-      '0px 12px 5px rgba(0,0,0,0.14)',
-      '0px 13px 5px rgba(0,0,0,0.14)',
-      '0px 14px 5px rgba(0,0,0,0.14)',
-      '0px 15px 5px rgba(0,0,0,0.14)',
-      '0px 16px 5px rgba(0,0,0,0.14)',
-      '0px 17px 5px rgba(0,0,0,0.14)',
-      '0px 18px 5px rgba(0,0,0,0.14)',
-      '0px 19px 5px rgba(0,0,0,0.14)',
-      '0px 20px 5px rgba(0,0,0,0.14)',
-      '0px 21px 5px rgba(0,0,0,0.14)'
-    ],    
+    shadows,    
     typography: {
       fontFamily: 'Poppins, Arial, sans-serif',
       h1: { fontSize: '2.5rem', fontWeight: 700 },

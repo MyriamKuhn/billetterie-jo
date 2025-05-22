@@ -1,6 +1,6 @@
 import { Typography } from '@mui/material';
 import { PageWrapper } from '../components/PageWrapper';
-import { Seo } from '../components/Seo';
+import Seo from '../components/Seo';
 
 export default function HomePage() {
   return (

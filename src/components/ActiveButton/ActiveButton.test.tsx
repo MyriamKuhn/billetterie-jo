@@ -5,14 +5,15 @@ import { ThemeProvider, createTheme } from '@mui/material';
 
 // 1) Mock d’ActiveLink : un simple <a> avec href et toutes les props
 vi.mock('../ActiveLink', () => ({
-  ActiveLink: ({ to, children, ...props }: any) => (
+  __esModule: true,
+  default: ({ to, children, ...props }: any) => (
     <a href={to} {...props}>
       {children}
     </a>
   ),
 }));
 
-import { ActiveButton } from './ActiveButton';
+import ActiveButton from './ActiveButton';
 
 const renderWithTheme = (ui: React.ReactElement) =>
   render(<ThemeProvider theme={createTheme()}>{ui}</ThemeProvider>);

@@ -16,7 +16,7 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-import { Seo } from './Seo';
+import Seo from './Seo';
 
 const BASE_URL = 'https://jo2024.mkcodecreations.dev';
 
@@ -85,7 +85,7 @@ describe('<Seo /> defaults', () => {
       "@type": "WebSite",
       name: "seo.title",
       url: BASE_URL,
-      logo: `${BASE_URL}/assets/jo_logo.png"`, // note le guillemet en trop dans le code d'origine
+      logo: `${BASE_URL}/assets/logos/jo_logo.png`, 
       description: "seo.description",
       contactPoint: [
         {

@@ -1,11 +1,12 @@
-import { Button, type ButtonProps } from '@mui/material';
-import { ActiveLink } from '../ActiveLink';
+import Button from '@mui/material/Button';
+import type { ButtonProps } from '@mui/material/Button';
+import ActiveLink from '../ActiveLink';
 
 interface Props extends Omit<ButtonProps, 'component'> {
   to: string;
 }
 
-export function ActiveButton({ to, children, ...props }: Props) {
+function ActiveButton({ to, children, ...props }: Props) {
   return (
     <Button
       component={ActiveLink as React.ElementType}
@@ -18,3 +19,5 @@ export function ActiveButton({ to, children, ...props }: Props) {
     </Button>
   );
 }
+
+export default ActiveButton;
