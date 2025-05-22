@@ -16,67 +16,59 @@ vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (k: string) => k }),
 }));
 
-// ─── ❸ Stub ActiveLink ───────────────────────────────────────────────────────
+// ─── ❸ Stub ActiveLink (export default) ───────────────────────────────────────
 vi.mock('../ActiveLink', () => ({
   __esModule: true,
-  ActiveLink: ({ to, children, ...p }: any) => (
-    <a data-testid="active-link" data-to={to} {...p}>{children}</a>
+  default: ({ to, children, ...p }: any) => (
+    <a data-testid="active-link" data-to={to} {...p}>
+      {children}
+    </a>
   ),
 }));
 
-// ─── ❹ Stub MUI components ───────────────────────────────────────────────────
-vi.mock('@mui/material', () => ({
-  __esModule: true,
-  Button: (p: any) => <button data-testid="button" {...p}>{p.children}</button>,
-  ListItemButton: (p: any) => <li data-testid="list-item" {...p}>{p.children}</li>,
-  ListItemIcon:   (p: any) => <span data-testid="list-item-icon">{p.children}</span>,
-  ListItemText:   ({ primary }: any) => <span data-testid="list-item-text">{primary}</span>,
-}));
+// pas besoin de mocker MUI si on ne cible plus `ListItemButton` ou `Button` directement
 
-// ─── ❺ Import du composant et de navItems réels (mockés) ────────────────────
 import { NavLinkList } from './NavLinkList';
-import { navItems }    from './navItems';
+import { navItems }   from './navItems';
 
 describe('<NavLinkList />', () => {
-  beforeEach(() => {
-    cleanup();
-  });
+  beforeEach(() => cleanup());
 
-  it('mode mobile : rend ListItemButton pour chaque item avec icône, texte, to et onClick', () => {
+  it('mode mobile : rend un <a data-testid="active-link"> pour chaque item avec icône, texte, to et onClick', () => {
     const onNavigate = vi.fn();
-
     render(<NavLinkList isMobile onNavigate={onNavigate} />);
 
-    const items = screen.getAllByTestId('list-item');
-    expect(items).toHaveLength(navItems.length);
+    const links = screen.getAllByTestId('active-link');
+    expect(links).toHaveLength(navItems.length);
 
-    items.forEach((item, idx) => {
+    links.forEach((link, idx) => {
       const cfg = navItems[idx];
-      // Vérifie le "to" passé
-      expect(item).toHaveAttribute('to', cfg.href);
-      // L'icône personnalisée est présente
-      expect(within(item).getByTestId(`icon-${cfg.key}`)).toBeInTheDocument();
-      // Le texte traduit est "navbar.<key>"
-      expect(within(item).getByTestId('list-item-text')).toHaveTextContent(`navbar.${cfg.key}`);
+      // ❶ le to arrive bien dans data-to
+      expect(link).toHaveAttribute('data-to', cfg.href);
 
-      // onClick déclenche onNavigate
-      fireEvent.click(item);
+      // ❷ l'icône custom est rendue
+      expect(within(link).getByTestId(`icon-${cfg.key}`)).toBeInTheDocument();
+
+      // ❸ le texte traduit est navbar.<key>
+      expect(link).toHaveTextContent(`navbar.${cfg.key}`);
+
+      // ❹ onNavigate est appelé quand on clique
+      fireEvent.click(link);
       expect(onNavigate).toHaveBeenCalledTimes(idx + 1);
     });
   });
 
-  it('mode desktop : rend Button pour chaque item avec texte et to', () => {
+  it('mode desktop : rend un <a data-testid="active-link"> pour chaque item avec texte et to', () => {
     render(<NavLinkList isMobile={false} />);
 
-    const buttons = screen.getAllByTestId('button');
-    expect(buttons).toHaveLength(navItems.length);
+    const links = screen.getAllByTestId('active-link');
+    expect(links).toHaveLength(navItems.length);
 
-    buttons.forEach((btn, idx) => {
+    links.forEach((link, idx) => {
       const cfg = navItems[idx];
-      // Vérifie le "to" passé
-      expect(btn).toHaveAttribute('to', cfg.href);
-      // Le texte traduit est "navbar.<key>"
-      expect(btn).toHaveTextContent(`navbar.${cfg.key}`);
+      expect(link).toHaveAttribute('data-to', cfg.href);
+      expect(link).toHaveTextContent(`navbar.${cfg.key}`);
     });
   });
 });
+

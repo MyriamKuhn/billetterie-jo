@@ -23,7 +23,7 @@ vi.mock('@mui/icons-material', () => ({
 }));
 
 // ❸ Import du composant APRÈS les mocks
-import { ThemeToggle } from './ThemeToggle';
+import ThemeToggle from './ThemeToggle';
 
 describe('<ThemeToggle />', () => {
   const toggleModeMock = vi.fn();

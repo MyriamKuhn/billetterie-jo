@@ -1,105 +1,84 @@
-import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, it, beforeEach, expect, vi } from 'vitest';
 
-// 1) Stub react-world-flags
-vi.mock('react-world-flags', () => ({
-  __esModule: true,
-  default: ({ code }: { code: string }) => <span data-testid={`flag-${code}`} />,
-}));
-
-// 2) Stub @mui/material Select/MenuItem
-vi.mock('@mui/material', () => ({
-  __esModule: true,
-  Select: ({
-    value,
-    onChange,
-    'aria-label': ariaLabel,
-    renderValue,
-    children,
-  }: any) => (
-    <div>
-      <span data-testid="current">{renderValue(value)}</span>
-      <select role="combobox" aria-label={ariaLabel} value={value} onChange={onChange}>
-        {children}
-      </select>
-    </div>
-  ),
-  MenuItem: ({ value, children }: any) => (
-    <option role="option" value={value}>
-      <span data-testid={`flag-${value.toUpperCase()}`}>{/* in-Option flag */}</span>
-      {children}
-    </option>
-  ),
-}));
-
-// 3) Stub react-i18next
+// ─── 1) Stub react-i18next ─────────────────────────────────────────────────────
 vi.mock('react-i18next', () => ({
   __esModule: true,
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({ t: (k: string) => k }), 
 }));
 
-// 4) Stub Zustand store
-vi.mock('../../stores/useLanguageStore', () => {
-  let state = { lang: 'fr' };
-  const setLang = (newLang: string) => { state.lang = newLang; };
-  return {
-    __esModule: true,
-    useLanguageStore: (selector: (s: any) => any) => selector({ lang: state.lang, setLang }),
-  };
-});
+// ─── 2) Stub zustand store ──────────────────────────────────────────────────────
+let currentLang = 'fr';
+const setLangSpy = vi.fn((l: string) => { currentLang = l; });
+vi.mock('../../stores/useLanguageStore', () => ({
+  __esModule: true,
+  useLanguageStore: (selector: any) =>
+    selector({ lang: currentLang, setLang: setLangSpy }),
+}));
 
-// 5) Import du composant APRÈS les mocks
-import { LanguageSwitcher } from './LanguageSwitcher';
+// ─── 3) Import du composant APRÈS les mocks ─────────────────────────────────────
+import LanguageSwitcher from './LanguageSwitcher';
 
 describe('<LanguageSwitcher />', () => {
   beforeEach(() => {
-    cleanup();
+    currentLang = 'fr';
+    setLangSpy.mockReset();
   });
 
-  it('affiche le drapeau de la langue courante (dans le renderValue)', () => {
-    const { rerender } = render(<LanguageSwitcher />);
-    // on ne cherche que DANS "current"
-    const current = screen.getByTestId('current');
-    expect(within(current).getByTestId('flag-FR')).toBeInTheDocument();
-    // re-render basique
-    rerender(<LanguageSwitcher />);
-  });
-
-  it('propose les trois options avec leurs labels', () => {
+  it('affiche le drapeau de la langue courante via renderValue', () => {
     render(<LanguageSwitcher />);
-    const options = screen.getAllByRole('option');
-    const vals    = options.map(o => (o as HTMLOptionElement).value);
-    const texts   = options.map(o => o.textContent);
-    expect(vals).toEqual(['fr','en','de']);
-    expect(texts).toEqual(['Français','English','Deutsch']);
+    // on cible le combobox (il n'a pas de name exposé dans l'accessibility tree)
+    const combobox = screen.getByRole('combobox');
+    expect(
+      within(combobox).getByRole('img', { name: 'Flag FR' })
+    ).toBeInTheDocument();
   });
 
-  it('change de langue et met à jour le drapeau dans renderValue après re-render', () => {
-    const { rerender } = render(<LanguageSwitcher />);
-    const select = screen.getByRole('combobox');
+  it('propose 3 options avec leurs drapeaux et labels', async () => {
+    render(<LanguageSwitcher />);
+    const combobox = screen.getByRole('combobox');
+    await userEvent.click(combobox);
 
-    // change event déclenche setLang interne
-    fireEvent.change(select, { target: { value: 'de' } });
+    const listbox = screen.getByRole('listbox');
+    const options = within(listbox).getAllByRole('option');
+    expect(options).toHaveLength(3);
 
-    // re-render pour lire le nouveau state.lang
-    rerender(<LanguageSwitcher />);
-    const current = screen.getByTestId('current');
-    expect(within(current).getByTestId('flag-DE')).toBeInTheDocument();
+    const [optFr, optEn, optDe] = options;
+    expect(optFr).toHaveTextContent('Français');
+    expect(within(optFr).getByRole('img', { name: 'Flag FR' })).toBeInTheDocument();
+
+    expect(optEn).toHaveTextContent('English');
+    expect(within(optEn).getByRole('img', { name: 'Flag US' })).toBeInTheDocument();
+
+    expect(optDe).toHaveTextContent('Deutsch');
+    expect(within(optDe).getByRole('img', { name: 'Flag DE' })).toBeInTheDocument();
   });
 
-    it('ne rend pas de drapeau si la langue n’est pas supportée', () => {
-    // On monte normalement
+  it('appelle setLang et met à jour le drapeau après sélection', async () => {
+    // on utilise destructuration pour récupérer rerender
     const { rerender } = render(<LanguageSwitcher />);
-    
-    // On simule le choix d'une langue non listée
-    const select = screen.getByRole('combobox');
-    fireEvent.change(select, { target: { value: 'es' } });
+    const combobox = screen.getByRole('combobox');
+    await userEvent.click(combobox);
 
-    // On re-render pour que le composant relise le nouveau state.lang
+    // clique sur "Deutsch"
+    const optDe = await screen.findByRole('option', { name: /Deutsch/ });
+    await userEvent.click(optDe);
+
+    // vérifie l'appel
+    expect(setLangSpy).toHaveBeenCalledOnce();
+    expect(setLangSpy).toHaveBeenCalledWith('de');
+
+    // on rerend le même composant (au lieu de render() à nouveau)
     rerender(<LanguageSwitcher />);
+    const cb2 = screen.getByRole('combobox');
+    expect(within(cb2).getByRole('img', { name: 'Flag DE' })).toBeInTheDocument();
+  });
 
-    // On ne cherche que DANS le renderValue
-    const current = screen.getByTestId('current');
-    expect(within(current).queryByTestId('flag-ES')).toBeNull();
+  it('ne rend aucun drapeau si la langue n’est pas supportée', () => {
+    currentLang = 'es';
+    render(<LanguageSwitcher />);
+    const combobox = screen.getByRole('combobox');
+    expect(within(combobox).queryByRole('img')).toBeNull();
   });
 });

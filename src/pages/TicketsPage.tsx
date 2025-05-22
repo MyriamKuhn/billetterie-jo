@@ -1,7 +1,7 @@
 // src/pages/ProductsPage.tsx
 import { Typography } from '@mui/material';
 import { PageWrapper } from '../components/PageWrapper';
-import { Seo } from '../components/Seo';
+import Seo from '../components/Seo';
 import { useTranslation } from 'react-i18next';
 
 export default function ProductsPage() {

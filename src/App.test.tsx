@@ -14,7 +14,7 @@ vi.mock('react-router-dom', () => {
 // 2) On stubbe Navbar et les pages pour alléger le test
 vi.mock('./components/Navbar', () => ({
   __esModule: true,
-  Navbar: () => <div data-testid="navbar" />,
+  default: () => <div data-testid="navbar" />,
 }));
 vi.mock('./pages/HomePage',    () => ({ __esModule: true, default: () => <div>HomePage</div> }));
 vi.mock('./pages/TicketsPage', () => ({ __esModule: true, default: () => <div>TicketsPage</div> }));

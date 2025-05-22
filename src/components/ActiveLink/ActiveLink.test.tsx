@@ -13,7 +13,7 @@ vi.mock('react-router-dom', () => ({
   ),
 }));
 
-import { ActiveLink } from './ActiveLink';
+import ActiveLink from './ActiveLink';
 
 const renderWithTheme = (ui: React.ReactElement) =>
   render(<ThemeProvider theme={createTheme()}>{ui}</ThemeProvider>);

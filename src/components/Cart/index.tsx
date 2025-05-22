@@ -1,2 +1,1 @@
-export { CartPreview } from './CartPreview';
-export { DevAddTestItem } from './DevAddTestItem';
+export { default } from './CartPreview';

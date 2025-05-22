@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">93.33% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>14/15</span>
+                <span class='fraction'>0/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/4</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.71% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>6/7</span>
+                <span class='fraction'>0/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.3% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>12/13</span>
+                <span class='fraction'>0/13</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -158,7 +158,9 @@
 <a name='L93'></a><a href='#L93'>93</a>
 <a name='L94'></a><a href='#L94'>94</a>
 <a name='L95'></a><a href='#L95'>95</a>
-<a name='L96'></a><a href='#L96'>96</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -176,22 +178,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -225,7 +228,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -235,7 +238,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -254,39 +258,40 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
-import {
-  IconButton,
-  Badge,
-  Popover,
-  List,
-  ListItem,
-  ListItemText,
-  Button,
-  Typography,
-  Box
-} from '@mui/material';
-import { ShoppingCart } from '@mui/icons-material';
+&nbsp;
+import IconButton    from '@mui/material/IconButton';
+import Badge         from '@mui/material/Badge';
+import Popover       from '@mui/material/Popover';
+import List          from '@mui/material/List';
+import ListItem      from '@mui/material/ListItem';
+import ListItemText  from '@mui/material/ListItemText';
+import Button        from '@mui/material/Button';
+import Typography    from '@mui/material/Typography';
+import Box           from '@mui/material/Box';
+&nbsp;
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+&nbsp;
 import { useCartStore } from '../../stores/cartStore';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 &nbsp;
-export function CartPreview() {
-  const { t } = useTranslation();
-  const items = useCartStore(s =&gt; s.items);
-  const cartCount = items.reduce((sum, i) =&gt; sum + i.quantity, 0);
+function <span class="fstat-no" title="function not covered" >CartPreview() {</span>
+  const { t } = <span class="cstat-no" title="statement not covered" >useTranslation();</span>
+  const items = <span class="cstat-no" title="statement not covered" >useCartStore(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.items)</span>;</span>
+  const cartCount = <span class="cstat-no" title="statement not covered" >items.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, i) =&gt; <span class="cstat-no" title="statement not covered" >sum + i.quantity, 0</span>);</span>
 &nbsp;
-  const [anchorEl, setAnchorEl] = React.useState&lt;HTMLElement | null&gt;(null);
-  const open = Boolean(anchorEl);
-  const id = open ? 'cart-popover' : undefined;
+  const [anchorEl, setAnchorEl] = <span class="cstat-no" title="statement not covered" >React.useState&lt;HTMLElement | null&gt;(null);</span>
+  const open = <span class="cstat-no" title="statement not covered" >Boolean(anchorEl);</span>
+  const id = <span class="cstat-no" title="statement not covered" >open ? 'cart-popover' : undefined;</span>
 &nbsp;
-  const handleOpen = (e: React.MouseEvent&lt;HTMLElement&gt;) =&gt; {
-    setAnchorEl(e.currentTarget);
+  const handleOpen = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >(e</span>: React.MouseEvent&lt;HTMLElement&gt;) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >    setAnchorEl(e.currentTarget);</span>
   };
-  const handleClose = <span class="fstat-no" title="function not covered" >() =&gt; {</span>
+  const handleClose = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >() =&gt; {</span></span>
 <span class="cstat-no" title="statement not covered" >    setAnchorEl(null);</span>
   };
 &nbsp;
-  return (
+<span class="cstat-no" title="statement not covered" >  return (</span>
     &lt;&gt;
       &lt;IconButton
         aria-describedby={id}
@@ -299,7 +304,7 @@ export function CartPreview() {
           color="info"
           anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         &gt;
-          &lt;ShoppingCart /&gt;
+          &lt;ShoppingCartIcon /&gt;
         &lt;/Badge&gt;
       &lt;/IconButton&gt;
 &nbsp;
@@ -313,14 +318,14 @@ export function CartPreview() {
         PaperProps={{ sx: { width: 300, p: 1 } }}
       &gt;
         {cartCount === 0 ? (
-<span class="branch-0 cbranch-no" title="branch not covered" >          &lt;Typography sx={{ p: 2 }} variant="body2"&gt;</span>
+          &lt;Typography sx={{ p: 2 }} variant="body2"&gt;
             {t('cart.empty')}
           &lt;/Typography&gt;
         ) : (
           &lt;Box&gt;
             &lt;List dense&gt;
-              {items.map(item =&gt; (
-                &lt;ListItem key={item.id}&gt;
+              {items.map(<span class="fstat-no" title="function not covered" >item =&gt; (</span>
+<span class="cstat-no" title="statement not covered" >                &lt;ListItem key={item.id}&gt;</span>
                   &lt;ListItemText
                     primary={item.name}
                     secondary={`${item.quantity} × ${item.price.toFixed(2)} €`}
@@ -330,7 +335,7 @@ export function CartPreview() {
             &lt;/List&gt;
             &lt;Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}&gt;
               &lt;Typography variant="subtitle1"&gt;
-                {t('cart.total')} : {items.reduce((sum, i) =&gt; sum + i.quantity * i.price, 0).toFixed(2)} €
+                {t('cart.total')} : {items.reduce(<span class="fstat-no" title="function not covered" >(s</span>um, i) =&gt; <span class="cstat-no" title="statement not covered" >sum + i.quantity * i.price, 0</span>).toFixed(2)} €
               &lt;/Typography&gt;
               &lt;Button
                 component={Link}
@@ -348,14 +353,15 @@ export function CartPreview() {
     &lt;/&gt;
   );
 }
-&nbsp;</pre></td></tr></table></pre>
+&nbsp;
+export default CartPreview;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-21T22:27:39.195Z
+                at 2025-05-22T10:17:56.986Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

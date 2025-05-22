@@ -1,30 +1,41 @@
-import React from 'react';
-import {
-  AppBar, Toolbar, IconButton, Box, Divider,
-  Badge, Drawer, List, ListItemButton,
-  ListItemIcon, ListItemText, useMediaQuery 
-} from '@mui/material';
-import {
-  Menu as MenuIcon, ShoppingCart, Login as LoginIcon
-} from '@mui/icons-material';
+import React, { Suspense } from 'react';
+import AppBar           from '@mui/material/AppBar';
+import Toolbar          from '@mui/material/Toolbar';
+import IconButton       from '@mui/material/IconButton';
+import Box              from '@mui/material/Box';
+import Divider          from '@mui/material/Divider';
+import Badge            from '@mui/material/Badge';
+import Drawer           from '@mui/material/Drawer';
+import List             from '@mui/material/List';
+import ListItemButton   from '@mui/material/ListItemButton';
+import ListItemIcon     from '@mui/material/ListItemIcon';
+import ListItemText     from '@mui/material/ListItemText';
+import useMediaQuery    from '@mui/material/useMediaQuery';
+import CircularProgress from '@mui/material/CircularProgress';
+
+import MenuIcon         from '@mui/icons-material/Menu';
+import ShoppingCart     from '@mui/icons-material/ShoppingCart';
+import LoginIcon        from '@mui/icons-material/Login';
+
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useCartStore } from '../../stores/cartStore';
-import logoSrc from '../../assets/logo_arcs.png';
-import logoParis from '../../assets/logo_paris.png';
-import { LanguageSwitcher } from '../LanguageSwitcher';
-import { ThemeToggle } from '../ThemeToggle';
 import { NavLinkList } from './NavLinkList';
-import { CartPreview } from '../Cart/CartPreview';
-import { ActiveLink } from '../ActiveLink';
-import { ActiveButton } from '../ActiveButton';
+import logoSrc from '../../assets/logos/logo_arcs.png';
+import logoParis from '../../assets/logos/logo_paris.png';
+import ActiveLink from '../ActiveLink';
+import ActiveButton from '../ActiveButton';
+import LanguageSwitcher from '../LanguageSwitcher';
+import ThemeToggle from '../ThemeToggle';
+
+const CartPreview = React.lazy(() => import('../Cart/CartPreview'));
 
 interface NavbarProps {
   mode: 'light' | 'dark';
   toggleMode: () => void;
 }
 
-export function Navbar({ mode, toggleMode }: NavbarProps) {
+function Navbar({ mode, toggleMode }: NavbarProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -53,8 +64,9 @@ export function Navbar({ mode, toggleMode }: NavbarProps) {
                 <Box component="img" src={logoParis} alt={t('navbar.logoParis')} sx={{ height: 32 }} />
               </Box>
 
-              {/* mini-panier */}
-              <CartPreview />
+              <Suspense fallback={<CircularProgress size={24} />}>
+                <CartPreview />
+              </Suspense>
             </>
           ) : (
             // ────────── BARRE DESKTOP ──────────
@@ -79,7 +91,9 @@ export function Navbar({ mode, toggleMode }: NavbarProps) {
                 <ActiveButton to="/login" aria-label={t('navbar.login')}>
                   {t('navbar.login')}
                 </ActiveButton>
-                <CartPreview />
+                <Suspense fallback={<CircularProgress size={24} />}>
+                  <CartPreview />
+                </Suspense>
               </Box>
             </>
           )}
@@ -135,3 +149,5 @@ export function Navbar({ mode, toggleMode }: NavbarProps) {
     </>
   );
 }
+
+export default Navbar;

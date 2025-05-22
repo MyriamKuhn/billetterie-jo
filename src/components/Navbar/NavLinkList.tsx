@@ -1,5 +1,9 @@
-import { Button, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { ActiveLink } from '../ActiveLink';
+import Button           from '@mui/material/Button';
+import ListItemButton   from '@mui/material/ListItemButton';
+import ListItemIcon     from '@mui/material/ListItemIcon';
+import ListItemText     from '@mui/material/ListItemText';
+
+import ActiveLink from '../ActiveLink';
 import { navItems } from './navItems';
 import { useTranslation } from 'react-i18next';
 
