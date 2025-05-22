@@ -14,7 +14,7 @@ import useMediaQuery    from '@mui/material/useMediaQuery';
 import CircularProgress from '@mui/material/CircularProgress';
 
 import MenuIcon         from '@mui/icons-material/Menu';
-import ShoppingCart     from '@mui/icons-material/ShoppingCart';
+import ShoppingCartIcon     from '@mui/icons-material/ShoppingCart';
 import LoginIcon        from '@mui/icons-material/Login';
 
 import { useTheme } from '@mui/material/styles';
@@ -121,7 +121,7 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
                     color="info"
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                   >
-                    <ShoppingCart />
+                    <ShoppingCartIcon />
                   </Badge>
                 </ListItemIcon>
               <ListItemText primary={t('navbar.cart')} />
