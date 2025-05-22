@@ -53,6 +53,12 @@ export default function App({ mode, toggleMode }: AppProps) {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/tickets" element={<TicketsPage />} />
+              <Route path="/cart" element={<HomePage />} />
+              <Route path="/contact" element={<HomePage />} />
+              <Route path="/legal-mentions" element={<HomePage />} />
+              <Route path="/terms" element={<HomePage />} />
+              <Route path="/privacy-policy" element={<HomePage />} />
+              <Route path="/login" element={<HomePage />} />
             </Routes>
           </Suspense>
         </Box>
