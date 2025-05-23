@@ -10,6 +10,7 @@ import { Box, CircularProgress } from '@mui/material';
 
 const HomePage    = React.lazy(() => import('./pages/HomePage'));
 const TicketsPage = React.lazy(() => import('./pages/TicketsPage'));
+const LegalMentionsPage = React.lazy(() => import('./pages/LegalMentionsPage'));
 
 const Loader: React.FC = () => (
   <Box
@@ -55,7 +56,7 @@ export default function App({ mode, toggleMode }: AppProps) {
               <Route path="/tickets" element={<TicketsPage />} />
               <Route path="/cart" element={<HomePage />} />
               <Route path="/contact" element={<HomePage />} />
-              <Route path="/legal-mentions" element={<HomePage />} />
+              <Route path="/legal-mentions" element={<LegalMentionsPage />} />
               <Route path="/terms" element={<HomePage />} />
               <Route path="/privacy-policy" element={<HomePage />} />
               <Route path="/login" element={<HomePage />} />

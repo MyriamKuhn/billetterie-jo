@@ -3,14 +3,19 @@ import type { PropsWithChildren } from 'react';
 
 interface PageWrapperProps {
   children: React.ReactNode;
+  disableCard?: boolean;
 }
 
-export function PageWrapper({ children }: PropsWithChildren<PageWrapperProps>) {
+export function PageWrapper({ children, disableCard = false }: PropsWithChildren<PageWrapperProps>) {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Card>
-        {children}
-      </Card>
+      {disableCard ? (
+        children
+      ) : (
+        <Card>
+          {children}
+        </Card>
+      )}
     </Container>
   );
 }
