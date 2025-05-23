@@ -8,6 +8,7 @@ import { useLanguageStore } from './stores/useLanguageStore';
 import i18n from './i18n';
 import Box from '@mui/material/Box';
 import OlympicLoader from './components/OlympicLoader';
+import ScrollToTop from './components/ScrollToTop';
 
 const HomePage    = lazy(() => import('./pages/HomePage'));
 const TicketsPage = lazy(() => import('./pages/TicketsPage'));
@@ -32,6 +33,7 @@ export default function App({ mode, toggleMode }: AppProps) {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
         <Navbar mode={mode} toggleMode={toggleMode} />
         <Toolbar id="back-to-top-anchor" variant="dense" />
