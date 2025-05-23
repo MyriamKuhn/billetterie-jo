@@ -1,4 +1,5 @@
-import { Card, Container } from '@mui/material';
+import Container from '@mui/material/Container';
+import Card      from '@mui/material/Card';
 import type { PropsWithChildren } from 'react';
 
 interface PageWrapperProps {

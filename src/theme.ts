@@ -124,11 +124,17 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       },
       MuiLink: {
         styleOverrides: {
-          root: {
-            color: brandColors.primary,
-          },
+          root: ({ theme }) => ({
+            color: theme.palette.mode === 'light'
+              ? theme.palette.primary.dark
+              : theme.palette.primary.light,
+            textDecoration: 'underline',
+            '&:hover': {
+              color: theme.palette.primary.main,
+            },
+          }),
         },
-      },
-    }                    
+      }                    
+    }
   });
 };

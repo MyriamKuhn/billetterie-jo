@@ -1,13 +1,11 @@
-import {
-  Typography,
-  Box,
-  Divider,
-  Stack,
-  Link,
-  List,
-  ListItemButton,
-  ListItemText
-} from '@mui/material';
+import Typography     from '@mui/material/Typography';
+import Box            from '@mui/material/Box';
+import Divider        from '@mui/material/Divider';
+import Stack          from '@mui/material/Stack';
+import Link           from '@mui/material/Link';
+import List           from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText   from '@mui/material/ListItemText';
 import { PageWrapper } from '../components/PageWrapper';
 import Seo from '../components/Seo';
 import { useTranslation } from 'react-i18next';
@@ -94,7 +92,10 @@ export default function LegalMentionsPage() {
                       // e-mail ?
                       if (/^[\w.+-]+@[\w-]+\.[\w.-]+$/.test(segment)) {
                         return (
-                          <Link key={idx} href={`mailto:${segment}`}>
+                          <Link 
+                            key={idx} 
+                            href={`mailto:${segment}`}
+                          >
                             {segment}
                           </Link>
                         );

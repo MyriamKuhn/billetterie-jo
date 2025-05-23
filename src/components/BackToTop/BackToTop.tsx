@@ -1,5 +1,9 @@
 import React from 'react';
-import { Box, Fab, useScrollTrigger, Zoom, useTheme } from '@mui/material';
+import Box              from '@mui/material/Box';
+import Fab              from '@mui/material/Fab';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import Zoom             from '@mui/material/Zoom';
+import { useTheme }     from '@mui/material/styles';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 interface ScrollTopProps {
