@@ -1,4 +1,4 @@
-import{j as e}from"./react-Dx1Prv24.js";import{S as i,P as a}from"./Seo-r0eJCuB2.js";import{i as t,e as s,h as o}from"./mui-core-BJxwacnZ.js";import"./helmet-B1hmP2rP.js";import"./vendor-tlgfy-q6.js";import"./i18n-react-CLnszlJt.js";const u=`
+import{j as e}from"./react-DC8o52IF.js";import{S as i,P as a}from"./Seo-BOqbQ3n2.js";import{i as t,e as s,h as o}from"./mui-core-CKHfY08w.js";import"./helmet-HgkH5sb3.js";import"./vendor-28M1N-qv.js";import"./i18n-react-BdmoSNPo.js";const u=`
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus lacinia odio vitae vestibulum vestibulum. 
 Cras venenatis euismod malesuada. Nullam ac erat ante. Sed vehicula mauris sit amet neque ultricies, 
 a interdum tortor scelerisque. Integer pretium posuere felis, vitae tristique lacus blandit at.

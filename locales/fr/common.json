@@ -1,0 +1,35 @@
+{
+  "navbar": {
+    "menu": "Ouvrir le menu",
+    "home": "Accueil",
+    "tickets": "Billets",
+    "cart": "Panier",
+    "login": "Se connecter",
+    "language": "Langue",
+    "logoJO": "Logo des Jeux Olympiques",
+    "logoParis": "Logo Paris 2024",
+    "toggleTheme": "Changer le thème"
+  },
+  "cart": {
+    "empty": "Votre panier est vide",
+    "total": "Total",
+    "view": "Voir le panier"
+  },
+  "seo": {
+    "title": "Réservez vos billets – Billetterie JO Paris 2024",
+    "description": "Projet de Bachelor : site de réservation de billets en ligne pour les Jeux Olympiques Paris 2024. Réservez facilement vos places, gérez votre panier et profitez d'une interface moderne et multilingue.",
+    "keywords": "billetterie, jeux olympiques, paris 2024, réservation de billets, site de réservation, interface moderne, multilingue, React, développement web, gestion de panier, expérience utilisateur"
+  },
+  "footer": {
+    "contact": "Nous contacter",
+    "legalMentions":  "Mentions légales",
+    "terms": "CGV",
+    "privacy": "Politique de confidentialité",
+    "copy": "© {{year}} Billetterie JO Paris 2024 — Réalisé par Myriam Kühn"
+  },
+  "cookieBanner": {
+    "message": "Nous utilisons des cookies pour améliorer votre expérience. Voir notre <privacyLink>politique de confidentialité</privacyLink>.",
+    "accept": "Accepter",
+    "decline": "Refuser"
+  }
+}

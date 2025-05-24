@@ -1,0 +1,35 @@
+{
+  "navbar": {
+    "menu": "Menü öffnen",
+    "home": "Startseite",
+    "tickets": "Tickets",
+    "cart": "Einkaufskorb",
+    "login": "Anmelden",
+    "language": "Sprache",
+    "logoJO": "Olympische Spiele Logo",
+    "logoParis": "Paris 2024 Logo",
+    "toggleTheme": "Thema wechseln"
+  },
+  "cart": {
+    "empty": "Ihr Einkaufskorb ist leer",
+    "total": "Gesamt",
+    "view": "Einkaufskorb anzeigen"
+  },
+  "seo": {
+    "title": "Buchen Sie Ihre Tickets – Olympischer Ticketverkauf Paris 2024",
+    "description": "Bachelor-Projekt: Online-Ticketreservierungsseite für die Olympischen Spiele Paris 2024. Reservieren Sie ganz einfach Ihre Plätze, verwalten Sie Ihren Warenkorb und genießen Sie eine moderne, mehrsprachige Oberfläche.",
+    "keywords": "Ticketverkauf, Olympische Spiele, Paris 2024, Ticketreservierung, Buchungsseite, moderne Oberfläche, mehrsprachig, React, Webentwicklung, Warenkorbverwaltung, Benutzererfahrung"
+  },
+  "footer": {
+    "contact": "Kontaktieren Sie uns",
+    "legalMentions":  "Rechtliche Hinweise",
+    "terms": "AGB",
+    "privacy": "Datenschutzbestimmungen",
+    "copy": "© {{year}} Olympischer Ticketverkauf Paris 2024 — Erstellt von Myriam Kühn"
+  },
+  "cookieBanner": {
+    "message": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern. Lesen Sie unsere <privacyLink>Datenschutzerklärung</privacyLink>.",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen"
+  }
+}
