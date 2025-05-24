@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/stores/cartStore.ts</title>
+    <title>Code coverage report for src/pages/LegalMentionsPage.tsx</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/stores</a> cartStore.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/pages</a> LegalMentionsPage.tsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -93,17 +93,9 @@
 <a name='L28'></a><a href='#L28'>28</a>
 <a name='L29'></a><a href='#L29'>29</a>
 <a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a>
-<a name='L39'></a><a href='#L39'>39</a>
-<a name='L40'></a><a href='#L40'>40</a>
-<a name='L41'></a><a href='#L41'>41</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L31'></a><a href='#L31'>31</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -120,69 +112,47 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { create } from 'zustand';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import LegalPageLayout from '../components/LegalPageLayout';
 &nbsp;
-export interface CartItem {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
-  // … tes autres champs
+const sections: readonly [string, string][] = [
+  ['subtitleEditor', 'editor'],
+  ['subtitleDirector', 'director'],
+  ['subtitleHosting', 'hosting'],
+  ['subtitleAccessibility', 'accessibility'],
+  ['subtitleIntellectualProperty', 'intellectualProperty'],
+  ['subtitlePersonalData', 'personalData'],
+  ['subtitleCookies', 'cookies'],
+  ['subtitleLiability', 'liability'],
+  ['subtitleLinks', 'links'],
+  ['subtitleGoverningLaw', 'governingLaw'],
+  ['subtitleContact', 'contact'],
+  ['subtitleCredits', 'credits'],
+  ['subtitleUpdate', 'update'],
+  ['subtitleLastUpdate', 'lastUpdate'],
+];
+&nbsp;
+export default function LegalMentionsPage() {
+  return (
+    &lt;LegalPageLayout
+      namespace="legal"
+      seoTitle="legal.seoTitle"
+      seoDescription="legal.seoDescription"
+      pageTitle="legal.title"
+      sections={sections}
+    /&gt;
+  );
 }
-&nbsp;
-interface CartState {
-  items: CartItem[];
-  addItem: (item: CartItem) =&gt; void;
-  removeItem: (id: string) =&gt; void;
-  clearCart: () =&gt; void;
-}
-&nbsp;
-export const useCartStore = <span class="cstat-no" title="statement not covered" >create&lt;CartState&gt;(<span class="fstat-no" title="function not covered" >(s</span>et, get) =&gt; (<span class="cstat-no" title="statement not covered" >{</span></span>
-  items: [],
-&nbsp;
-  addItem: <span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; {
-    const items = <span class="cstat-no" title="statement not covered" >[...get().items];</span>
-    const idx = <span class="cstat-no" title="statement not covered" >items.findIndex(<span class="fstat-no" title="function not covered" >i =&gt; <span class="cstat-no" title="statement not covered" >i</span>.id === item.id)</span>;</span>
-<span class="cstat-no" title="statement not covered" >    if (idx !== -1) {</span>
-      // incrémente la quantité
-<span class="cstat-no" title="statement not covered" >      items[idx] = { ...items[idx], quantity: items[idx].quantity + item.quantity };</span>
-    } else {
-<span class="cstat-no" title="statement not covered" >      items.push(item);</span>
-    }
-<span class="cstat-no" title="statement not covered" >    set({ items });</span>
-  },
-&nbsp;
-  removeItem: <span class="fstat-no" title="function not covered" >(i</span>d) =&gt; {
-<span class="cstat-no" title="statement not covered" >    set({ items: get().items.filter(<span class="fstat-no" title="function not covered" >i =&gt; <span class="cstat-no" title="statement not covered" >i</span>.id !== id)</span> });</span>
-  },
-&nbsp;
-  clearCart: <span class="fstat-no" title="function not covered" >() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    set({ items: [] });</span>
-  },
-}));
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
