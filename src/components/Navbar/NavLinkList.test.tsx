@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { describe, it, beforeEach, vi, expect } from 'vitest';
 
-// ─── ❶ Stub du module navItems ───────────────────────────────────────────────
+// ❶ Stub du module navItems
 vi.mock('./navItems', () => ({
   __esModule: true,
   navItems: [
@@ -10,13 +10,13 @@ vi.mock('./navItems', () => ({
   ],
 }));
 
-// ─── ❷ Stub react-i18next ────────────────────────────────────────────────────
+// ❷ Stub react-i18next
 vi.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => ({ t: (k: string) => k }),
 }));
 
-// ─── ❸ Stub ActiveLink (export default) ───────────────────────────────────────
+// ❸ Stub ActiveLink (export default)
 vi.mock('../ActiveLink', () => ({
   __esModule: true,
   default: ({ to, children, ...p }: any) => (
@@ -35,7 +35,7 @@ describe('<NavLinkList />', () => {
     vi.restoreAllMocks();
   });
 
-  it('mode mobile : rend un <a data-testid="active-link"> pour chaque item avec icône, texte, to et onClick', () => {
+  it('mode mobile : rend un lien pour chaque item et ferme le drawer via onNavigate si fourni', () => {
     const onNavigate = vi.fn();
     render(<NavLinkList isMobile onNavigate={onNavigate} />);
 
@@ -44,39 +44,29 @@ describe('<NavLinkList />', () => {
 
     links.forEach((link, idx) => {
       const cfg = navItems[idx];
-      // ❶ le to arrive bien dans data-to
       expect(link).toHaveAttribute('data-to', cfg.href);
-
-      // ❷ l'icône custom est rendue
       expect(within(link).getByTestId(`icon-${cfg.key}`)).toBeInTheDocument();
-
-      // ❸ le texte traduit est navbar.<key>
       expect(link).toHaveTextContent(`navbar.${cfg.key}`);
 
-      // ❹ onNavigate est appelé quand on clique
       fireEvent.click(link);
       expect(onNavigate).toHaveBeenCalledTimes(idx + 1);
     });
   });
 
-  it('mode mobile sans onNavigate : appelle seulement window.scrollTo', () => {
-    // Espionner scrollTo
-    const scrollSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
-
-    // Pas de onNavigate
+  it('mode mobile sans onNavigate : ne scrolle plus, n\'appelle que la navigation', () => {
     render(<NavLinkList isMobile />);
 
     const links = screen.getAllByTestId('active-link');
     expect(links).toHaveLength(navItems.length);
 
-    // Cliquer sur le premier lien
-    fireEvent.click(links[0]);
+    // spy on scrollTo
+    const scrollSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
 
-    // onNavigate n'existe pas, on vérifie que scrollTo a été appelé
-    expect(scrollSpy).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+    fireEvent.click(links[0]);
+    expect(scrollSpy).not.toHaveBeenCalled();
   });
 
-  it('mode desktop : rend un <a data-testid="active-link"> pour chaque item avec texte et to', () => {
+  it('mode desktop : rend un lien pour chaque item sans onNavigate', () => {
     render(<NavLinkList isMobile={false} />);
 
     const links = screen.getAllByTestId('active-link');
@@ -89,5 +79,3 @@ describe('<NavLinkList />', () => {
     });
   });
 });
-
-
