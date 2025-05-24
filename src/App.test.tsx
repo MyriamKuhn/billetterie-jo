@@ -30,6 +30,7 @@ vi.mock('./pages/TicketsPage', () => ({ __esModule: true, default: () => <div da
 vi.mock('./pages/LegalMentionsPage', () => ({ __esModule: true, default: () => <div data-testid="page-legal">Legal</div> }));
 vi.mock('./pages/TermsPage',   () => ({ __esModule: true, default: () => <div data-testid="page-terms">Terms</div> }));
 vi.mock('./pages/PolicyPage',  () => ({ __esModule: true, default: () => <div data-testid="page-policy">Policy</div> }));
+vi.mock('./pages/ContactPage', () => ({ __esModule: true, default: () => <div data-testid="page-contact">Contact</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -129,8 +130,14 @@ describe('<App />', () => {
     await waitFor(() => expect(screen.getByTestId('page-policy')).toBeInTheDocument());
   });
 
-  it('affiche HomePage sur "/cart", "/contact" et "/login"', async () => {
-    for (const path of ['/cart', '/contact', '/login']) {
+  it('affiche ContactPage sur "/contact"', async () => {
+    window.history.pushState({}, '', '/contact');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-contact')).toBeInTheDocument());
+  });
+
+  it('affiche HomePage sur "/cart" et "/login"', async () => {
+    for (const path of ['/cart', '/login']) {
       window.history.pushState({}, '', path);
       render(<App mode="light" toggleMode={vi.fn()} />);
       await waitFor(() => expect(screen.getByTestId('page-home')).toBeInTheDocument());
