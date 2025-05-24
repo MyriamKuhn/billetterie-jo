@@ -162,17 +162,41 @@ Planned improvements:
 
 ## 🛠️ Tech Stack
 
-- Vite (dev + build)
-- React 19
-- TypeScript
-- Material UI (+ DataGrid, Autocomplete)
-- React Hook Form + Zod
-- i18next / react-i18next
-- Zustand (state management)
-- Axios + React Query (data fetching)
-- react-world-flags (flag selects)
-- Vitest + React Testing Library + jest-dom
-- ESLint + Prettier
+- **Core:**  
+  - Vite (dev server & build)  
+  - React 19  
+  - TypeScript  
+
+- **Styling & UI:**  
+  - Material UI v7 (`@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled`)  
+  - MUI X DataGrid (`@mui/x-data-grid`) & Autocomplete  
+
+- **Routing & Head:**  
+  - React Router v7 (`react-router-dom`)  
+  - React Helmet Async (`react-helmet-async`)  
+
+- **State & Forms:**  
+  - Zustand (state management)  
+  - React Hook Form (`react-hook-form`) + `@hookform/resolvers` + Zod  
+
+- **Data & I18n:**  
+  - Axios + TanStack React Query (`@tanstack/react-query`)  
+  - i18next + `i18next-http-backend` + `i18next-browser-languagedetector` + React-i18next  
+
+- **Cookies & Consent:**  
+  - React Cookie Consent (`react-cookie-consent`)  
+
+- **Testing:**  
+  - Vitest  
+  - React Testing Library (`@testing-library/react`, `@testing-library/dom`, `@testing-library/user-event`)  
+  - jest-dom (`@testing-library/jest-dom`)  
+
+- **Linting & Formatting:**  
+  - ESLint + Prettier + `@typescript-eslint`  
+
+- **Dev Utilities:**  
+  - identity-obj-proxy (for CSS modules in tests)  
+  - jsdom (test environment)  
 
 ---
 
