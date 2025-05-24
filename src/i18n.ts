@@ -17,7 +17,7 @@ i18n
       order: ['querystring', 'cookie', 'navigator'],
       caches: ['cookie'],
     },
-    ns: ['common', 'legal'],    
+    ns: ['common', 'legal', 'privacy', 'terms'],    
     defaultNS: 'common',
     interpolation: { escapeValue: false },
     react: { useSuspense: false },
