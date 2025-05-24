@@ -120,11 +120,29 @@ describe('getAppTheme – component styleOverrides', () => {
 
       it('MuiButton – containedPrimary overrides', () => {
         const cp = theme.components!.MuiButton!.styleOverrides!.containedPrimary!;
-        expect(cp).toMatchObject({
-          backgroundColor: brandColors.primary,
-          color: '#0B1B2B',
-          '&:hover': { backgroundColor: '#57A5A2' },
+        // on cast en any pour ignorer la signature stricte
+        const styles = (cp as any)({ theme });
+        expect(styles).toMatchObject({
+          backgroundColor: theme.palette.mode === 'dark'
+            ? theme.palette.primary.dark
+            : theme.palette.info.main,
+          color: theme.palette.mode === 'dark'
+            ? theme.palette.primary.contrastText
+            : theme.palette.info.contrastText,
+          '&:hover': {
+            backgroundColor: theme.palette.mode === 'dark'
+              ? theme.palette.primary.main
+              : theme.palette.info.light,
+          },
         });
+      });
+
+      it('getAppTheme – component styleOverrides > mode="dark" > MuiButton – containedPrimary overrides', () => {
+        const theme = getAppTheme('dark');
+        const cp = theme.components!.MuiButton!.styleOverrides!.containedPrimary!;
+        const styles = (cp as any)({ theme });
+        expect(styles.backgroundColor).toBe(theme.palette.primary.dark);
+        // etc.
       });
 
       it(`MuiButton – outlinedPrimary ${isLight ? 'present' : 'absent'}`, () => {

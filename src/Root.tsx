@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline   from '@mui/material/CssBaseline';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -6,6 +6,7 @@ import { I18nextProvider, Trans, useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import App from './App';
 import { getAppTheme } from './theme';
+import { useThemeStore } from './stores/useThemeStore';
 import { useLanguageStore } from './stores/useLanguageStore';
 import { HelmetProvider } from 'react-helmet-async';
 import CookieConsent from 'react-cookie-consent';
@@ -13,12 +14,23 @@ import CookieConsent from 'react-cookie-consent';
 export function Root() {
   // Detection of the user's preferred color scheme
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [mode, setMode] = useState<'light'|'dark'>(
-    prefersDarkMode ? 'dark' : 'light'
-  );
+
+  // Zustand store for theme management
+  const mode        = useThemeStore((s) => s.mode);
+  const setLight    = useThemeStore((s) => s.setLight);
+  const setDark     = useThemeStore((s) => s.setDark);
+  const toggleMode  = useThemeStore((s) => s.toggle);
+
+  // Update the Zustand store based on the user's preference
   useEffect(() => {
-    setMode(prefersDarkMode ? 'dark' : 'light');
-  }, [prefersDarkMode]);
+    if (localStorage.getItem('theme-mode') != null) return;
+
+    if (prefersDarkMode) {
+      setDark();
+    } else {
+      setLight();
+    }
+  }, []);
 
   // Detection of the user's language
   const lang = useLanguageStore(state => state.lang);
@@ -82,10 +94,7 @@ export function Root() {
             />
           </CookieConsent>
 
-          <App 
-            mode={mode} 
-            toggleMode={() => setMode(m => m === 'light' ? 'dark' : 'light')}
-          />
+          <App mode={mode} toggleMode={toggleMode} />
         </ThemeProvider>
       </I18nextProvider>
     </HelmetProvider>

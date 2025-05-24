@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Tauchen Sie ein in das Herz der Olympischen Spiele Paris 2024",
+    "subtitle": "Buchen Sie jetzt Ihre Tickets und erleben Sie das einzigartige Olympia-Erlebnis."
+  },
+  "history": {
+    "title": "Ein Stück Geschichte",
+    "text": "Die modernen Olympischen Spiele wurden 1896 in Athen wiederbelebt, mit dem Ziel, Frieden und Solidarität zwischen den Völkern zu fördern. Seitdem bringt dieses weltweite Ereignis alle vier Jahre Tausende von Athleten aus über 200 Ländern zusammen, um die Grenzen des Möglichen zu verschieben. Paris 2024 markiert die Rückkehr der Spiele nach Frankreich nach 100 Jahren und verspricht unvergessliche Wettbewerbe an legendären Austragungsstätten."
+  },
+  "events": {
+    "title": "Unvergessliche Wettkämpfe",
+    "intro": "Erleben Sie die Intensität und Emotion dieser legendären Wettbewerbe bei den kommenden Olympischen Spielen.",
+    "item1": {
+      "title": "Eröffnungsfeier",
+      "description": "Ein großes Spektakel aus Musik, Tanz und Inszenierung zur offiziellen Eröffnung der Spiele."
+    },
+    "item2": {
+      "title": "Leichtathletik",
+      "description": "Von Sprintläufen bis zu Sprungdisziplinen – entdecken Sie eine der beliebtesten Sportarten."
+    },
+    "item3": {
+      "title": "Schwimmen",
+      "description": "Tauchen Sie ein in die Wasserwelt, von Freistilstaffeln bis zu akrobatischen Sprüngen."
+    },
+    "item4": {
+      "title": "Judo",
+      "description": "Eine japanische Kampfsportart, in der Kraft und Technik auf der Matte aufeinandertreffen."
+    }
+  },
+  "cta": {
+    "title": "Buchen Sie jetzt Ihre Tickets"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Plongez au cœur des Jeux Olympiques de Paris 2024",
+    "subtitle": "Réservez vos billets dès maintenant pour vivre l’expérience unique des JO."
+  },
+  "history": {
+    "title": "Un peu d’histoire",
+    "text": "Les Jeux Olympiques modernes ont été relancés en 1896 à Athènes, dans l’esprit de favoriser la paix et la solidarité entre les peuples. Depuis, cet événement planétaire rassemble tous les quatre ans des milliers d’athlètes venus de plus de 200 pays pour repousser les limites du possible. Paris 2024 marquera le retour des Jeux en France après 100 ans, et promet des compétitions inoubliables dans des sites légendaires."
+  },
+  "events": {
+    "title": "Quelques épreuves à ne pas manquer",
+    "intro": "Vivez l’intensité et l’émotion de ces compétitions emblématiques lors des prochains Jeux Olympiques.",
+    "item1": {
+      "title": "Cérémonie d’ouverture",
+      "description": "Un spectacle grandiose mêlant musique, danse et mise en scène pour lancer officiellement les Jeux."
+    },
+    "item2": {
+      "title": "Athlétisme",
+      "description": "Des courses de vitesse aux concours de saut, découvrez l’une des disciplines les plus populaires."
+    },
+    "item3": {
+      "title": "Natation",
+      "description": "Plongez dans l’univers aquatique, entre courses de nage libre et plongeon acrobatique."
+    },
+    "item4": {
+      "title": "Judo",
+      "description": "Un art martial japonais où la force et la technique s’affrontent sur le tatami."
+    }
+  },
+  "cta": {
+    "title": "Réservez vos billets maintenant"
+  }
+}
