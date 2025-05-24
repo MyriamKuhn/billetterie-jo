@@ -47,7 +47,7 @@ export default function LegalPageLayout({
             titleKey={`${namespace}.subtitleTableOfContents`}
           />
 
-          <Box sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
             {sections.map(([subKey, textKey], idx) => (
               <LegalSection
                 key={subKey}

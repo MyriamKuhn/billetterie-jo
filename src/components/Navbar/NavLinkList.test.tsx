@@ -26,13 +26,14 @@ vi.mock('../ActiveLink', () => ({
   ),
 }));
 
-// pas besoin de mocker MUI si on ne cible plus `ListItemButton` ou `Button` directement
-
 import { NavLinkList } from './NavLinkList';
 import { navItems }   from './navItems';
 
 describe('<NavLinkList />', () => {
-  beforeEach(() => cleanup());
+  beforeEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
 
   it('mode mobile : rend un <a data-testid="active-link"> pour chaque item avec icône, texte, to et onClick', () => {
     const onNavigate = vi.fn();
@@ -58,6 +59,23 @@ describe('<NavLinkList />', () => {
     });
   });
 
+  it('mode mobile sans onNavigate : appelle seulement window.scrollTo', () => {
+    // Espionner scrollTo
+    const scrollSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+
+    // Pas de onNavigate
+    render(<NavLinkList isMobile />);
+
+    const links = screen.getAllByTestId('active-link');
+    expect(links).toHaveLength(navItems.length);
+
+    // Cliquer sur le premier lien
+    fireEvent.click(links[0]);
+
+    // onNavigate n'existe pas, on vérifie que scrollTo a été appelé
+    expect(scrollSpy).toHaveBeenCalledWith({ top: 0, behavior: 'smooth' });
+  });
+
   it('mode desktop : rend un <a data-testid="active-link"> pour chaque item avec texte et to', () => {
     render(<NavLinkList isMobile={false} />);
 
@@ -71,4 +89,5 @@ describe('<NavLinkList />', () => {
     });
   });
 });
+
 
