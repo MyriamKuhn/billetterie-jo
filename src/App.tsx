@@ -13,6 +13,7 @@ import ScrollToTop from './components/ScrollToTop';
 const HomePage    = lazy(() => import('./pages/HomePage'));
 const TicketsPage = lazy(() => import('./pages/TicketsPage'));
 const LegalMentionsPage = lazy(() => import('./pages/LegalMentionsPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
 
 interface AppProps {
   mode: 'light' | 'dark';
@@ -50,7 +51,7 @@ export default function App({ mode, toggleMode }: AppProps) {
               <Route path="/cart" element={<HomePage />} />
               <Route path="/contact" element={<HomePage />} />
               <Route path="/legal-mentions" element={<LegalMentionsPage />} />
-              <Route path="/terms" element={<HomePage />} />
+              <Route path="/terms" element={<TermsPage />} />
               <Route path="/privacy-policy" element={<HomePage />} />
               <Route path="/login" element={<HomePage />} />
             </Routes>
