@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "title": "Dive into the Heart of the Paris 2024 Olympic Games",
+    "subtitle": "Book your tickets now to experience the unique thrill of the Olympics."
+  },
+  "history": {
+    "title": "A Bit of History",
+    "text": "The modern Olympic Games were revived in 1896 in Athens, with the aim of promoting peace and solidarity among nations. Since then, this global event has brought together thousands of athletes from over 200 countries every four years to push the limits of what’s possible. Paris 2024 marks the return of the Games to France after 100 years, promising unforgettable competitions at legendary venues."
+  },
+  "events": {
+    "title": "Must-See Events",
+    "intro": "Experience the intensity and emotion of these iconic competitions at the upcoming Olympic Games.",
+    "item1": {
+      "title": "Opening Ceremony",
+      "description": "A grand spectacle of music, dance, and pageantry to officially launch the Games."
+    },
+    "item2": {
+      "title": "Athletics",
+      "description": "From sprint races to jumping events, discover one of the most popular disciplines."
+    },
+    "item3": {
+      "title": "Swimming",
+      "description": "Dive into the aquatic world, from freestyle races to acrobatic diving."
+    },
+    "item4": {
+      "title": "Judo",
+      "description": "A Japanese martial art where strength and technique clash on the tatami."
+    }
+  },
+  "cta": {
+    "title": "Book Your Tickets Now"
+  }
+}

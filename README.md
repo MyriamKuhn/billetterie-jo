@@ -2,7 +2,7 @@
 
 This is the React/Vite frontend client for the Olympic Games Paris 2024 ticketing platform. It consumes our REST API via Axios and React Query, and offers a rich UI built with Material UI, typed forms, internationalization, lightweight state management, and more.
 
-![Tests](https://img.shields.io/badge/tests-118_passed-4caf50.svg) ![Test Coverage](https://img.shields.io/badge/coverage-100%25-darkgreen)
+![Tests](https://img.shields.io/badge/tests-141_passed-4caf50.svg) ![Test Coverage](https://img.shields.io/badge/coverage-100%25-darkgreen)
 ![Vite](https://img.shields.io/badge/vite-6.3.5-blue) ![React](https://img.shields.io/badge/react-19.1.0-61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)
 
 ---
@@ -16,6 +16,8 @@ This is the React/Vite frontend client for the Olympic Games Paris 2024 ticketin
   - [📥 Installation](#-installation)
   - [🏗️ Environment Setup](#️-environment-setup)
   - [🏃‍♂️ Running the Application](#️-running-the-application)
+    - [Build for production](#build-for-production)
+    - [Deploy to production branch](#deploy-to-production-branch)
   - [🧪 Testing](#-testing)
   - [🚀 Future Evolutions](#-future-evolutions)
   - [🛠️ Tech Stack](#️-tech-stack)
@@ -98,12 +100,29 @@ Open your browser at
 ```
 http://localhost:3000
 ```
-Build for production:
+### Build for production  
 ```bash
 npm run build
 # or
 yarn build
 ```
+
+### Deploy to production branch
+I’ve added a one-liner script that does everything via a Git worktree:
+```bash
+npm run deploy:prod
+# or
+yarn deploy:prod
+```
+Under the hood, `deploy:prod` runs `scripts/deploy-prod-wt.sh`, which:
+- Builds your app (npm run build)
+- Creates/updates a prod/ worktree on production
+- Cleans out prod/ (except .git & .gitignore)
+- Copies the dist/ output into prod/
+- Commits & force-pushes to origin/production
+- Removes the temporary worktree
+
+With this in place, a single command is all you need to publish!
 
 ---
 
@@ -113,7 +132,7 @@ The application has a **full feature test coverage**.
 
 Full HTML report available under [Coverage HTML](https://myriamkuhn.github.io/billetterie-jo/).  
 
-✅ **118 tests passed**.  
+✅ **141 tests passed**.  
 📊 **Coverage: 100%**
 
 To run all automated tests:
@@ -143,17 +162,41 @@ Planned improvements:
 
 ## 🛠️ Tech Stack
 
-- Vite (dev + build)
-- React 19
-- TypeScript
-- Material UI (+ DataGrid, Autocomplete)
-- React Hook Form + Zod
-- i18next / react-i18next
-- Zustand (state management)
-- Axios + React Query (data fetching)
-- react-world-flags (flag selects)
-- Vitest + React Testing Library + jest-dom
-- ESLint + Prettier
+- **Core:**  
+  - Vite (dev server & build)  
+  - React 19  
+  - TypeScript  
+
+- **Styling & UI:**  
+  - Material UI v7 (`@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled`)  
+  - MUI X DataGrid (`@mui/x-data-grid`) & Autocomplete  
+
+- **Routing & Head:**  
+  - React Router v7 (`react-router-dom`)  
+  - React Helmet Async (`react-helmet-async`)  
+
+- **State & Forms:**  
+  - Zustand (state management)  
+  - React Hook Form (`react-hook-form`) + `@hookform/resolvers` + Zod  
+
+- **Data & I18n:**  
+  - Axios + TanStack React Query (`@tanstack/react-query`)  
+  - i18next + `i18next-http-backend` + `i18next-browser-languagedetector` + React-i18next  
+
+- **Cookies & Consent:**  
+  - React Cookie Consent (`react-cookie-consent`)  
+
+- **Testing:**  
+  - Vitest  
+  - React Testing Library (`@testing-library/react`, `@testing-library/dom`, `@testing-library/user-event`)  
+  - jest-dom (`@testing-library/jest-dom`)  
+
+- **Linting & Formatting:**  
+  - ESLint + Prettier + `@typescript-eslint`  
+
+- **Dev Utilities:**  
+  - identity-obj-proxy (for CSS modules in tests)  
+  - jsdom (test environment)  
 
 ---
 

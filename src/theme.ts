@@ -78,22 +78,33 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       },
       MuiButton: {
         styleOverrides: {
-          containedPrimary: {
-            backgroundColor: brandColors.primary,
-            color: '#0B1B2B',
-            '&:hover': { backgroundColor: '#57A5A2' }
-          },
+          containedPrimary: ({ theme }) => ({
+            backgroundColor:
+              theme.palette.mode === 'dark'
+                ? theme.palette.primary.dark
+                : theme.palette.info.main,
+            color:
+              theme.palette.mode === 'dark'
+                ? theme.palette.primary.contrastText
+                : theme.palette.info.contrastText,
+            '&:hover': {
+              backgroundColor:
+                theme.palette.mode === 'dark'
+                  ? theme.palette.primary.main
+                  : theme.palette.info.light,
+            },
+          }),
           ...(isLight && {
             outlinedPrimary: {
-              borderColor:     brandColors.secondary,  
+              borderColor:     brandColors.secondary,
               color:           brandColors.secondary,
               '&:hover': {
                 borderColor:     brandColors.secondary,
-                backgroundColor: `${brandColors.secondary}10`, 
+                backgroundColor: `${brandColors.secondary}10`,
               },
-            }
-          })
-        }
+            },
+          }),
+        },
       },
       MuiIconButton: {
         styleOverrides: {
