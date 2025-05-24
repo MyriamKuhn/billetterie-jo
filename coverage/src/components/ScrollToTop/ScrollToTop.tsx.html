@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/components/ActiveLink/ActiveLink.tsx</title>
+    <title>Code coverage report for src/components/ScrollToTop/ScrollToTop.tsx</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,20 +19,20 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/ActiveLink</a> ActiveLink.tsx</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/ScrollToTop</a> ScrollToTop.tsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>4/4</span>
             </div>
         
             
@@ -87,12 +87,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -102,28 +96,34 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { NavLink, type NavLinkProps } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useEffect } from 'react';
+import { usePathname } from '../../utils/getPathname';
 &nbsp;
-// Variante simple : un &lt;NavLink&gt; stylé
-const StyledNavLink = styled(NavLink)(({ theme }) =&gt; ({
-  color: theme.palette.text.primary,
-  textDecoration: 'none',
-  padding: theme.spacing(0.5, 1),
-  borderRadius: theme.shape.borderRadius,
-  '&amp;.active': {
-    backgroundColor: theme.palette.action.selected,
-    fontWeight: theme.typography.fontWeightMedium,
-  }
-}));
-&nbsp;
-function ActiveLink(props: NavLinkProps) {
-  // NavLink injecte automatiquement la class "active" quand la route matche
-  return &lt;StyledNavLink {...props} /&gt;;
+interface ScrollToTopProps {
+  /**
+   * Permet d’injecter un pathname en test, sans React Router.
+   */
+  forcedPath?: string;
 }
 &nbsp;
-export default ActiveLink;</pre></td></tr></table></pre>
+function ScrollToTop({ forcedPath }: ScrollToTopProps) {
+  const realPath = forcedPath ?? usePathname();
+&nbsp;
+  useEffect(() =&gt; {
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  }, [realPath]);
+&nbsp;
+  return null;
+}
+&nbsp;
+export default ScrollToTop;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->

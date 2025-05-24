@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/12</span>
+                <span class='fraction'>12/12</span>
             </div>
         
             
@@ -142,7 +142,11 @@
 <a name='L77'></a><a href='#L77'>77</a>
 <a name='L78'></a><a href='#L78'>78</a>
 <a name='L79'></a><a href='#L79'>79</a>
-<a name='L80'></a><a href='#L80'>80</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -157,10 +161,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -169,12 +182,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -196,10 +204,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -222,7 +230,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
-import { Box, Fab, useScrollTrigger, Zoom, useTheme } from '@mui/material';
+import Box              from '@mui/material/Box';
+import Fab              from '@mui/material/Fab';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import Zoom             from '@mui/material/Zoom';
+import { useTheme }     from '@mui/material/styles';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 &nbsp;
 interface ScrollTopProps {
@@ -235,20 +247,20 @@ interface ScrollTopProps {
 /**
  * Ce composant affiche son enfant dans un Zoom quand on scroll (threshold = 100px).
  */
-function ScrollTop(props: ScrollTopProps &amp; { children: React.ReactElement }) {
+export function ScrollTop(props: ScrollTopProps &amp; { children: React.ReactElement }) {
   const { children, window } = props;
   const trigger = useScrollTrigger({
-    target: window ? <span class="branch-0 cbranch-no" title="branch not covered" >window() : u</span>ndefined,
+    target: window ? window() : undefined,
     disableHysteresis: true,
     threshold: 100,
   });
 &nbsp;
   const handleClick = (event: React.MouseEvent&lt;HTMLElement&gt;) =&gt; {
     const anchor = (
-      (event.currentTarget as HTMLElement).ownerDocument || <span class="branch-1 cbranch-no" title="branch not covered" >document</span>
+      (event.currentTarget as HTMLElement).ownerDocument || document
     ).querySelector('#back-to-top-anchor');
 &nbsp;
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (anchor) {
+    if (anchor) {
       anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
@@ -287,10 +299,10 @@ export default function BackToTop(props: ScrollTopProps) {
           size="small"
           aria-label="scroll back to top"
           sx={{
-            bgcolor: isDark ? <span class="branch-0 cbranch-no" title="branch not covered" >'primary.dark' : '</span>info.main',
-            color: isDark ? <span class="branch-0 cbranch-no" title="branch not covered" >'primary.contrastText' : '</span>info.contrastText',
+            bgcolor: isDark ? 'primary.dark' : 'info.main',
+            color: isDark ? 'primary.contrastText' : 'info.contrastText',
             '&amp;:hover': {
-              bgcolor: isDark ? <span class="branch-0 cbranch-no" title="branch not covered" >'primary.main' : '</span>info.light',
+              bgcolor: isDark ? 'primary.main' : 'info.light',
             },
           }}
         &gt;
@@ -307,7 +319,7 @@ export default function BackToTop(props: ScrollTopProps) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-22T20:57:28.097Z
+                at 2025-05-24T11:15:30.325Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

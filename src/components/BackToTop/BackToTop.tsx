@@ -16,7 +16,7 @@ interface ScrollTopProps {
 /**
  * Ce composant affiche son enfant dans un Zoom quand on scroll (threshold = 100px).
  */
-function ScrollTop(props: ScrollTopProps & { children: React.ReactElement }) {
+export function ScrollTop(props: ScrollTopProps & { children: React.ReactElement }) {
   const { children, window } = props;
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,

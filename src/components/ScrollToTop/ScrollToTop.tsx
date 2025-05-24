@@ -1,12 +1,20 @@
 import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname } from '../../utils/getPathname';
 
-function ScrollToTop() {
-  const { pathname } = useLocation();
+interface ScrollToTopProps {
+  /**
+   * Permet d’injecter un pathname en test, sans React Router.
+   */
+  forcedPath?: string;
+}
+
+function ScrollToTop({ forcedPath }: ScrollToTopProps) {
+  const realPath = forcedPath ?? usePathname();
+
   useEffect(() => {
-    // Dès que la route change, on se replace en haut de la page
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-  }, [pathname]);
+  }, [realPath]);
+
   return null;
 }
 

@@ -1,62 +1,91 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import { vi, type Mock } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// 1) Mock du module MUI pour surcharger useMediaQuery
-vi.mock('@mui/material', async () => {
-  const actual = await vi.importActual<typeof import('@mui/material')>('@mui/material');
-  return {
-    ...actual,
-    useMediaQuery: vi.fn(),
-  };
-});
-
-// 2) Mock ActiveButton
-vi.mock('../ActiveButton', () => ({
-  default: ({ to, children }: { to: string; children: React.ReactNode }) => (
-    <button data-to={to}>{children}</button>
+// 1️⃣ Mock du sous‐module Box
+vi.mock('@mui/material/Box', () => ({
+  __esModule: true,
+  default: ({ sx, component, children }: any) => (
+    <div
+      data-testid={`box-${component ?? 'div'}`}
+      data-sx={JSON.stringify(sx)}
+    >
+      {children}
+    </div>
   ),
 }));
 
-// 3) Mock useTranslation
+// 2️⃣ Mock useMediaQuery
+vi.mock('@mui/material/useMediaQuery', () => ({
+  __esModule: true,
+  default: vi.fn(),
+}));
+
+// 3️⃣ Mock Typography
+vi.mock('@mui/material/Typography', () => ({
+  __esModule: true,
+  default: ({ children }: any) => <p>{children}</p>,
+}));
+
+// 4️⃣ Mock ActiveButton et useTranslation
+vi.mock('../ActiveButton', () => ({
+  __esModule: true,
+  default: ({ to, children }: any) => <button data-to={to}>{children}</button>,
+}));
 vi.mock('react-i18next', () => ({
+  __esModule: true,
   useTranslation: () => ({
-    t: (key: string, options?: any) => {
-      if (key === 'footer.copy' && options?.year) {
-        return `© ${options.year} Test`;
-      }
-      return key;
-    },
+    t: (key: string, opts?: any) =>
+      key === 'footer.copy' && opts?.year ? `© ${opts.year} Test` : key,
   }),
 }));
 
 import Footer from './Footer';
-import * as mui from '@mui/material';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-// 4) Récupère le mock de useMediaQuery et tape-le en vitest.Mock
-const mockedUseMediaQuery = mui.useMediaQuery as unknown as Mock;
+describe('<Footer /> style sx', () => {
+  const mockedUseMediaQuery = useMediaQuery as ReturnType<typeof vi.fn>;
 
-describe('Footer component', () => {
-  afterEach(() => {
-    vi.resetAllMocks();
+  beforeEach(() => {
+    cleanup();
+    vi.clearAllMocks();
   });
 
-  it('renders all links with correct labels on desktop', () => {
-    mockedUseMediaQuery.mockReturnValue(false); // desktop
+  it('desktop : row layout, center align/justify, gap 2, py 1.5 ; copyright py 1', () => {
+    mockedUseMediaQuery.mockReturnValue(false);
     render(<Footer />);
 
-    const buttons = screen.getAllByRole('button');
-    expect(buttons).toHaveLength(4);
-    expect(buttons[0]).toHaveTextContent('footer.contact');
-    expect(buttons[3]).toHaveTextContent('footer.privacy');
-    expect(screen.getByText(/© \d+ Test/)).toBeInTheDocument();
+    // 2ᵉ Box : layout des liens
+    const [layoutBox, copyBox] = screen.getAllByTestId('box-div');
+    const sxLayout = JSON.parse(layoutBox.getAttribute('data-sx')!);
+    expect(sxLayout).toMatchObject({
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 2,
+      py: 1.5,
+    });
+
+    // 3ᵉ Box : copyright
+    const sxCopy = JSON.parse(copyBox.getAttribute('data-sx')!);
+    expect(sxCopy).toMatchObject({ py: 1 });
   });
 
-  it('renders links stacked on mobile', () => {
-    mockedUseMediaQuery.mockReturnValue(true); // mobile
+  it('mobile : column layout, gap 1, py 1 ; copyright py 0.5', () => {
+    mockedUseMediaQuery.mockReturnValue(true);
     render(<Footer />);
-    const buttons = screen.getAllByRole('button');
-    expect(buttons).toHaveLength(4);
+
+    const [layoutBox, copyBox] = screen.getAllByTestId('box-div');
+    const sxLayout = JSON.parse(layoutBox.getAttribute('data-sx')!);
+    expect(sxLayout).toMatchObject({
+      flexDirection: 'column',
+      gap: 1,
+      py: 1,
+    });
+
+    const sxCopy = JSON.parse(copyBox.getAttribute('data-sx')!);
+    expect(sxCopy).toMatchObject({ py: 0.5 });
   });
 });
+
 
