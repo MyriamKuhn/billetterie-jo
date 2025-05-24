@@ -28,6 +28,8 @@ vi.mock('./components/OlympicLoader', () => ({ __esModule: true, default: () => 
 vi.mock('./pages/HomePage', () => ({ __esModule: true, default: () => <div data-testid="page-home">Home</div> }));
 vi.mock('./pages/TicketsPage', () => ({ __esModule: true, default: () => <div data-testid="page-tickets">Tickets</div> }));
 vi.mock('./pages/LegalMentionsPage', () => ({ __esModule: true, default: () => <div data-testid="page-legal">Legal</div> }));
+vi.mock('./pages/TermsPage',   () => ({ __esModule: true, default: () => <div data-testid="page-terms">Terms</div> }));
+vi.mock('./pages/PolicyPage',  () => ({ __esModule: true, default: () => <div data-testid="page-policy">Policy</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -54,6 +56,7 @@ vi.mock('@mui/material/styles', () => ({
 // ── 7️⃣ Import APRÈS TOUS les mocks ──────────────────────────────────────────────
 import App from './App';
 import i18n from './i18n';
+import { lazy } from 'react';
 
 const changeLanguage = (i18n as any).changeLanguage as ReturnType<typeof vi.fn>;
 
@@ -113,5 +116,45 @@ describe('<App />', () => {
     // Mais comme base === lang, on ne rappelle pas changeLanguage
     expect(changeLanguage).not.toHaveBeenCalled()
   })
+
+  it('affiche TermsPage sur "/terms"', async () => {
+    window.history.pushState({}, '', '/terms');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-terms')).toBeInTheDocument());
+  });
+
+  it('affiche PolicyPage sur "/privacy-policy"', async () => {
+    window.history.pushState({}, '', '/privacy-policy');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-policy')).toBeInTheDocument());
+  });
+
+  it('affiche HomePage sur "/cart", "/contact" et "/login"', async () => {
+    for (const path of ['/cart', '/contact', '/login']) {
+      window.history.pushState({}, '', path);
+      render(<App mode="light" toggleMode={vi.fn()} />);
+      await waitFor(() => expect(screen.getByTestId('page-home')).toBeInTheDocument());
+      cleanup();
+    }
+  });
+
+  it('montre le loader dans le fallback de Suspense', async () => {
+    // 1️⃣ Réinitialise tous les modules
+    vi.resetModules();
+
+    // 2️⃣ Mock HomePage pour qu’elle n’aboutisse jamais
+    vi.doMock('./pages/HomePage', () => ({
+      __esModule: true,
+      default: lazy(() => new Promise(() => {})),
+    }));
+
+    // 3️⃣ Import dynamiquement App **après** avoir mis en place le mock
+    const { default: AppWithStall } = await import('./App');
+
+    // 4️⃣ Render et assert sur le loader
+    window.history.pushState({}, '', '/');
+    render(<AppWithStall mode="light" toggleMode={vi.fn()} />);
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
+  });
 });
 
