@@ -1,0 +1,12 @@
+{
+  "contact": {
+    "title": "Nous contacter",
+    "intro": "Vous avez une question sur vos billets ou le site ? Voici nos coordonnées :",
+    "emailLabel": "Email",
+    "phoneLabel": "Téléphone",
+    "addressLabel": "Adresse",
+    "hoursLabel": "Horaires",
+    "hours": "Du lundi au vendredi, de 9h à 18h",
+    "note": "Cette page est purement informative. Aucune prise de rendez-vous ou de support direct n’est effectuée ici."
+  }
+}

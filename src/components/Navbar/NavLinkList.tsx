@@ -15,11 +15,6 @@ interface Props {
 export function NavLinkList({ isMobile, onNavigate }: Props) {
   const { t } = useTranslation();
 
-  const handleMobileClick = () => {
-    if (onNavigate) onNavigate();             // 1) on ferme le drawer
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // 2) on scroll en haut
-  };
-
   return (
     <>
       {navItems.map(({ key, href, icon: Icon }) =>
@@ -28,7 +23,7 @@ export function NavLinkList({ isMobile, onNavigate }: Props) {
             key={key}
             component={ActiveLink}
             to={href}
-            onClick={handleMobileClick}
+            onClick={() => onNavigate?.()}
           >
             <ListItemIcon><Icon/></ListItemIcon>
             <ListItemText primary={t(`navbar.${key}`)} />

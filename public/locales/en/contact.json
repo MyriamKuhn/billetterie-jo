@@ -1,0 +1,12 @@
+{
+  "contact": {
+    "title": "Contact Us",
+    "intro": "Have questions about your tickets or the site? Here’s how to reach us:",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "addressLabel": "Address",
+    "hoursLabel": "Opening Hours",
+    "hours": "Monday to Friday, 9am to 6pm",
+    "note": "This page is for information only. No direct appointments or support are handled here."
+  }
+}
