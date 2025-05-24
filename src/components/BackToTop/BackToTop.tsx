@@ -1,5 +1,9 @@
 import React from 'react';
-import { Box, Fab, useScrollTrigger, Zoom, useTheme } from '@mui/material';
+import Box              from '@mui/material/Box';
+import Fab              from '@mui/material/Fab';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
+import Zoom             from '@mui/material/Zoom';
+import { useTheme }     from '@mui/material/styles';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 interface ScrollTopProps {
@@ -12,7 +16,7 @@ interface ScrollTopProps {
 /**
  * Ce composant affiche son enfant dans un Zoom quand on scroll (threshold = 100px).
  */
-function ScrollTop(props: ScrollTopProps & { children: React.ReactElement }) {
+export function ScrollTop(props: ScrollTopProps & { children: React.ReactElement }) {
   const { children, window } = props;
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,

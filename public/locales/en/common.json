@@ -26,5 +26,10 @@
     "terms": "Terms and conditions",
     "privacy": "Privacy policy",
     "copy": "© {{year}} Paris 2024 Olympic Ticketing — Created by Myriam Kühn"
+  },
+  "cookieBanner": {
+    "message": "We use cookies to improve your experience. See our <privacyLink>privacy policy</privacyLink>.",
+    "accept": "Accept",
+    "decline": "Decline"
   }
 }

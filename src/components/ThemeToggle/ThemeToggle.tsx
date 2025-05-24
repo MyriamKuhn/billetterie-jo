@@ -1,5 +1,6 @@
-import { IconButton } from '@mui/material';
-import { LightMode, DarkMode } from '@mui/icons-material';
+import IconButton from '@mui/material/IconButton';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon  from '@mui/icons-material/DarkMode';
 
 interface ThemeToggleProps {
   mode: 'light' | 'dark';
@@ -13,7 +14,7 @@ function ThemeToggle({ mode, toggleMode }: ThemeToggleProps) {
       onClick={toggleMode}
       aria-label={mode === 'light' ? 'Activer le mode sombre' : 'Activer le mode clair'}
     >
-      {mode === 'light' ? <DarkMode /> : <LightMode />}
+      {mode === 'light' ? <DarkModeIcon /> : <LightModeIcon />}
     </IconButton>
   );
 }

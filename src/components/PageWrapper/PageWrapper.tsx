@@ -1,16 +1,22 @@
-import { Card, Container } from '@mui/material';
+import Container from '@mui/material/Container';
+import Card      from '@mui/material/Card';
 import type { PropsWithChildren } from 'react';
 
 interface PageWrapperProps {
   children: React.ReactNode;
+  disableCard?: boolean;
 }
 
-export function PageWrapper({ children }: PropsWithChildren<PageWrapperProps>) {
+export function PageWrapper({ children, disableCard = false }: PropsWithChildren<PageWrapperProps>) {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Card>
-        {children}
-      </Card>
+      {disableCard ? (
+        children
+      ) : (
+        <Card>
+          {children}
+        </Card>
+      )}
     </Container>
   );
 }
