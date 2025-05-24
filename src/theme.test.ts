@@ -1,41 +1,41 @@
-// src/theme.test.ts
 import { createTheme } from '@mui/material/styles';
 import { getAppTheme } from './theme';
 
+const brandColors = {
+  primary:   '#68B9B5',
+  secondary: '#0B1B2B',
+  accent:    '#F8E1B0',
+  info:      '#0085C7',
+  warning:   '#FFCD00',
+  error:     '#E31937',
+  success:   '#009739',
+};
+
+const backgroundDefaults = {
+  light: { default: '#F4F4F4', paper: '#FFFFFF' },
+  dark:  { default: '#121212', paper: '#0C1F2B' },
+};
+
+const textDefaults = {
+  light:   { primary: '#0C1B2B', secondary: '#576271' },
+  dark:    { primary: '#F9E8C4', secondary: '#C0C0C0' },
+};
+
+const customShadows = {
+  1: '0px 1px 3px rgba(0,0,0,0.2)',
+  2: '0px 1px 5px rgba(0,0,0,0.14)',
+  3: '0px 1px 8px rgba(0,0,0,0.12)',
+  4: '0px 2px 4px rgba(0,0,0,0.12)',
+};
+
+const defaultTheme = createTheme();
+const defaultShadows = defaultTheme.shadows;
+
+// explicit modes
+const modes: ReadonlyArray<'light' | 'dark'> = ['light', 'dark'];
+
 describe('getAppTheme', () => {
-  const brandColors = {
-    primary:   '#68B9B5',
-    secondary: '#0B1B2B',
-    error:     '#E31937',
-    warning:   '#FFCD00',
-    info:      '#0085C7',
-    success:   '#009739',
-  };
-
-  const backgroundDefaults = {
-    light: { default: '#F4F4F4', paper: '#FFFFFF' },
-    dark:  { default: '#121212', paper: '#0C1F2B' },
-  };
-
-  const textDefaults = {
-    light:   { primary: '#0C1B2B', secondary: '#576271' },
-    dark:    { primary: '#F9E8C4', secondary: '#C0C0C0' },
-  };
-
-  const customShadows = {
-    1: '0px 1px 3px rgba(0,0,0,0.2)',
-    2: '0px 1px 5px rgba(0,0,0,0.14)',
-    3: '0px 1px 8px rgba(0,0,0,0.12)',
-    4: '0px 2px 4px rgba(0,0,0,0.12)',
-  };
-
-  const defaultTheme = createTheme();
-  const defaultShadows = defaultTheme.shadows;
-
-  // explicitly type modes as a readonly tuple
-  const modes: ReadonlyArray<'light' | 'dark'> = ['light', 'dark'];
-
-  modes.forEach((mode: 'light' | 'dark') => {
+  modes.forEach((mode) => {
     describe(`mode="${mode}"`, () => {
       const theme = getAppTheme(mode);
 
@@ -75,12 +75,11 @@ describe('getAppTheme', () => {
         expect(theme.palette.divider).toBe(expected);
       });
 
-      it('inherits default shape.borderRadius', () => {
+      it('sets shape.borderRadius to 10', () => {
         expect(theme.shape.borderRadius).toBe(10);
       });
 
       it('overrides shadows index 1–4 and preserves others', () => {
-        // length matches default
         expect(theme.shadows).toHaveLength(defaultShadows.length);
 
         // custom entries
@@ -101,4 +100,97 @@ describe('getAppTheme', () => {
     });
   });
 });
+
+describe('getAppTheme – component styleOverrides', () => {
+  modes.forEach((mode) => {
+    const theme = getAppTheme(mode);
+    const isLight = mode === 'light';
+
+    describe(`mode="${mode}"`, () => {
+      it('MuiCard – root overrides', () => {
+        const fn = theme.components!.MuiCard!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+        expect(styles).toMatchObject({
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 10,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          padding: '40px 20px',
+        });
+      });
+
+      it('MuiButton – containedPrimary overrides', () => {
+        const cp = theme.components!.MuiButton!.styleOverrides!.containedPrimary!;
+        expect(cp).toMatchObject({
+          backgroundColor: brandColors.primary,
+          color: '#0B1B2B',
+          '&:hover': { backgroundColor: '#57A5A2' },
+        });
+      });
+
+      it(`MuiButton – outlinedPrimary ${isLight ? 'present' : 'absent'}`, () => {
+        const op = (theme.components!.MuiButton!.styleOverrides as any).outlinedPrimary;
+        if (isLight) {
+          expect(op).toMatchObject({
+            borderColor: brandColors.secondary,
+            color: brandColors.secondary,
+            '&:hover': {
+              borderColor: brandColors.secondary,
+              backgroundColor: `${brandColors.secondary}10`,
+            },
+          });
+        } else {
+          expect(op).toBeUndefined();
+        }
+      });
+
+      it('MuiIconButton – root override', () => {
+        const fn = theme.components!.MuiIconButton!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+        const expected = isLight
+          ? theme.palette.info.main
+          : theme.palette.text.primary;
+        expect(styles).toEqual({ color: expected });
+      });
+
+      it('MuiListItemIcon – root override', () => {
+        const fn = theme.components!.MuiListItemIcon!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+        const expected = isLight
+          ? theme.palette.info.main
+          : theme.palette.text.primary;
+        expect(styles).toEqual({ color: expected });
+      });
+
+      it('MuiBadge – badge overrides', () => {
+        const fn = theme.components!.MuiBadge!.styleOverrides!.badge!;
+        const styles = (fn as any)({ theme });
+        expect(styles).toMatchObject({
+          backgroundColor: isLight
+            ? theme.palette.text.primary
+            : theme.palette.info.main,
+          color: '#fff',
+          minWidth: 16,
+          height: 16,
+          fontSize: '0.625rem',
+          borderRadius: '50%',
+          transform: 'translate(35%, 35%)',
+        });
+      });
+
+      it('MuiLink – root override', () => {
+        const fn = theme.components!.MuiLink!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+        const expectedColor = isLight
+          ? theme.palette.primary.dark
+          : theme.palette.primary.light;
+        expect(styles).toMatchObject({
+          color: expectedColor,
+          textDecoration: 'underline',
+          '&:hover': { color: theme.palette.primary.main },
+        });
+      });
+    });
+  });
+});
+
 

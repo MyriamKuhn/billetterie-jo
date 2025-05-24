@@ -26,5 +26,10 @@
     "terms": "CGV",
     "privacy": "Politique de confidentialité",
     "copy": "© {{year}} Billetterie JO Paris 2024 — Réalisé par Myriam Kühn"
+  },
+  "cookieBanner": {
+    "message": "Nous utilisons des cookies pour améliorer votre expérience. Voir notre <privacyLink>politique de confidentialité</privacyLink>.",
+    "accept": "Accepter",
+    "decline": "Refuser"
   }
 }

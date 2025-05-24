@@ -26,5 +26,10 @@
     "terms": "AGB",
     "privacy": "Datenschutzbestimmungen",
     "copy": "© {{year}} Olympischer Ticketverkauf Paris 2024 — Erstellt von Myriam Kühn"
+  },
+  "cookieBanner": {
+    "message": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern. Lesen Sie unsere <privacyLink>Datenschutzerklärung</privacyLink>.",
+    "accept": "Akzeptieren",
+    "decline": "Ablehnen"
   }
 }

@@ -1,4 +1,6 @@
-import { Box, Typography, useMediaQuery } from '@mui/material';
+import Box        from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import ActiveButton from '../ActiveButton';
 import { useTranslation } from 'react-i18next';

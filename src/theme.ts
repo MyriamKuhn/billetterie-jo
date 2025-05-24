@@ -56,6 +56,10 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       fontFamily: 'Poppins, Arial, sans-serif',
       h1: { fontSize: '2.5rem', fontWeight: 700 },
       h2: { fontSize: '2rem', fontWeight: 700 },
+      h3: { fontSize: '1.75rem', fontWeight: 700 },
+      h4: { fontSize: '1.5rem', fontWeight: 400, textTransform: 'uppercase' },
+      h5: { fontSize: '1.25rem', fontWeight: 400 },
+      h6: { fontSize: '1.125rem', fontWeight: 500, textTransform: 'uppercase' },
       body1: { fontSize: '1rem', fontWeight: 400 },
       body2: { fontSize: '0.875rem', fontWeight: 400 },
       subtitle1: { fontSize: '1rem', fontWeight: 400 },
@@ -120,11 +124,17 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       },
       MuiLink: {
         styleOverrides: {
-          root: {
-            color: brandColors.primary,
-          },
+          root: ({ theme }) => ({
+            color: theme.palette.mode === 'light'
+              ? theme.palette.primary.dark
+              : theme.palette.primary.light,
+            textDecoration: 'underline',
+            '&:hover': {
+              color: theme.palette.primary.main,
+            },
+          }),
         },
-      },
-    }                    
+      }                    
+    }
   });
 };
