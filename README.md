@@ -173,7 +173,7 @@ Planned improvements:
 
 - **Routing & Head:**  
   - React Router v7 (`react-router-dom`)  
-  - React Helmet Async (`react-helmet-async`)  
+  - React Helmet (`react-helmet`)  
 
 - **State & Forms:**  
   - Zustand (state management)  

@@ -9,6 +9,7 @@ import i18n from './i18n';
 import Box from '@mui/material/Box';
 import OlympicLoader from './components/OlympicLoader';
 import ScrollToTop from './components/ScrollToTop';
+import ErrorBoundary from './components/ErrorBoundary';
 
 const HomePage    = lazy(() => import('./pages/HomePage'));
 const TicketsPage = lazy(() => import('./pages/TicketsPage'));
@@ -42,22 +43,24 @@ export default function App({ mode, toggleMode }: AppProps) {
         <Toolbar id="back-to-top-anchor" variant="dense" />
 
         <Box sx={{ flex: 1 }}>
-          <Suspense fallback={
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', py: 4 }}>
-              <OlympicLoader />
-            </Box>
-          }>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/tickets" element={<TicketsPage />} />
-              <Route path="/cart" element={<HomePage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/legal-mentions" element={<LegalMentionsPage />} />
-              <Route path="/terms" element={<TermsPage />} />
-              <Route path="/privacy-policy" element={<PolicyPage />} />
-              <Route path="/login" element={<HomePage />} />
-            </Routes>
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', py: 4 }}>
+                <OlympicLoader />
+              </Box>
+            }>
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/tickets" element={<TicketsPage />} />
+                <Route path="/cart" element={<HomePage />} />
+                <Route path="/contact" element={<ContactPage />} />
+                <Route path="/legal-mentions" element={<LegalMentionsPage />} />
+                <Route path="/terms" element={<TermsPage />} />
+                <Route path="/privacy-policy" element={<PolicyPage />} />
+                <Route path="/login" element={<HomePage />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </Box>
 
         <BackToTop />

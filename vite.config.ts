@@ -80,7 +80,7 @@ export default defineConfig({
           }
 
           // Helmet / head manager
-          if (id.match(/\/node_modules\/react-helmet-async/)) {
+          if (id.match(/\/node_modules\/react-helmet/)) {
             return 'helmet';
           }
 
