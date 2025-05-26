@@ -11,10 +11,10 @@ interface Props {
 
 export function ProductGrid({ products, fmtCur, fmtDate }: Props) {
   if (products.length === 0) {
-    return <Typography>Aucun billet trouvé.</Typography>;
+    return <Typography variant='h4' sx={{ textAlign: 'center' }}>Aucun billet trouvé</Typography>;
   }
   return (
-    <Box sx={{ display: 'flex', gap: 4, justifyContent: 'flex-start', flexWrap: { xs: 'wrap', md: 'nowrap' }, flexDirection: { xs: 'row', md: 'column' }}}>
+    <Box sx={{ display: 'flex', gap: 4, justifyContent: { xs: 'center', md: 'flex-start' }, flexWrap: { xs: 'wrap', md: 'nowrap' }, flexDirection: { xs: 'row', md: 'column' }}}>
       {products.map(p => (
         <ProductCard key={p.id} product={p} fmtCur={fmtCur} fmtDate={fmtDate} />
       ))}

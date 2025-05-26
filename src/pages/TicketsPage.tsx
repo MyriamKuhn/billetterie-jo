@@ -10,6 +10,7 @@ import { ProductGrid } from '../components/ProductGrid';
 import { useLanguageStore } from '../stores/useLanguageStore';
 import type { Filters } from '../hooks/useProducts';
 import { useProducts } from '../hooks/useProducts';
+import { PageWrapper } from '../components/PageWrapper';
 
 export default function ProductsPage() {
   const lang = useLanguageStore(s => s.lang);
@@ -72,29 +73,31 @@ export default function ProductsPage() {
   return (
     <>
       <Seo title='Billets disponibles en vente - Billetterie JO Paris 2024' description='Petite description SEO' />
-      <Typography variant="h4" sx={{ mt: 4, px:2 }}>
-        Billets disponibles en vente
-      </Typography>
-      <Box sx={{ display:'flex', flexDirection:{ xs:'column', md:'row' }, gap:2, p:2 }}>
-        {/* Sidebar filtres */}
-        <ProductsFilters filters={filters} onChange={upd=>setFilters(f=>({...f,...upd}))}/>
+      <PageWrapper disableCard>
+        <Typography variant="h4" sx={{ px:2 }}>
+          Billets disponibles en vente
+        </Typography>
+        <Box sx={{ display:'flex', flexDirection:{ xs:'column', md:'row' }, gap:2, p:2 }}>
+          {/* Sidebar filtres */}
+          <ProductsFilters filters={filters} onChange={upd=>setFilters(f=>({...f,...upd}))}/>
 
-        {/* Contenu principal */}
-        <Box component="main" flex={1}>
-          {loading
-            ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
-            : <ProductGrid products={products} fmtCur={fmtCur} fmtDate={fmtDate}/>}
-          {!loading && products.length>0 && (
-            <Box textAlign="center" mt={4}>
-              <Pagination
-                count={Math.ceil(total/filters.perPage)||1}
-                page={filters.page}
-                onChange={(_,p)=>setFilters(f=>({...f,page:p}))}
-              />
-            </Box>
-          )}
+          {/* Contenu principal */}
+          <Box component="main" flex={1}>
+            {loading
+              ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
+              : <ProductGrid products={products} fmtCur={fmtCur} fmtDate={fmtDate}/>}
+            {!loading && products.length>0 && (
+              <Box textAlign="center" mt={4}>
+                <Pagination
+                  count={Math.ceil(total/filters.perPage)||1}
+                  page={filters.page}
+                  onChange={(_,p)=>setFilters(f=>({...f,page:p}))}
+                />
+              </Box>
+            )}
+          </Box>
         </Box>
-      </Box>
+      </PageWrapper>
     </>
   );
 }
