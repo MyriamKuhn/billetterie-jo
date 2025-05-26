@@ -16,10 +16,10 @@ export function ProductCard({ product: p, fmtCur, fmtDate }: Props) {
   if (Array.isArray(sd)) sd = Array.isArray(sd[0]) ? sd[0][0] : sd[0];
 
   return (
-    <Box sx={{ flex: '1 1 calc(33% - 32px)', minWidth: 280, maxWidth: 320 }}>
-      <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <CardMedia component="img" height="180" image={p.product_details.image} alt={p.name} />
-        <CardContent sx={{ flexGrow: 1 }}>
+    <Box sx={{ flex: { xs: '1 1 calc(33% - 32px)', md: '1 1 100%' }, minWidth: { xs: 280, md: 'auto' }, maxWidth: { xs: 320, md: '100%' } }}>
+      <Card sx={{ height: '100%', display: 'flex', flexDirection: { xs: 'column', md: 'row' } }}>
+        <CardMedia component="img" image={p.product_details.image} alt={p.name} sx={{ width: { xs: 'auto' , md: 320 }, height: 180, objectFit: 'cover' }} />
+        <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
           <Typography variant="h6">{p.name}</Typography>
           <Typography variant="caption" color="text.secondary">
             Catégorie : {p.product_details.category}
@@ -32,11 +32,11 @@ export function ProductCard({ product: p, fmtCur, fmtDate }: Props) {
               Lieu : {p.product_details.location}
             </Typography>
           )}
-          {sd && <Typography variant="body2" paragraph>{sd}</Typography>}
+          {sd && <Typography variant="body2">{sd}</Typography>}
           <Typography variant="body2" color="text.secondary">
             {p.product_details.places} place(s)
           </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mt: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 , mt: 1 }}>
             {p.sale > 0 && (
               <Typography variant="body2" sx={{ textDecoration: 'line-through' }}>
                 {fmtCur(p.price)}

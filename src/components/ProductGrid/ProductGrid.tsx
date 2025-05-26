@@ -14,7 +14,7 @@ export function ProductGrid({ products, fmtCur, fmtDate }: Props) {
     return <Typography>Aucun billet trouvé.</Typography>;
   }
   return (
-    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'flex-start' }}>
+    <Box sx={{ display: 'flex', gap: 4, justifyContent: 'flex-start', flexWrap: { xs: 'wrap', md: 'nowrap' }, flexDirection: { xs: 'row', md: 'column' }}}>
       {products.map(p => (
         <ProductCard key={p.id} product={p} fmtCur={fmtCur} fmtDate={fmtDate} />
       ))}
