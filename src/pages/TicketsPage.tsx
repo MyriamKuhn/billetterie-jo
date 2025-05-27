@@ -11,6 +11,7 @@ import { useLanguageStore } from '../stores/useLanguageStore';
 import type { Filters } from '../hooks/useProducts';
 import { useProducts } from '../hooks/useProducts';
 import { PageWrapper } from '../components/PageWrapper';
+import { ProductDetailsModal } from '../components/ProductDetailsModal';
 
 export default function ProductsPage() {
   const lang = useLanguageStore(s => s.lang);
@@ -22,6 +23,8 @@ export default function ProductsPage() {
   });
 
   const { products, total, loading, error, validationErrors } = useProducts(filters, lang);
+
+  const [detailsId, setDetailsId] = useState<number | null>(null);
 
   useEffect(() => {
   if (validationErrors) {
@@ -85,7 +88,7 @@ export default function ProductsPage() {
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
-              : <ProductGrid products={products} fmtCur={fmtCur} fmtDate={fmtDate}/>}
+              : <ProductGrid products={products} fmtCur={fmtCur} fmtDate={fmtDate} onViewDetails={setDetailsId} />}
             {!loading && products.length>0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination
@@ -98,6 +101,14 @@ export default function ProductsPage() {
           </Box>
         </Box>
       </PageWrapper>
+
+      <ProductDetailsModal
+        open={detailsId !== null}
+        productId={detailsId}
+        lang={lang}
+        onClose={() => setDetailsId(null)}
+      />
+
     </>
   );
 }

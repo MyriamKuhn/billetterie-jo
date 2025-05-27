@@ -7,16 +7,17 @@ interface Props {
   products: Product[];
   fmtCur: (n:number)=>string;
   fmtDate: (s?:string)=>string;
+  onViewDetails: (id: number) => void;
 }
 
-export function ProductGrid({ products, fmtCur, fmtDate }: Props) {
+export function ProductGrid({ products, fmtCur, fmtDate, onViewDetails }: Props) {
   if (products.length === 0) {
     return <Typography variant='h4' sx={{ textAlign: 'center' }}>Aucun billet trouvé</Typography>;
   }
   return (
     <Box sx={{ display: 'flex', gap: 4, justifyContent: { xs: 'center', md: 'flex-start' }, flexWrap: { xs: 'wrap', md: 'nowrap' }, flexDirection: { xs: 'row', md: 'column' }}}>
       {products.map(p => (
-        <ProductCard key={p.id} product={p} fmtCur={fmtCur} fmtDate={fmtDate} />
+        <ProductCard key={p.id} product={p} fmtCur={fmtCur} fmtDate={fmtDate} onViewDetails={onViewDetails} />
       ))}
     </Box>
   );

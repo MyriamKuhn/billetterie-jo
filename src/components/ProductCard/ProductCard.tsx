@@ -11,23 +11,24 @@ interface Props {
   product: Product; 
   fmtCur: (n:number)=>string; 
   fmtDate:(s?:string)=>string; 
+  onViewDetails: (id: number) => void;
 }
 
-export function ProductCard({ product: p, fmtCur, fmtDate }: Props) {
+export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Props) {
   const soldOut = p.stock_quantity === 0;
   const finalPrice = p.price * (1 - p.sale);
 
   return (
     <Box sx={{ flex: { xs: '1 1 calc(33% - 32px)', md: '1 1 100%' }, minWidth: { xs: 280, md: 'auto' }, maxWidth: { xs: 320, md: '100%' } }}>
-      <Card sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'stretch', md: 'center' }, gap: 2 }}>
+      <Card sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'stretch', md: 'center' }, p: 2, gap: 1 }}>
         <CardMedia component="img" image={p.product_details.image} alt={p.name} sx={{ width: { xs: '100%' , md: 320 }, height: 180, objectFit: 'cover', alignSelf: { xs: 'auto', md: 'center' } }} />
-        <CardContent sx={{ flexGrow: 1, p: 2 }}>
+        <CardContent sx={{ flexGrow: 1 }}>
           <Typography variant="h6">{p.name}</Typography>
           <Typography variant="body2">
             {fmtDate(p.product_details.date)}{p.product_details.time && ` – ${p.product_details.time}`}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Lieu : {p.product_details.location}
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            {p.product_details.location}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {p.product_details.places} place(s)
@@ -59,7 +60,7 @@ export function ProductCard({ product: p, fmtCur, fmtDate }: Props) {
             }
           }}
         >
-          <Button size="small" variant="outlined">
+          <Button size="small" variant="outlined" onClick={() => onViewDetails(p.id)}>
             Voir plus
           </Button>
           <Button size="small" variant="contained" disabled={soldOut} href={`/tickets/${p.id}`}>
