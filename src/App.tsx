@@ -9,7 +9,7 @@ import i18n from './i18n';
 import Box from '@mui/material/Box';
 import OlympicLoader from './components/OlympicLoader';
 import ScrollToTop from './components/ScrollToTop';
-import ErrorBoundary from './components/ErrorBoundary';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const HomePage    = lazy(() => import('./pages/HomePage'));
 const TicketsPage = lazy(() => import('./pages/TicketsPage'));

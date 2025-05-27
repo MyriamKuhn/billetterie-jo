@@ -51,15 +51,7 @@ export function useProducts(filters: Filters, lang: string) {
       date:  'product_details->date',
     };
 
-    // Si jamais filters.sortBy venait à ne pas figurer dans sortMap
     const apiSort = sortMap[filters.sortBy];
-    if (!apiSort) {
-      // On considère qu'on ne veut pas lancer la requête,
-      // mais on peut choisir de reporter une erreur
-      setError(`Option de tri invalide : "${filters.sortBy}". Tri par défaut appliqué.`);
-      setLoading(false);
-      return;
-    }
 
     const params: Record<string, any> = {
       per_page: Math.max(1, filters.perPage),
@@ -82,9 +74,7 @@ export function useProducts(filters: Filters, lang: string) {
         if (axios.isAxiosError(err)) {
           const status = err.response?.status;
           if (status === 422) {
-          // On stocke les erreurs de validation pour le parent
           setValidationErrors(err.response!.data.errors as Record<string,string[]>);
-          // on ne popule ni products ni total
           return;
         }
         if (status === 404) {
@@ -93,7 +83,7 @@ export function useProducts(filters: Filters, lang: string) {
           return;
         }
       }
-      setError(err.message);
+      setError(err.code);
     })
     .finally(() => setLoading(false));
   }, [filters, lang]);

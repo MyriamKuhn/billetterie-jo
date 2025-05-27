@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
 import type { Product } from '../../hooks/useProducts';
+import { useTranslation } from 'react-i18next';
 
 interface Props { 
   product: Product; 
@@ -15,6 +16,7 @@ interface Props {
 }
 
 export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Props) {
+  const { t } = useTranslation(['common', 'ticket']);
   const soldOut = p.stock_quantity === 0;
   const finalPrice = p.price * (1 - p.sale);
 
@@ -31,7 +33,7 @@ export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Prop
             {p.product_details.location}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {p.product_details.places} place(s)
+            {t('ticket:tickets.places_left', { count: p.product_details.places })}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 , mt: 1 }}>
             {p.sale > 0 && (
@@ -45,7 +47,7 @@ export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Prop
             {p.sale > 0 && <Chip label={`–${Math.round(p.sale*100)}%`} size="small" />}
           </Box>
           <Typography variant="body2" color={soldOut ? 'error.main' : 'text.secondary'} sx={{ mt:1 }}>
-            {soldOut ? 'Épuisé' : `${p.stock_quantity} disponible(s)`}
+            { soldOut ? t('ticket:tickets.out_of_stock') : t('ticket:tickets.available', {count: p.stock_quantity}) }
           </Typography>
         </CardContent>
         <Box
@@ -61,10 +63,10 @@ export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Prop
           }}
         >
           <Button size="small" variant="outlined" onClick={() => onViewDetails(p.id)}>
-            Voir plus
+            {t('ticket:tickets.more_info')}
           </Button>
           <Button size="small" variant="contained" disabled={soldOut} href={`/tickets/${p.id}`}>
-            {soldOut ? 'Épuisé' : 'Acheter'}
+            {soldOut ? t('ticket:tickets.out_of_stock') : t('ticket:tickets.buy')}
           </Button>
         </Box>
       </Card>

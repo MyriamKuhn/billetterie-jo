@@ -4,7 +4,6 @@ import OlympicLoader from '../components/OlympicLoader';
 import Seo from '../components/Seo';
 import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import { ProductsFilters } from '../components/ProductsFilters';
 import { ProductGrid } from '../components/ProductGrid';
 import { useLanguageStore } from '../stores/useLanguageStore';
@@ -12,8 +11,11 @@ import type { Filters } from '../hooks/useProducts';
 import { useProducts } from '../hooks/useProducts';
 import { PageWrapper } from '../components/PageWrapper';
 import { ProductDetailsModal } from '../components/ProductDetailsModal';
+import { useTranslation } from 'react-i18next';
+import { ErrorDisplay } from '../components/ErrorDisplay';
 
 export default function ProductsPage() {
+  const { t } = useTranslation('ticket');
   const lang = useLanguageStore(s => s.lang);
 
   // --- États ---
@@ -58,27 +60,24 @@ export default function ProductsPage() {
 
   if (error) {
     return (
-      <Box sx={{ p:4, textAlign:'center' }}>
-        <Typography variant="h5" gutterBottom>
-          Oups… une erreur est survenue
-        </Typography>
-        <Typography variant="body1" sx={{ mb:2 }}>
-          {error}
-        </Typography>
-        <Button onClick={() => setFilters(f => ({ ...f }))}>
-          Réessayer
-        </Button>
-      </Box>
-    );
-  }
+      <ErrorDisplay
+        title={t('errors.title')}
+        message={t('errors.unexpected')}
+        retryButtonText={t('errors.retry')}
+        onRetry={() => setFilters(f => ({ ...f }))}
+        showHome
+        homeButtonText={t('errors.home')}
+      />
+  );
+}
   
   // --- Rendu normal loader / grille / pagination ---
   return (
     <>
-      <Seo title='Billets disponibles en vente - Billetterie JO Paris 2024' description='Petite description SEO' />
+      <Seo title={t('tickets.seo_title')} description={t('tickets.seo_description')} />
       <PageWrapper disableCard>
         <Typography variant="h4" sx={{ px:2 }}>
-          Billets disponibles en vente
+          {t('tickets.title')}
         </Typography>
         <Box sx={{ display:'flex', flexDirection:{ xs:'column', md:'row' }, gap:2, p:2 }}>
           {/* Sidebar filtres */}
@@ -108,7 +107,6 @@ export default function ProductsPage() {
         lang={lang}
         onClose={() => setDetailsId(null)}
       />
-
     </>
   );
 }

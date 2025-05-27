@@ -1,0 +1,36 @@
+{
+  "tickets": {
+    "seo_title": "Verfügbare Tickets zum Verkauf – Olympischer Ticketverkauf Paris 2024",
+    "seo_description": "Entdecken Sie die zum Verkauf verfügbaren Tickets für die Olympischen Spiele Paris 2024. Kaufen Sie Ihre Tickets und reservieren Sie Ihre Plätze für Sport- und Kulturveranstaltungen.",
+    "title": "Verfügbare Tickets zum Verkauf",
+    "places_left": "{{count}} Platz(e)",
+    "out_of_stock": "Ausverkauft",
+    "available": "{{count}} verfügbar",
+    "buy": "Kaufen",
+    "more_info": "Mehr anzeigen",
+    "not_found": "Keine Tickets gefunden"
+  },
+  "filters": {
+    "title": "Filter",
+    "name": "Name",
+    "category": "Kategorie",
+    "location": "Ort",
+    "date": "Datum",
+    "price": "Preis",
+    "places": "Plätze",
+    "one_place": "1 Platz",
+    "two_places": "2 Plätze",
+    "four_places": "4 Plätze",
+    "all_places": "Alle",
+    "sort_by": "Sortieren nach",
+    "offers_per_page": "Angebote pro Seite",
+    "reset": "Zurücksetzen",
+    "close": "Filter schließen"
+  },
+  "errors": {
+    "title": "Ups… ein Fehler ist aufgetreten",
+    "unexpected": "Beim Abrufen der Tickets ist ein unerwarteter Fehler aufgetreten.",
+    "retry": "Erneut versuchen",
+    "home": "Zurück zur Startseite"
+  }
+}

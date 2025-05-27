@@ -2,25 +2,24 @@ import React, { type ReactNode } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { withTranslation, type WithTranslation } from 'react-i18next';
 
-interface ErrorBoundaryProps {
+interface Props extends WithTranslation {
   children: ReactNode;
 }
 
-interface ErrorBoundaryState {
+interface State {
   hasError: boolean;
+  reloadKey: number;
 }
 
-export default class ErrorBoundary extends React.Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState & { reloadKey: number }
-> {
-  constructor(props: ErrorBoundaryProps) {
+class ErrorBoundaryInner extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { hasError: false, reloadKey: 0 };
   }
 
-  static getDerivedStateFromError(_: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(_: Error): Pick<State, 'hasError'> {
     return { hasError: true };
   }
 
@@ -29,35 +28,45 @@ export default class ErrorBoundary extends React.Component<
   }
 
   handleReload = () => {
-    // remet hasError à false et incrémente reloadKey
     this.setState(({ reloadKey }) => ({
       hasError: false,
-      reloadKey: reloadKey + 1
+      reloadKey: reloadKey + 1,
     }));
   };
 
   render() {
+    const { t, children } = this.props;
     if (this.state.hasError) {
       return (
         <Box sx={{ p: 4, textAlign: 'center' }}>
-          <Typography variant="h5" gutterBottom>
-            Oops… une erreur est survenue
+          <Typography variant="h4" gutterBottom>
+            {t('errors.title')}
           </Typography>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            Nous n'avons pas pu charger la page. Veuillez réessayer.
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            {t('errors.unexpected')}
           </Typography>
           <Button variant="contained" onClick={this.handleReload}>
-            Réessayer
+            {t('errors.retry')}
+          </Button>
+          <Button
+            variant="text"
+            onClick={() => (window.location.href = '/')}
+            sx={{ ml: 2 }}
+          >
+            {t('errors.home')}
           </Button>
         </Box>
       );
     }
 
-    // On clone les children en leur passant un `key` unique
-    return React.Children.map(this.props.children, child =>
+    // On donne une nouvelle key quand on recharge pour « reset » les enfants
+    return React.Children.map(children, (child) =>
       React.isValidElement(child)
         ? React.cloneElement(child, { key: `reload-${this.state.reloadKey}` })
         : child
     );
   }
 }
+
+// on wrappe avec withTranslation pour injecter `t`
+export const ErrorBoundary = withTranslation()(ErrorBoundaryInner);

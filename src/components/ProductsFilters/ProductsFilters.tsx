@@ -14,6 +14,7 @@ import { FilterSelect }  from '../FilterSelect';
 import { FilterRadios }  from '../FilterRadios';
 import { SortControl }   from '../SortControl';
 import CloseIcon from '@mui/icons-material/Close';
+import { useTranslation } from 'react-i18next';
 
 interface ProductsFiltersProps {
   filters: {
@@ -34,46 +35,47 @@ export function ProductsFilters({
   filters,
   onChange,
 }: ProductsFiltersProps) {
+  const { t } = useTranslation('ticket');
   const theme = useTheme();
   const [open, setOpen] = useState(false);
 
   // Liste des champs de tri pour le SortControl
   const sortFields = [
-    { value: 'name' as const,  label: 'Nom' },
-    { value: 'price' as const, label: 'Prix' },
-    { value: 'date' as const,  label: 'Date' },
+    { value: 'name' as const,  label: t('filters.name') },
+    { value: 'price' as const, label: t('filters.price') },
+    { value: 'date' as const,  label: t('filters.date') },
   ];
 
   const content = (
     <Box sx={{ width: 260, py: 2, px: 1 }}>
       <Typography variant="h6" gutterBottom>
-        Filtres
+        {t('filters.title')}
       </Typography>
       <Stack spacing={2} sx={{ mx: 1 }}>
         {/* Nom */}
         <FilterField
-          label="Nom"
+          label={t('filters.name')}
           value={filters.name}
           onChange={v => onChange({ name:v, page:1 })}
         />
 
         {/* Catégorie */}
         <FilterField
-          label="Catégorie"
+          label={t('filters.category')}
           value={filters.category}
           onChange={v => onChange({ category:v, page:1})}
         />
 
         {/* Lieu */}
         <FilterField
-          label="Lieu"
+          label={t('filters.location')}
           value={filters.location}
           onChange={v => onChange({ location:v, page:1})}
         />
 
         {/* Date */}
         <DatePicker
-          label="Date"
+          label={t('filters.date')}
           value={filters.date ? dayjs(filters.date) : null}
           onChange={(newVal: Dayjs | null) =>
             onChange({ date: newVal?.format('YYYY-MM-DD') || '', page: 1 })
@@ -89,13 +91,13 @@ export function ProductsFilters({
 
         {/* Places (radio) */}
         <FilterRadios
-          legend="Places"
+          legend={t('filters.places')}
           value={filters.places.toString()}
           options={[
-            {value:'0', label:'Toutes'},
-            {value:'1', label:'1 place'},
-            {value:'2', label:'2 places'},
-            {value:'4', label:'4 places'},
+            {value:'0', label:t('filters.all_places')},
+            {value:'1', label:t('filters.one_place')},
+            {value:'2', label:t('filters.two_places')},
+            {value:'4', label:t('filters.four_places')},
           ]}
           onChange={v=> onChange({ places:Number(v), page:1 })}
         />
@@ -108,11 +110,12 @@ export function ProductsFilters({
           onSortChange={(newField, newOrder) =>
             onChange({ sortBy: newField, order: newOrder, page: 1 })
           }
+          label={t('filters.sort_by')}
         />
 
         {/* Offres par page */}
         <FilterSelect
-          label="Offres par page"
+          label={t('filters.offers_per_page')}
           value={filters.perPage}
           options={[1,5,10,15,25,50,100]}
           onChange={v=>onChange({ perPage:v, page:1 })}
@@ -136,7 +139,7 @@ export function ProductsFilters({
             })
           }
         >
-          Réinitialiser
+          {t('filters.reset')}
         </Button>
       </Stack>
     </Box>
@@ -162,7 +165,7 @@ export function ProductsFilters({
 
       {/* Drawer mobile */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 2 }}>
-        <IconButton onClick={() => setOpen(true)} aria-label="Filtres">
+        <IconButton onClick={() => setOpen(true)} aria-label={t('filters.title')}>
           <MenuIcon />
         </IconButton>
         <Drawer open={open} onClose={() => setOpen(false)} keepMounted>
@@ -175,7 +178,7 @@ export function ProductsFilters({
                 top: 8,
                 right: 8,
               }}
-              aria-label="Fermer les filtres"
+              aria-label={t('filters.close')}
             >
               <CloseIcon />
             </IconButton>

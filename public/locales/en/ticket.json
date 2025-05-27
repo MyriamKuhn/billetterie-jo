@@ -1,0 +1,36 @@
+{
+  "tickets": {
+    "seo_title": "Tickets Available for Sale – Paris 2024 Olympic Ticketing",
+    "seo_description": "Discover tickets available for sale for the Paris 2024 Olympic Games. Purchase your tickets and reserve your seats for sporting and cultural events.",
+    "title": "Tickets Available for Sale",
+    "places_left": "{{count}} seat(s)",
+    "out_of_stock": "Sold Out",
+    "available": "{{count}} available",
+    "buy": "Buy",
+    "more_info": "View More",
+    "not_found": "No tickets found"
+  },
+  "filters": {
+    "title": "Filters",
+    "name": "Name",
+    "category": "Category",
+    "location": "Location",
+    "date": "Date",
+    "price": "Price",
+    "places": "Seats",
+    "one_place": "1 seat",
+    "two_places": "2 seats",
+    "four_places": "4 seats",
+    "all_places": "All",
+    "sort_by": "Sort By",
+    "offers_per_page": "Offers per Page",
+    "reset": "Reset",
+    "close": "Close Filters"
+  },
+  "errors": {
+    "title": "Oops… an error occurred",
+    "unexpected": "An unexpected error occurred while fetching tickets.",
+    "retry": "Retry",
+    "home": "Back to Home"
+  }
+}

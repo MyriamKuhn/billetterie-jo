@@ -1,0 +1,36 @@
+{
+  "tickets": {
+    "seo_title": "Billets disponibles en vente - Billetterie JO Paris 2024",
+    "seo_description": "Découvrez les billets disponibles à la vente pour les Jeux Olympiques de Paris 2024. Achetez vos billets, réservez vos places pour les événements sportifs et culturels.",
+    "title": "Billets disponibles en vente",
+    "places_left": "{{count}} place(s)",
+    "out_of_stock": "Épuisé",
+    "available": "{{count}} disponible(s)",
+    "buy": "Acheter",
+    "more_info": "Voir plus",
+    "not_found": "Aucun billet trouvé"
+  },
+  "filters": {
+    "title": "Filtres",
+    "name": "Nom",
+    "category": "Catégorie",
+    "location": "Lieu",
+    "date": "Date",
+    "price": "Prix",
+    "places": "Places",
+    "one_place": "1 place",
+    "two_places": "2 places",
+    "four_places": "4 places",
+    "all_places": "Toutes",
+    "sort_by": "Trier par",
+    "offers_per_page": "Offres par page",
+    "reset": "Réinitialiser",
+    "close": "Fermer les filtres"
+  },
+  "errors": {
+    "title": "Oops… une erreur est survenue",
+    "unexpected": "Une erreur inattendue est survenue lors de la récupération des billets.",
+    "retry": "Réessayer",
+    "home": "Retour à l’accueil"
+  }
+}

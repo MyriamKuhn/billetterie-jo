@@ -7,6 +7,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { useTranslation } from 'react-i18next';
 
 export type SortField = string;
 export type SortOrder = 'asc' | 'desc';
@@ -20,6 +21,7 @@ interface SortControlProps<F extends SortField> {
   order: SortOrder;
   /** callback quand on change soit le champ, soit l’ordre */
   onSortChange: (sortBy: F, order: SortOrder) => void;
+  label: String;
 }
 
 export function SortControl<F extends SortField>({
@@ -27,7 +29,9 @@ export function SortControl<F extends SortField>({
   sortBy,
   order,
   onSortChange,
+  label
 }: SortControlProps<F>) {
+  const { t } = useTranslation();
   const handleField = (_: React.MouseEvent<HTMLElement>, newField: F) => {
     if (newField) onSortChange(newField, order);
   };
@@ -38,7 +42,7 @@ export function SortControl<F extends SortField>({
   return (
     <FormControl component="fieldset" fullWidth>
       <FormLabel component="legend" sx={{ mb: 1 }}>
-        Trier par
+        {label}
       </FormLabel>
       <Box sx={{ display: 'flex', gap: 1 }}>
         {/* Groupe Champs (personnalisable) */}
@@ -47,7 +51,7 @@ export function SortControl<F extends SortField>({
           exclusive
           size="small"
           onChange={handleField}
-          aria-label="Champ de tri"
+          aria-label={t('sorting.title')}
           sx={{ flex: 1 }}
         >
           {fields.map(({ value, label }) => (
@@ -63,12 +67,12 @@ export function SortControl<F extends SortField>({
           exclusive
           size="small"
           onChange={handleOrder}
-          aria-label="Ordre de tri"
+          aria-label={t('sorting.order')}
         >
-          <ToggleButton value="asc" aria-label="Ascendant">
+          <ToggleButton value="asc" aria-label={t('sorting.ascendant')}>
             <ArrowUpwardIcon fontSize="small" />
           </ToggleButton>
-          <ToggleButton value="desc" aria-label="Descendant">
+          <ToggleButton value="desc" aria-label={t('sorting.descendant')}>
             <ArrowDownwardIcon fontSize="small" />
           </ToggleButton>
         </ToggleButtonGroup>

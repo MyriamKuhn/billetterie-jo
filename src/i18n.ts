@@ -22,7 +22,7 @@ i18n
       order: ['querystring', 'cookie', 'navigator'],
       caches: ['cookie'],
     },
-    ns: ['common', 'legal', 'privacy', 'terms', 'contact', 'home'],    
+    ns: ['common', 'legal', 'privacy', 'terms', 'contact', 'home', 'ticket'],    
     defaultNS: 'common',
     interpolation: { escapeValue: false },
     react: { useSuspense: false },
