@@ -31,5 +31,24 @@
     "message": "Nous utilisons des cookies pour améliorer votre expérience. Voir notre <privacyLink>politique de confidentialité</privacyLink>.",
     "accept": "Accepter",
     "decline": "Refuser"
+  },
+  "errors": {
+    "title": "Oops… une erreur est survenue",
+    "unexpected": "Une erreur inattendue est survenue…",
+    "retry": "Réessayer",
+    "home": "Retour à l’accueil"
+  },
+  "scroll": {
+    "back_to_top": "Retour en haut"
+  },
+  "sorting": {
+    "title": "Champ de tri",
+    "order": "Ordre de tri",
+    "asc": "Croissant",
+    "desc": "Décroissant"
+  },
+  "theme": {
+    "light": "Activer le mode clair",
+    "dark": "Activer le mode sombre"
   }
 }

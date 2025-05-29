@@ -164,7 +164,12 @@
 <a name='L99'></a><a href='#L99'>99</a>
 <a name='L100'></a><a href='#L100'>100</a>
 <a name='L101'></a><a href='#L101'>101</a>
-<a name='L102'></a><a href='#L102'>102</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -240,11 +245,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -275,8 +283,9 @@ import App from './App';
 import { getAppTheme } from './theme';
 import { useThemeStore } from './stores/useThemeStore';
 import { useLanguageStore } from './stores/useLanguageStore';
-import { HelmetProvider } from 'react-helmet-async';
 import CookieConsent from 'react-cookie-consent';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs }           from '@mui/x-date-pickers/AdapterDayjs';
 &nbsp;
 export function Root() {
   // Detection of the user's preferred color scheme
@@ -308,63 +317,66 @@ export function Root() {
   const { t } = useTranslation();
 &nbsp;
   return (
-    &lt;HelmetProvider&gt;
-      &lt;I18nextProvider i18n={i18n}&gt;
-        &lt;ThemeProvider theme={getAppTheme(mode)}&gt;
-          &lt;CssBaseline /&gt;
+    &lt;I18nextProvider i18n={i18n}&gt;
+      &lt;ThemeProvider theme={getAppTheme(mode)}&gt;
+        &lt;CssBaseline /&gt;
 &nbsp;
-          &lt;CookieConsent
-            location="bottom"
-            buttonText={t('cookieBanner.accept')}
-            declineButtonText={t('cookieBanner.decline')}
-            enableDeclineButton
-            cookieName="jo2024_cookie_consent"
-            style={{
-              position: 'fixed',
-              bottom: 0,
-              width: '100%',
-              background: 'rgba(0,0,0,0.8)',
-              color: '#fff',
-              zIndex: 2000,      
+        &lt;CookieConsent
+          location="bottom"
+          buttonText={t('cookieBanner.accept')}
+          declineButtonText={t('cookieBanner.decline')}
+          enableDeclineButton
+          cookieName="jo2024_cookie_consent"
+          style={{
+            position: 'fixed',
+            bottom: 0,
+            width: '100%',
+            background: 'rgba(0,0,0,0.8)',
+            color: '#fff',
+            zIndex: 2000,      
+          }}
+          buttonStyle={{
+            background: '#009739',
+            borderRadius: '10px',
+            color: '#fff',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+          }}
+          declineButtonStyle={{
+            background: '#E31937',
+            color: '#fff',
+            borderRadius: '10px',
+            fontWeight: 'bold',
+            textTransform: 'uppercase',
+          }}
+          onAccept={() =&gt; {
+            console.log('Cookies acceptés');
+          }}
+          onDecline={() =&gt; {
+            console.log('Cookies refusés');
+          }}
+        &gt;
+          &lt;Trans
+            i18nKey="cookieBanner.message"
+            components={{
+              privacyLink: (
+                &lt;a
+                  href="/privacy-policy"
+                  style={{ color: '#68B9B5', textDecoration: 'underline' }}
+                /&gt;
+              ),
             }}
-            buttonStyle={{
-              background: '#009739',
-              borderRadius: '10px',
-              color: '#fff',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-            }}
-            declineButtonStyle={{
-              background: '#E31937',
-              color: '#fff',
-              borderRadius: '10px',
-              fontWeight: 'bold',
-              textTransform: 'uppercase',
-            }}
-            onAccept={() =&gt; {
-              console.log('Cookies acceptés');
-            }}
-            onDecline={() =&gt; {
-              console.log('Cookies refusés');
-            }}
-          &gt;
-            &lt;Trans
-              i18nKey="cookieBanner.message"
-              components={{
-                privacyLink: (
-                  &lt;a
-                    href="/privacy-policy"
-                    style={{ color: '#68B9B5', textDecoration: 'underline' }}
-                  /&gt;
-                ),
-              }}
-            /&gt;
-          &lt;/CookieConsent&gt;
+          /&gt;
+        &lt;/CookieConsent&gt;
 &nbsp;
+        &lt;LocalizationProvider
+          dateAdapter={AdapterDayjs}
+          adapterLocale={i18n.language}   
+        &gt;
           &lt;App mode={mode} toggleMode={toggleMode} /&gt;
-        &lt;/ThemeProvider&gt;
-      &lt;/I18nextProvider&gt;
-    &lt;/HelmetProvider&gt;
+        &lt;/LocalizationProvider&gt;
+      &lt;/ThemeProvider&gt;
+    &lt;/I18nextProvider&gt;
   );
 }</pre></td></tr></table></pre>
 
@@ -373,7 +385,7 @@ export function Root() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-24T23:31:36.236Z
+                at 2025-05-29T22:00:34.666Z
             </div>
         <script src="../prettify.js"></script>
         <script>

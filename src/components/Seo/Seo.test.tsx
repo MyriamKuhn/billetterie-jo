@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
-// ─── ❶ Stub de react-helmet-async pour exposer directement les enfants ───────
-vi.mock('react-helmet-async', () => ({
+// ─── ❶ Stub de react-helmet pour exposer directement les enfants ───────
+vi.mock('react-helmet', () => ({
   __esModule: true,
   Helmet: ({ children }: any) => <>{children}</>,
 }));

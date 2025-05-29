@@ -31,5 +31,24 @@
     "message": "We use cookies to improve your experience. See our <privacyLink>privacy policy</privacyLink>.",
     "accept": "Accept",
     "decline": "Decline"
+  },
+  "errors": {
+    "title": "Oops… an error occurred",
+    "unexpected": "An unexpected error occurred…",
+    "retry": "Retry",
+    "home": "Back to home"
+  },
+  "scroll": {
+    "back_to_top": "Back to top"
+  },
+  "sorting": {
+    "title": "Sorting field",
+    "order": "Order",
+    "asc": "Ascending",
+    "desc": "Descending"
+  },
+  "theme": {
+    "light": "Enable light mode",
+    "dark": "Enable dark mode"
   }
 }

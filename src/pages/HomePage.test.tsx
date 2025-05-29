@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { HelmetProvider } from 'react-helmet-async';
 import HomePage from './HomePage';
 
 // mocks images et i18n comme précédemment…
@@ -20,9 +19,7 @@ vi.mock('react-i18next', () => ({
 describe('HomePage', () => {
   beforeEach(() => {
     render(
-      <HelmetProvider>
         <HomePage />
-      </HelmetProvider>
     );
   });
 

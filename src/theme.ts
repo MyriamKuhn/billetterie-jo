@@ -78,6 +78,20 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       },
       MuiButton: {
         styleOverrides: {
+          text: ({ theme, ownerState }) => {
+            if (
+              theme.palette.mode === 'light' &&
+              ownerState.color !== 'inherit'
+            ) {
+              return {
+                color: theme.palette.info.main,
+                '&:hover': {
+                  backgroundColor: `${theme.palette.info.main}10`,
+                },
+              };
+            }
+            return {}; // sinon, pas de changement
+          },
           containedPrimary: ({ theme }) => ({
             backgroundColor:
               theme.palette.mode === 'dark'
@@ -145,7 +159,51 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
             },
           }),
         },
-      }                    
-    }
+      },
+      MuiRadio: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            color: theme.palette.text.secondary,
+            '&.Mui-checked': {
+              color: theme.palette.mode === 'dark'
+                  ? theme.palette.primary.dark
+                  : theme.palette.info.main,
+            },
+          }),
+        },
+      }, 
+      MuiPagination: {
+        styleOverrides: {
+          root: {
+            // Centrage et marge
+            display: 'flex',
+            justifyContent: 'center',
+            padding: '1rem 0',
+          },
+        },
+      },    
+      MuiPaginationItem: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            minWidth: 32,
+            height:    32,
+            margin:   '0 4px',
+            '&.Mui-selected': {
+              backgroundColor: theme.palette.mode === 'dark'
+                  ? theme.palette.primary.dark
+                  : theme.palette.info.main,
+              color: theme.palette.mode === 'dark'
+                ? theme.palette.primary.contrastText
+                : theme.palette.info.contrastText,
+              '&:hover': {
+                backgroundColor: theme.palette.mode === 'dark'
+                  ? theme.palette.primary.main
+                  : theme.palette.info.light,
+              },
+            },  
+          }),             
+        },
+      },
+    },
   });
 };
