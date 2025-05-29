@@ -1,1 +1,0 @@
-import{j as a}from"./react-DC8o52IF.js";import{p as t,q as o}from"./mui-core-BojWx797.js";function x({children:r,disableCard:s=!1}){return a.jsx(t,{maxWidth:"lg",sx:{py:4},children:s?r:a.jsx(o,{children:r})})}export{x as P};
