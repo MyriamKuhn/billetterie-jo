@@ -1,6 +1,17 @@
 import { render, fireEvent, screen, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+vi.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => ({
+    t: (key: string) => {
+      if (key === 'scroll.back_to_top') return 'scroll back to top';
+      return key;
+    },
+    i18n: { changeLanguage: async () => {} },
+  }),
+}));
+
 // 1️⃣ Stub useScrollTrigger
 vi.mock('@mui/material/useScrollTrigger', () => ({
   __esModule: true,

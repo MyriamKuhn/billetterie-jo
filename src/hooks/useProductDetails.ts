@@ -1,4 +1,3 @@
-// src/hooks/useProductDetails.ts
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import type { Product } from '../types/products';

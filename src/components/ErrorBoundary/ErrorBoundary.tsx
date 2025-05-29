@@ -70,3 +70,4 @@ class ErrorBoundaryInner extends React.Component<Props, State> {
 
 // on wrappe avec withTranslation pour injecter `t`
 export const ErrorBoundary = withTranslation()(ErrorBoundaryInner);
+export { ErrorBoundaryInner };
