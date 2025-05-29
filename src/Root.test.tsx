@@ -28,9 +28,6 @@ vi.mock('react-i18next', () => ({
   Trans: ({ children }: any) => <>{children}</>,
   useTranslation: () => ({ t: (k: string) => k }),
 }));
-vi.mock('react-helmet-async', () => ({
-  HelmetProvider: ({ children }: any) => <>{children}</>,
-}));
 vi.mock('react-cookie-consent', () => ({
   default: (props: any) => (
     <div data-testid="cookie-banner">

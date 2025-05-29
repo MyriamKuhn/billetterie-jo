@@ -31,5 +31,24 @@
     "message": "Wir verwenden Cookies, um Ihre Erfahrung zu verbessern. Lesen Sie unsere <privacyLink>Datenschutzerklärung</privacyLink>.",
     "accept": "Akzeptieren",
     "decline": "Ablehnen"
+  },
+  "errors": {
+    "title": "Hoppla… ein Fehler ist aufgetreten",
+    "unexpected": "Ein unerwarteter Fehler ist aufgetreten…",
+    "retry": "Erneut versuchen",
+    "home": "Zurück zur Startseite"
+  },
+  "scroll": {
+    "back_to_top": "Zurück nach oben"
+  },
+  "sorting": {
+    "title": "Sortierfeld",
+    "order": "Sortierreihenfolge",
+    "asc": "Aufsteigend",
+    "desc": "Absteigend"
+  },
+  "theme": {
+    "light": "Aktivieren Sie den hellen Modus",
+    "dark": "Aktivieren Sie den dunklen Modus"
   }
 }

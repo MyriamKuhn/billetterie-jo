@@ -118,37 +118,25 @@ describe('getAppTheme – component styleOverrides', () => {
         });
       });
 
-      it('MuiButton – containedPrimary overrides', () => {
-        const cp = theme.components!.MuiButton!.styleOverrides!.containedPrimary!;
-        // on cast en any pour ignorer la signature stricte
-        const styles = (cp as any)({ theme });
-        expect(styles).toMatchObject({
-          backgroundColor: theme.palette.mode === 'dark'
-            ? theme.palette.primary.dark
-            : theme.palette.info.main,
-          color: theme.palette.mode === 'dark'
-            ? theme.palette.primary.contrastText
-            : theme.palette.info.contrastText,
-          '&:hover': {
-            backgroundColor: theme.palette.mode === 'dark'
-              ? theme.palette.primary.main
-              : theme.palette.info.light,
-          },
-        });
-      });
-
-      it('getAppTheme – component styleOverrides > mode="dark" > MuiButton – containedPrimary overrides', () => {
-        const theme = getAppTheme('dark');
+      it('MuiButton – containedPrimary overrides (background, color & hover)', () => {
         const cp = theme.components!.MuiButton!.styleOverrides!.containedPrimary!;
         const styles = (cp as any)({ theme });
-        expect(styles.backgroundColor).toBe(theme.palette.primary.dark);
-        // etc.
+        // backgroundColor branch
+        if (mode === 'dark') {
+          expect(styles.backgroundColor).toBe(theme.palette.primary.dark);
+          expect(styles.color).toBe(theme.palette.primary.contrastText);
+          expect(styles['&:hover'].backgroundColor).toBe(theme.palette.primary.main);
+        } else {
+          expect(styles.backgroundColor).toBe(theme.palette.info.main);
+          expect(styles.color).toBe(theme.palette.info.contrastText);
+          expect(styles['&:hover'].backgroundColor).toBe(theme.palette.info.light);
+        }
       });
 
       it(`MuiButton – outlinedPrimary ${isLight ? 'present' : 'absent'}`, () => {
-        const op = (theme.components!.MuiButton!.styleOverrides as any).outlinedPrimary;
+        const outlined = (theme.components!.MuiButton!.styleOverrides as any).outlinedPrimary;
         if (isLight) {
-          expect(op).toMatchObject({
+          expect(outlined).toMatchObject({
             borderColor: brandColors.secondary,
             color: brandColors.secondary,
             '&:hover': {
@@ -157,7 +145,7 @@ describe('getAppTheme – component styleOverrides', () => {
             },
           });
         } else {
-          expect(op).toBeUndefined();
+          expect(outlined).toBeUndefined();
         }
       });
 
@@ -207,8 +195,87 @@ describe('getAppTheme – component styleOverrides', () => {
           '&:hover': { color: theme.palette.primary.main },
         });
       });
+
+      it('MuiRadio – root override', () => {
+        const rootOverride = theme.components!.MuiRadio!.styleOverrides!.root!;
+        const styles = (rootOverride as any)({ theme });
+        expect(styles).toMatchObject({
+          color: theme.palette.text.secondary,
+          '&.Mui-checked': {
+            color:
+              theme.palette.mode === 'dark'
+                ? theme.palette.primary.dark
+                : theme.palette.info.main,
+          },
+        });
+      });
+
+      it('MuiPagination – root override', () => {
+        const rootStyles = theme.components!.MuiPagination!.styleOverrides!.root!;
+        expect(rootStyles).toEqual({
+          display: 'flex',
+          justifyContent: 'center',
+          padding: '1rem 0',
+        });
+      });
+
+      it('MuiPaginationItem – root override', () => {
+        const fn = theme.components!.MuiPaginationItem!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+
+        // Vérifie les propriétés de base
+        expect(styles).toMatchObject({
+          minWidth: 32,
+          height: 32,
+          margin: '0 4px',
+        });
+
+        // Vérifie le style pour l’état sélectionné
+        const selected = styles['&.Mui-selected'];
+        expect(selected).toMatchObject({
+          backgroundColor:
+            theme.palette.mode === 'dark'
+              ? theme.palette.primary.dark
+              : theme.palette.info.main,
+          color:
+            theme.palette.mode === 'dark'
+              ? theme.palette.primary.contrastText
+              : theme.palette.info.contrastText,
+          '&:hover': {
+            backgroundColor:
+              theme.palette.mode === 'dark'
+                ? theme.palette.primary.main
+                : theme.palette.info.light,
+          },
+        });
+      });
+
+      it('MuiButton – text overrides for light mode when ownerState.color !== "inherit"', () => {
+        const textOverride = theme.components!.MuiButton!.styleOverrides!.text!;
+        // simule ownerState.color != 'inherit'
+        const styles = (textOverride as any)({
+          theme,
+          ownerState: { color: 'primary' }
+        });
+        if (isLight) {
+          expect(styles).toMatchObject({
+            color: theme.palette.info.main,
+            '&:hover': { backgroundColor: `${theme.palette.info.main}10` }
+          });
+        } else {
+          // en dark, on retourne toujours {}
+          expect(styles).toEqual({});
+        }
+      });
+
+      it('MuiButton – text returns empty object when ownerState.color === "inherit"', () => {
+        const textOverride = theme.components!.MuiButton!.styleOverrides!.text!;
+        const styles = (textOverride as any)({
+          theme,
+          ownerState: { color: 'inherit' }
+        });
+        expect(styles).toEqual({});
+      });
     });
   });
 });
-
-

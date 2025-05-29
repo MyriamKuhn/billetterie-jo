@@ -5,6 +5,7 @@ import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Zoom             from '@mui/material/Zoom';
 import { useTheme }     from '@mui/material/styles';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useTranslation } from 'react-i18next';
 
 interface ScrollTopProps {
   /**
@@ -56,6 +57,7 @@ export function ScrollTop(props: ScrollTopProps & { children: React.ReactElement
  * Composant à importer dans App.tsx
  */
 export default function BackToTop(props: ScrollTopProps) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
 
@@ -66,7 +68,7 @@ export default function BackToTop(props: ScrollTopProps) {
       <ScrollTop {...props}>
         <Fab
           size="small"
-          aria-label="scroll back to top"
+          aria-label={t('scroll.back_to_top')}
           sx={{
             bgcolor: isDark ? 'primary.dark' : 'info.main',
             color: isDark ? 'primary.contrastText' : 'info.contrastText',

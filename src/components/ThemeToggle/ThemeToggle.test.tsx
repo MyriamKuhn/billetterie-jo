@@ -1,6 +1,22 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
+vi.mock('react-i18next', () => ({
+  __esModule: true,
+  useTranslation: () => ({
+    t: (key: string) => {
+      switch (key) {
+        case 'theme.dark':
+          return 'Activer le mode sombre';
+        case 'theme.light':
+          return 'Activer le mode clair';
+        default:
+          return key;
+      }
+    }
+  }),
+}));
+
 // 1) Mocks avant d'importer votre composant
 vi.mock('@mui/material/IconButton', () => ({
   __esModule: true,
