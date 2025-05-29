@@ -5,8 +5,9 @@ import Button from '@mui/material/Button';
 interface ErrorDisplayProps {
   title: string;
   message: string;
-  retryButtonText: string;
-  onRetry: () => void;
+  showRetry?: boolean;
+  retryButtonText?: string;
+  onRetry?: () => void;
   showHome?: boolean;
   homeButtonText?: string;
 }
@@ -14,6 +15,7 @@ interface ErrorDisplayProps {
 export function ErrorDisplay({
   title,
   message,
+  showRetry = true,
   retryButtonText,
   onRetry,
   showHome = true,
@@ -27,9 +29,11 @@ export function ErrorDisplay({
       <Typography variant="body1" sx={{ mb: 2 }}>
         {message}
       </Typography>
-      <Button variant="text" onClick={onRetry}>
-        {retryButtonText}
-      </Button>
+      {showRetry && (
+        <Button variant="text" onClick={onRetry}>
+          {retryButtonText}
+        </Button>
+      )}
       {showHome && (
         <Button
           variant="contained"

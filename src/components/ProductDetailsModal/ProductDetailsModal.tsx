@@ -1,5 +1,3 @@
-// src/components/ProductDetailsModal.tsx
-import { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -7,12 +5,12 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-
-import {
-  CircularProgress
-} from '@mui/material';
-import axios from 'axios';
-import type { Product } from '../../hooks/useProducts';
+import { useProductDetails } from '../../hooks/useProductDetails';
+import OlympicLoader from './../OlympicLoader';
+import { ErrorDisplay } from '../ErrorDisplay';
+import { useTranslation } from 'react-i18next';
+import { formatCurrency, formatDate } from '../../utils/format';
+import Chip from '@mui/material/Chip';
 
 interface Props {
   open: boolean;
@@ -22,49 +20,31 @@ interface Props {
 }
 
 export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState<string | null>(null);
+  const { t } = useTranslation('ticket');
 
-  useEffect(() => {
-    if (!open || productId == null) return;
-    setLoading(true);
-    setError(null);
-    setProduct(null);
+  const { product, loading, error } = useProductDetails(open ? productId : null, lang);
 
-    axios
-      .get<{ data: Product }>(
-        `https://api-jo2024.mkcodecreations.dev/api/products/${productId}`, 
-        { headers: { 'Accept-Language': lang } }
-      )
-      .then(res => setProduct(res.data.data))
-      .catch(err => {
-        setError(
-          axios.isAxiosError(err) && err.response?.data?.message
-            ? err.response.data.message
-            : err.message
-        );
-      })
-      .finally(() => setLoading(false));
-  }, [open, productId]);
+  const fmtCur = (v: number)   => formatCurrency(v, lang, 'EUR');
+  const dateStr  = product ? formatDate(product.product_details.date, lang) : '';
+
+  const soldOut = product?.stock_quantity === 0;
+  const finalPrice = (product?.price ?? 0) * (1 - (product?.sale ?? 0));
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        {loading ? 'Chargement…' : error ? 'Erreur' : product?.name}
+        {loading ? t('tickets.loading') : error ? t('tickets.error') : product?.name}
       </DialogTitle>
 
       <DialogContent dividers>
         {loading && (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <CircularProgress />
+            <OlympicLoader />
           </Box>
         )}
 
         {error && (
-          <Typography color="error" align="center">
-            {error}
-          </Typography>
+          <ErrorDisplay title={t('errors.title')} message={t('errors.not_found')} showRetry={false} showHome={false} />
         )}
 
         {product && (
@@ -73,73 +53,56 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
               component="img"
               src={product.product_details.image}
               alt={product.name}
+              loading="lazy"
               sx={{ width: '100%', height: 200, objectFit: 'cover', mb: 2 }}
             />
 
-            <Typography gutterBottom>
-              <strong>Date / Heure : </strong>
-              {product.product_details.date}{' '}
-              {product.product_details.time}
+            <Typography variant="body1">
+              {dateStr}{product.product_details.time && ` – ${product.product_details.time}`}
             </Typography>
 
-            <Typography gutterBottom>
-              <strong>Lieu : </strong>
+            <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
               {product.product_details.location}
             </Typography>
 
-            <Typography gutterBottom>
-              <strong>Catégorie : </strong>
-              {product.product_details.category}
+            <Typography variant='body2' color="text.secondary" sx={{ mb: 1 }}>
+              {t('tickets.category', { category: product.product_details.category })}
             </Typography>
 
-            <Typography gutterBottom>
-              <strong>Description : </strong>
-              {typeof product.product_details.description === 'string'
-                ? product.product_details.description
-                : ('À personnaliser selon format API')}
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              {product.product_details.description}
             </Typography>
 
-            <Typography gutterBottom>
-              <strong>Places restantes : </strong>
-              {product.product_details.places}
+            <Typography variant="body1" color="text.secondary">
+              {t('tickets.places', { count: product.product_details.places })}
             </Typography>
 
-            <Typography gutterBottom>
-              <strong>Prix : </strong>
-              {(product.sale > 0) ? (
-                <>
-                  <span style={{ textDecoration: 'line-through' }}>
-                    {product.price.toLocaleString(undefined, { style:'currency', currency:'EUR' })}
-                  </span>{' '}
-                  <strong>
-                    {(product.price * (1-product.sale)).toLocaleString(undefined,{style:'currency',currency:'EUR'})}
-                  </strong>
-                </>
-              ) : (
-                product.price.toLocaleString(undefined,{style:'currency',currency:'EUR'})
+            <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 , mt: 1 }}>
+              {product.sale > 0 && (
+                <Typography variant="body2" sx={{ textDecoration: 'line-through' }}>
+                  {fmtCur(product.price)}
+                </Typography>
               )}
+              <Typography variant="subtitle1" fontWeight="bold">
+                {fmtCur(finalPrice)}
+              </Typography>
+              {product.sale > 0 && <Chip label={`–${Math.round(product.sale*100)}%`} size="small" />}
+            </Box>
+            <Typography variant="body2" color={soldOut ? 'error.main' : 'text.secondary'} sx={{ mt:1 }}>
+              { soldOut ? t('tickets.out_of_stock') : t('tickets.available', {count: product.stock_quantity}) }
             </Typography>
-
-            <Typography
-              color={product.stock_quantity === 0 ? 'error' : undefined}
-              gutterBottom
-            >
-              {product.stock_quantity === 0
-                ? 'Épuisé'
-                : `${product.stock_quantity} disponible(s)`}
-            </Typography>
-          </Box>
+            </Box>
         )}
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>Fermer</Button>
+        <Button onClick={onClose}>{t('tickets.close')}</Button>
         <Button
           variant="contained"
           disabled={product?.stock_quantity === 0 || loading || !!error}
           href={`/tickets/${productId}`}
         >
-          {product?.stock_quantity === 0 ? 'Épuisé' : 'Acheter'}
+          {soldOut ? t('tickets.out_of_stock') : t('tickets.buy')}
         </Button>
       </DialogActions>
     </Dialog>

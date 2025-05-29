@@ -78,6 +78,20 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       },
       MuiButton: {
         styleOverrides: {
+          text: ({ theme, ownerState }) => {
+            if (
+              theme.palette.mode === 'light' &&
+              ownerState.color !== 'inherit'
+            ) {
+              return {
+                color: theme.palette.info.main,
+                '&:hover': {
+                  backgroundColor: `${theme.palette.info.main}10`,
+                },
+              };
+            }
+            return {}; // sinon, pas de changement
+          },
           containedPrimary: ({ theme }) => ({
             backgroundColor:
               theme.palette.mode === 'dark'

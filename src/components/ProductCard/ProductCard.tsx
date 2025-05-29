@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Box from '@mui/material/Box';
-import type { Product } from '../../hooks/useProducts';
+import type { Product } from '../../types/products';
 import { useTranslation } from 'react-i18next';
 
 interface Props { 
@@ -23,7 +23,7 @@ export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Prop
   return (
     <Box sx={{ flex: { xs: '1 1 calc(33% - 32px)', md: '1 1 100%' }, minWidth: { xs: 280, md: 'auto' }, maxWidth: { xs: 320, md: '100%' } }}>
       <Card sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'stretch', md: 'center' }, p: 2, gap: 1 }}>
-        <CardMedia component="img" image={p.product_details.image} alt={p.name} sx={{ width: { xs: '100%' , md: 320 }, height: 180, objectFit: 'cover', alignSelf: { xs: 'auto', md: 'center' } }} />
+        <CardMedia component="img" image={p.product_details.image} alt={p.name} loading="lazy" sx={{ width: { xs: '100%' , md: 320 }, height: 180, objectFit: 'cover', alignSelf: { xs: 'auto', md: 'center' } }} />
         <CardContent sx={{ flexGrow: 1 }}>
           <Typography variant="h6">{p.name}</Typography>
           <Typography variant="body2">
@@ -33,7 +33,7 @@ export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Prop
             {p.product_details.location}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {t('ticket:tickets.places_left', { count: p.product_details.places })}
+            {t('ticket:tickets.places', { count: p.product_details.places })}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 , mt: 1 }}>
             {p.sale > 0 && (

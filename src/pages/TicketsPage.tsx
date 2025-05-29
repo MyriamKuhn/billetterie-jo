@@ -13,6 +13,7 @@ import { PageWrapper } from '../components/PageWrapper';
 import { ProductDetailsModal } from '../components/ProductDetailsModal';
 import { useTranslation } from 'react-i18next';
 import { ErrorDisplay } from '../components/ErrorDisplay';
+import { formatCurrency, formatDate } from '../utils/format';
 
 export default function ProductsPage() {
   const { t } = useTranslation('ticket');
@@ -44,25 +45,16 @@ export default function ProductsPage() {
 }, [validationErrors]);
 
   // --- Helpers de format ---
-  const fmtCur = (v: number) =>
-    new Intl.NumberFormat(lang, { style: 'currency', currency: 'EUR' }).format(v);
+  const fmtCur = (v: number)   => formatCurrency(v, lang, 'EUR');
 
-  const fmtDate = (iso?: string) => {
-    if (!iso) return '';
-    const d = new Date(iso);
-    if (isNaN(d.getTime())) return '';
-    return new Intl.DateTimeFormat(lang, {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }).format(d);
-  };
+  const fmtDate = (iso?: string) => formatDate(iso, lang);
 
   if (error) {
     return (
       <ErrorDisplay
         title={t('errors.title')}
         message={t('errors.unexpected')}
+        showRetry
         retryButtonText={t('errors.retry')}
         onRetry={() => setFilters(f => ({ ...f }))}
         showHome

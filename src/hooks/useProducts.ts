@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import type { Product } from '../types/products';
+import { API_BASE_URL } from '../config';
 
 export interface Filters {
   name: string;
@@ -11,25 +13,6 @@ export interface Filters {
   order: 'asc' | 'desc';
   perPage: number;
   page: number;
-}
-
-export interface ProductDetails {
-  places: number;
-  description: string;
-  image: string;
-  date: string;
-  time: string;
-  location: string;
-  category: string;
-}
-
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  sale: number;
-  stock_quantity: number;
-  product_details: ProductDetails;
 }
 
 export function useProducts(filters: Filters, lang: string) {
@@ -65,7 +48,7 @@ export function useProducts(filters: Filters, lang: string) {
       ...(filters.places > 0 && { places: filters.places }),
     };
 
-    axios.get('https://api-jo2024.mkcodecreations.dev/api/products', { params, headers: { 'Accept-Language': lang } })
+    axios.get(`${API_BASE_URL}/api/products`, { params, headers: { 'Accept-Language': lang } })
       .then(res => {
         setProducts(res.data.data);
         setTotal(res.data.pagination.total);

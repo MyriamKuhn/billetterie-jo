@@ -1,4 +1,4 @@
-import type { Product } from '../../hooks/useProducts';
+import type { Product } from '../../types/products';
 import { ProductCard } from '../ProductCard';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
