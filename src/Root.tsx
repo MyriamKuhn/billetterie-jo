@@ -1,3 +1,4 @@
+import { SnackbarProvider } from 'notistack';
 import { useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline   from '@mui/material/CssBaseline';
@@ -42,65 +43,67 @@ export function Root() {
   const { t } = useTranslation();
 
   return (
-    <I18nextProvider i18n={i18n}>
-      <ThemeProvider theme={getAppTheme(mode)}>
-        <CssBaseline />
+    <SnackbarProvider maxSnack={3} autoHideDuration={3000} preventDuplicate>
+      <I18nextProvider i18n={i18n}>
+        <ThemeProvider theme={getAppTheme(mode)}>
+          <CssBaseline />
 
-        <CookieConsent
-          location="bottom"
-          buttonText={t('cookieBanner.accept')}
-          declineButtonText={t('cookieBanner.decline')}
-          enableDeclineButton
-          cookieName="jo2024_cookie_consent"
-          style={{
-            position: 'fixed',
-            bottom: 0,
-            width: '100%',
-            background: 'rgba(0,0,0,0.8)',
-            color: '#fff',
-            zIndex: 2000,      
-          }}
-          buttonStyle={{
-            background: '#009739',
-            borderRadius: '10px',
-            color: '#fff',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-          }}
-          declineButtonStyle={{
-            background: '#E31937',
-            color: '#fff',
-            borderRadius: '10px',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-          }}
-          onAccept={() => {
-            console.log('Cookies acceptés');
-          }}
-          onDecline={() => {
-            console.log('Cookies refusés');
-          }}
-        >
-          <Trans
-            i18nKey="cookieBanner.message"
-            components={{
-              privacyLink: (
-                <a
-                  href="/privacy-policy"
-                  style={{ color: '#68B9B5', textDecoration: 'underline' }}
-                />
-              ),
+          <CookieConsent
+            location="bottom"
+            buttonText={t('cookieBanner.accept')}
+            declineButtonText={t('cookieBanner.decline')}
+            enableDeclineButton
+            cookieName="jo2024_cookie_consent"
+            style={{
+              position: 'fixed',
+              bottom: 0,
+              width: '100%',
+              background: 'rgba(0,0,0,0.8)',
+              color: '#fff',
+              zIndex: 2000,      
             }}
-          />
-        </CookieConsent>
+            buttonStyle={{
+              background: '#009739',
+              borderRadius: '10px',
+              color: '#fff',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+            }}
+            declineButtonStyle={{
+              background: '#E31937',
+              color: '#fff',
+              borderRadius: '10px',
+              fontWeight: 'bold',
+              textTransform: 'uppercase',
+            }}
+            onAccept={() => {
+              console.log('Cookies acceptés');
+            }}
+            onDecline={() => {
+              console.log('Cookies refusés');
+            }}
+          >
+            <Trans
+              i18nKey="cookieBanner.message"
+              components={{
+                privacyLink: (
+                  <a
+                    href="/privacy-policy"
+                    style={{ color: '#68B9B5', textDecoration: 'underline' }}
+                  />
+                ),
+              }}
+            />
+          </CookieConsent>
 
-        <LocalizationProvider
-          dateAdapter={AdapterDayjs}
-          adapterLocale={i18n.language}   
-        >
-          <App mode={mode} toggleMode={toggleMode} />
-        </LocalizationProvider>
-      </ThemeProvider>
-    </I18nextProvider>
+          <LocalizationProvider
+            dateAdapter={AdapterDayjs}
+            adapterLocale={i18n.language}   
+          >
+            <App mode={mode} toggleMode={toggleMode} />
+          </LocalizationProvider>
+        </ThemeProvider>
+      </I18nextProvider>
+    </SnackbarProvider>
   );
 }

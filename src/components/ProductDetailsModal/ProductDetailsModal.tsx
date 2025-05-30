@@ -11,8 +11,8 @@ import { ErrorDisplay } from '../ErrorDisplay';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency, formatDate } from '../../utils/format';
 import Chip from '@mui/material/Chip';
-import { enqueueAddToCart } from '../../utils/cart';
-import { useCartStore } from '../../stores/cartStore';
+import { useCartStore, type CartItem } from '../../stores/cartStore';
+import { closeSnackbar, useSnackbar } from 'notistack';
 
 interface Props {
   open: boolean;
@@ -27,6 +27,7 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
     : null;
 
   const { t } = useTranslation('ticket');
+  const { enqueueSnackbar } = useSnackbar();
 
   const { product, loading, error } = useProductDetails(open ? productId : null, lang);
 
@@ -37,27 +38,45 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
   const finalPrice = (product?.price ?? 0) * (1 - (product?.sale ?? 0));
 
   // on récupère le tableau items et la fonction addItem
-  const items = useCartStore.getState().items;
+  const addItem = useCartStore.getState().addItem;
 
-  const handleBuy = () => {
+  const handleBuy = async () => {
     if (!product) return;
 
-    // 1) Cherche la ligne existante dans le panier
-    const existing = items.find(i => i.id === product.id.toString());
+    // Récupère le panier actuel pour calculer la quantité finale
+    const existingItems = useCartStore.getState().items;
+    const existing = existingItems.find(i => i.id === product.id.toString());
     const currentQty = existing?.quantity ?? 0;
 
-    // 2) Calcule la nouvelle quantité totale
+    // On ajoute toujours la quantité finale (1 de plus)
     const newQty = currentQty + 1;
 
-    // 3) On décale l’appel pour ne pas bloquer l’UI
-    enqueueAddToCart({
-      id:       product.id.toString(),
-      name:     product.name,
+    const item: CartItem = {
+      id: product.id.toString(),
+      name: product.name,
       quantity: newQty,
-      price:    finalPrice,
-    });
-
-    // 4) on ferme la modale
+      price: finalPrice,
+      inStock: product.stock_quantity > 0,
+      availableQuantity: product.stock_quantity,
+    };
+    try {
+      await addItem(item);
+      enqueueSnackbar(t('cart.add_success'), {
+        variant: 'success',
+        autoHideDuration: 2000,                     // plus court pour le succès
+        action: key => (                            // bouton « Annuler »
+          <Button color="inherit" size="small" onClick={() => closeSnackbar(key)}>
+            {t('cart.undo')}
+          </Button>
+        ),
+      });
+    } catch (err: any) {
+      if (err.message.includes('exceeds available')) {
+        enqueueSnackbar(t('cart.not_enough_stock', { count: item.availableQuantity }), { variant: 'warning' });
+      } else {
+        enqueueSnackbar(t('cart.error_update'), { variant: 'error' });
+      }
+    }
     onClose();
   };
 
