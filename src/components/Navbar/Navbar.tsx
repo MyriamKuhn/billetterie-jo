@@ -39,7 +39,10 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const cartCount = useCartStore(s => s.items.reduce((sum, i) => sum + i.quantity, 0));
+
+  const items = useCartStore(s => s.items) ?? [];
+  const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
+  
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = () => setOpen(o => !o);

@@ -11,6 +11,8 @@ import { ErrorDisplay } from '../ErrorDisplay';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency, formatDate } from '../../utils/format';
 import Chip from '@mui/material/Chip';
+import { enqueueAddToCart } from '../../utils/cart';
+import { useCartStore } from '../../stores/cartStore';
 
 interface Props {
   open: boolean;
@@ -20,6 +22,10 @@ interface Props {
 }
 
 export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
+  const modalContainer = typeof document !== 'undefined'
+    ? document.getElementById('modal-root')
+    : null;
+
   const { t } = useTranslation('ticket');
 
   const { product, loading, error } = useProductDetails(open ? productId : null, lang);
@@ -30,8 +36,40 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
   const soldOut = product?.stock_quantity === 0;
   const finalPrice = (product?.price ?? 0) * (1 - (product?.sale ?? 0));
 
+  // on récupère le tableau items et la fonction addItem
+  const items = useCartStore.getState().items;
+
+  const handleBuy = () => {
+    if (!product) return;
+
+    // 1) Cherche la ligne existante dans le panier
+    const existing = items.find(i => i.id === product.id.toString());
+    const currentQty = existing?.quantity ?? 0;
+
+    // 2) Calcule la nouvelle quantité totale
+    const newQty = currentQty + 1;
+
+    // 3) On décale l’appel pour ne pas bloquer l’UI
+    enqueueAddToCart({
+      id:       product.id.toString(),
+      name:     product.name,
+      quantity: newQty,
+      price:    finalPrice,
+    });
+
+    // 4) on ferme la modale
+    onClose();
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      // @ts-ignore : MUI attend bien container et le passera au Modal en interne
+      container={modalContainer!}
+    >
       <DialogTitle>
         {loading ? t('tickets.loading') : error ? t('tickets.error') : product?.name}
       </DialogTitle>
@@ -99,8 +137,8 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
         <Button onClick={onClose}>{t('tickets.close')}</Button>
         <Button
           variant="contained"
+          onClick={handleBuy}
           disabled={product?.stock_quantity === 0 || loading || !!error}
-          href={`/tickets/${productId}`}
         >
           {soldOut ? t('tickets.out_of_stock') : t('tickets.buy')}
         </Button>
