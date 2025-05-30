@@ -13,9 +13,10 @@ interface Props {
   fmtCur: (n:number)=>string; 
   fmtDate:(s?:string)=>string; 
   onViewDetails: (id: number) => void;
+  onBuy: () => void;
 }
 
-export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Props) {
+export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails, onBuy }: Props) {
   const { t } = useTranslation(['common', 'ticket']);
   const soldOut = p.stock_quantity === 0;
   const finalPrice = p.price * (1 - p.sale);
@@ -65,7 +66,7 @@ export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails }: Prop
           <Button size="small" variant="outlined" onClick={() => onViewDetails(p.id)}>
             {t('ticket:tickets.more_info')}
           </Button>
-          <Button size="small" variant="contained" disabled={soldOut} href={`/tickets/${p.id}`}>
+          <Button size="small" variant="contained" disabled={soldOut} onClick={onBuy}>
             {soldOut ? t('ticket:tickets.out_of_stock') : t('ticket:tickets.buy')}
           </Button>
         </Box>

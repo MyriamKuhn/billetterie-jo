@@ -11,8 +11,8 @@ import { ErrorDisplay } from '../ErrorDisplay';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency, formatDate } from '../../utils/format';
 import Chip from '@mui/material/Chip';
-import { useCartStore, type CartItem } from '../../stores/cartStore';
-import { useCustomSnackbar } from '../../hooks/useCustomSnackbar';
+import { useCartStore } from '../../stores/cartStore';
+import { useAddToCart } from '../../hooks/useAddToCart';
 
 interface Props {
   open: boolean;
@@ -23,9 +23,8 @@ interface Props {
 
 export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
   const { t } = useTranslation(['ticket', 'cart']);
-  const { notify } = useCustomSnackbar();
   const cartItems = useCartStore(s => s.items);
-  const addItem   = useCartStore.getState().addItem;
+  const addToCart = useAddToCart();
 
   const { product, loading, error } = useProductDetails(open ? productId : null, lang);
 
@@ -65,26 +64,14 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
     const existing = cartItems.find(i => i.id === product.id.toString());
     const newQty = (existing?.quantity ?? 0) + 1;
 
-    const item: CartItem = {
-      id: product.id.toString(),
-      name: product.name,
-      quantity: newQty,
-      price: finalPrice,
-      inStock: product.stock_quantity > 0,
-      availableQuantity: product.stock_quantity,
-    };
-
-    try {
-      await addItem(item);
-      notify(t('cart:cart.add_success'), 'success');
-      onClose();
-    } catch (err: any) {
-      if (err.message.includes('exceeds')) {
-        notify(t('cart:cart.not_enough_stock', { count: item.availableQuantity }), 'warning');
-      } else {
-        notify(t('cart:errors.error_update'), 'error');
-      }
-    }
+    const ok = await addToCart(
+      product.id.toString(),
+      product.name,
+      newQty,
+      finalPrice,
+      product.stock_quantity
+    );
+    if (ok) onClose();
   };
 
   return (
