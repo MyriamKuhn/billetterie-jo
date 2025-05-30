@@ -1,0 +1,22 @@
+{
+  "cart": {
+    "empty": "Ihr Einkaufskorb ist leer",
+    "total": "Gesamt",
+    "view": "Anzeigen",
+    "removed_unavailable": "{{name}} wurde aus Ihrem Einkaufskorb entfernt (nicht mehr auf Lager)",
+    "quantity_reduced": "{{name}} Menge auf {{count}} reduziert (begrenzter Lagerbestand)",
+    "unavailable": "Einkaufskorb nicht verfügbar, bitte versuchen Sie es erneut",
+    "remove_one": "Einzeln entfernen",
+    "add_one": "Einzeln hinzufügen",
+    "not_enough_stock": "Menge nicht verfügbar (max: {{count}})",
+    "max_reached": "Begrenzter Lagerbestand: {{count}} verbleibend",
+    "add_success": "Artikel zum Einkaufskorb hinzugefügt",
+    "remove_success": "Artikel aus dem Einkaufskorb entfernt",
+    "update_success": "Menge aktualisiert"
+  },
+  "errors": {
+    "error_load": "Der Einkaufskorb konnte nicht geladen werden, bitte versuchen Sie es erneut",
+    "error_not_found": "Einkaufskorb nicht gefunden",
+    "error_update": "Der Einkaufskorb konnte nicht aktualisiert werden"
+  }
+}

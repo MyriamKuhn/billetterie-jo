@@ -43,7 +43,12 @@ export function Root() {
   const { t } = useTranslation();
 
   return (
-    <SnackbarProvider maxSnack={3} autoHideDuration={3000} preventDuplicate>
+    <SnackbarProvider
+      maxSnack={3}
+      autoHideDuration={3000}
+      preventDuplicate
+      anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+    >
       <I18nextProvider i18n={i18n}>
         <ThemeProvider theme={getAppTheme(mode)}>
           <CssBaseline />

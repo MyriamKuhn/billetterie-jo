@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { withTranslation, type WithTranslation } from 'react-i18next';
+import { logError } from '../../utils/logger';
 
 interface Props extends WithTranslation {
   children: ReactNode;
@@ -24,7 +25,7 @@ class ErrorBoundaryInner extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error', error, info);
+    logError('ErrorBoundary', { error, info });
   }
 
   handleReload = () => {

@@ -1,0 +1,22 @@
+{
+  "cart": {
+    "empty": "Your cart is empty",
+    "total": "Total",
+    "view": "View cart",
+    "removed_unavailable": "{{name}} was removed from your cart (no longer in stock)",
+    "quantity_reduced": "{{name}} quantity reduced to {{count}} (limited stock)",
+    "unavailable": "Cart unavailable, please try again",
+    "remove_one": "Remove one",
+    "add_one": "Add one",
+    "not_enough_stock": "Quantity not available (max: {{count}})",
+    "max_reached": "Limited stock: {{count}} remaining",
+    "add_success": "Item added to cart",
+    "remove_success": "Item removed from cart",
+    "update_success": "Quantity updated"
+  },
+  "errors": {
+    "error_load": "Unable to load cart, please try again",
+    "error_not_found": "Cart not found",
+    "error_update": "Unable to update cart"
+  }
+}

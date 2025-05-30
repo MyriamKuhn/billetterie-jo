@@ -1,0 +1,22 @@
+{
+  "cart": {
+    "empty": "Votre panier est vide",
+    "total": "Total",
+    "view": "Voir le panier",
+    "removed_unavailable": "{{name}} a été retiré du panier (plus en stock)",
+    "quantity_reduced": "{{name}} a été réduit à {{count}} (stock limité)",
+    "unavailable": "Panier indisponible, veuillez réessayer",
+    "remove_one": "Retirer un",
+    "add_one": "Ajouter un",
+    "not_enough_stock": "Quantité non disponible (max : {{count}})",
+    "max_reached": "Stock limité : {{count}} restants",
+    "add_success": "Article ajouté au panier",
+    "remove_success": "Article retiré du panier",
+    "update_success": "Quantité mise à jour"
+  },
+  "errors": {
+    "error_load": "Impossible de charger le panier, veuillez réessayer",
+    "error_not_found": "Panier introuvable",
+    "error_update": "Impossible de mettre à jour le panier"
+  }
+}
