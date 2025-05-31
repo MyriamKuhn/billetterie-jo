@@ -66,9 +66,7 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
 
     const ok = await addToCart(
       product.id.toString(),
-      product.name,
       newQty,
-      finalPrice,
       product.stock_quantity
     );
     if (ok) onClose();

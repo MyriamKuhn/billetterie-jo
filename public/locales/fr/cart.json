@@ -1,5 +1,10 @@
 {
+  "seo": {
+    "title": "Votre panier - Billetterie JO Paris 2024",
+    "description": "Consultez les articles de votre panier, ajustez les quantités et passez commande."
+  },
   "cart": {
+    "title": "Votre panier",
     "empty": "Votre panier est vide",
     "total": "Total",
     "view": "Voir le panier",
@@ -17,6 +22,21 @@
   "errors": {
     "error_load": "Impossible de charger le panier, veuillez réessayer",
     "error_not_found": "Panier introuvable",
-    "error_update": "Impossible de mettre à jour le panier"
+    "error_update": "Impossible de mettre à jour le panier",
+    "error_loading": "Erreur de chargement",
+    "error_loading_message": "Impossible de charger votre panier. Vérifiez votre connexion et réessayez.",
+    "empty": "Votre panier est vide",
+    "empty_message": "Il semblerait que vous n’ayez encore ajouté aucun article. Parcourez notre catalogue pour commencer vos achats !"
+  },
+  "table": {
+    "product": "Produit",
+    "unit_price": "Prix unitaire",
+    "quantity": "Quantité",
+    "total": "Total"
+  },
+  "checkout": {
+    "accept_cgv": "J’accepte les Conditions Générales de Vente",
+    "checkout": "Payer",
+    "continue_shopping": "Continuer vos achats"
   }
 }

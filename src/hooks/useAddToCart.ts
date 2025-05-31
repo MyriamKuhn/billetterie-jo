@@ -1,4 +1,4 @@
-import { useCartStore, type CartItem } from '../stores/cartStore';
+import { useCartStore } from '../stores/cartStore';
 import { useCustomSnackbar } from './useCustomSnackbar';
 import { useTranslation } from 'react-i18next';
 
@@ -7,19 +7,9 @@ export function useAddToCart() {
   const { notify } = useCustomSnackbar();
   const { t } = useTranslation('cart');
 
-  return async (id: string, name: string, desiredQty: number, unitPrice: number, availableQty: number) => {
-    // construit l’objet CartItem
-    const item: CartItem = {
-      id: id,
-      name: name,
-      quantity: desiredQty,
-      price: unitPrice,
-      inStock: availableQty > 0,
-      availableQuantity: availableQty
-    };
-
+  return async (id: string, desiredQty: number, availableQty: number): Promise<boolean> => {
     try {
-      await addItem(item);
+      await addItem(id, desiredQty, availableQty);
       notify(t('cart.add_success'), 'success');
       return true;
     } catch (err: any) {

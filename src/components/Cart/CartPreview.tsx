@@ -61,7 +61,7 @@ export default function CartPreview() {
         return;
       }
       try {
-        await addItem({ ...item, quantity: newQty });
+        await addItem(item.id, newQty, item.availableQuantity);
         if (delta > 0) {
         notify(
           t('cart:cart.add_success'),

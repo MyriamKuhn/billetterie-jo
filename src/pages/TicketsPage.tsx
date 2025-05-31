@@ -94,9 +94,7 @@ export default function ProductsPage() {
                     const newQty = currentQty + 1;
                     const ok = await addToCart(
                       prod.id.toString(),
-                      prod.name,
                       newQty,
-                      prod.price * (1 - (prod.sale ?? 0)),
                       prod.stock_quantity
                     );
                     if (ok) setDetailsId(null);}}

@@ -27,17 +27,24 @@ interface RawCartItem {
 export interface CartItem {
   id: string;
   name: string;
+  image: string;
+  date: string;
+  time?: string;
+  location: string;
   quantity: number;
   price: number;
+  totalPrice?: number;
   inStock: boolean;
   availableQuantity: number;
+  discountRate: number | null;
+  originalPrice: number | null;
 }
 
 interface CartState {
   items: CartItem[];
   guestCartId: string | null;
   loadCart: () => Promise<void>;
-  addItem: (item: CartItem) => Promise<void>;
+  addItem(id: string, quantity: number, availableQuantity: number): Promise<void>
   clearCart: () => Promise<void>;
 }
 
@@ -94,10 +101,17 @@ export const useCartStore = create<CartState>()(
               .map((ci: RawCartItem) => ({
                 id: ci.product_id.toString(),
                 name: ci.product.name,
+                image: ci.product.image,
+                date: ci.product.date,
+                time: ci.product.time ?? undefined,
+                location: ci.product.location,
                 quantity: Number(ci.quantity),
                 price: ci.unit_price,
+                totalPrice: ci.total_price,
                 inStock: ci.in_stock,
                 availableQuantity: ci.available_quantity,
+                discountRate: ci.discount_rate,
+                originalPrice: ci.original_price,
               }));
             set({ items });
           } catch (err) {
@@ -106,15 +120,12 @@ export const useCartStore = create<CartState>()(
           }
         },
 
-        addItem: async item => {
-          if (item.quantity > item.availableQuantity) {
+        addItem: async (id, quantity, availableQuantity) => {
+          if (quantity > availableQuantity) {
             throw new Error('Quantity exceeds available stock');
           }
           try {
-            await axiosInstance.patch(
-              `/api/cart/items/${item.id}`,
-              { quantity: item.quantity }
-            );
+            await axiosInstance.patch(`/api/cart/items/${id}`, { quantity });
           } catch (err) {
             logError('addItem', err);
             throw err;
