@@ -19,10 +19,10 @@ import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useLanguageStore } from '../stores/useLanguageStore';
-import { useCartStore, type CartItem } from '../stores/cartStore';
+import { useCartStore, type CartItem } from '../stores/useCartStore';
 import { useReloadCart } from '../hooks/useReloadCart';
 import { useCustomSnackbar } from '../hooks/useCustomSnackbar';
-import { formatCurrency } from '../utils/format';
+import { formatCurrency, formatDate } from '../utils/format';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 
 export default function CartPage() {
@@ -55,20 +55,20 @@ export default function CartPage() {
     async (item: CartItem, newQty: number) => {
       if (newQty < 0) newQty = 0;
       if (newQty > item.availableQuantity) {
-        notify(t('cart:not_enough_stock', { count: item.availableQuantity }), 'warning');
+        notify(t('cart:cart.not_enough_stock', { count: item.availableQuantity }), 'warning');
         return;
       }
       try {
         await addItem(item.id, newQty, item.availableQuantity);
         if (newQty > item.quantity) {
-          notify(t('cart:add_success'), 'success');
+          notify(t('cart:cart.add_success'), 'success');
         } else if (newQty < item.quantity) {
-          notify(t('cart:remove_success'), 'success');
+          notify(t('cart:cart.remove_success'), 'success');
         } else {
-          notify(t('cart:update_success'), 'info');
+          notify(t('cart:cart.update_success'), 'info');
         }
       } catch {
-        notify(t('cart:error_update'), 'error');
+        notify(t('cart:errors.error_update'), 'error');
       }
     },
     [addItem, notify, t]
@@ -91,13 +91,13 @@ export default function CartPage() {
   if (hasError) {
     return (
       <ErrorDisplay
-        title={t('cart:error_loading')}
-        message={t('cart:error_loading_message')} 
+        title={t('cart:errors.error_loading')}
+        message={t('cart:errors.error_loading_message')} 
         showRetry={true}
-        retryButtonText={t('common:retry')}
+        retryButtonText={t('common:errors.retry')}
         onRetry={reload}
         showHome={true}
-        homeButtonText={t('common:go_home')}
+        homeButtonText={t('common:errors.home')}
       />
     );
   }
@@ -105,11 +105,11 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <ErrorDisplay
-        title={t('cart:empty')}               
-        message={t('cart:empty_message')}     
+        title={t('cart:cart.empty')}               
+        message={t('cart:errors.empty_message')}     
         showRetry={false}                     
         showHome={true}                       
-        homeButtonText={t('common:go_home')}  
+        homeButtonText={t('common:errors.home')}  
       />
     );
   }
@@ -134,7 +134,7 @@ export default function CartPage() {
             <TableCell>{t('cart:table.product')}</TableCell>
             <TableCell align="right">{t('cart:table.unit_price')}</TableCell>
             <TableCell align="center">{t('cart:table.quantity')}</TableCell>
-            <TableCell align="right">{t('cart:table.total')}</TableCell>
+            <TableCell align="right">{t('cart:cart.total')}</TableCell>
           </TableRow>
         </TableHead>
 
@@ -162,11 +162,11 @@ export default function CartPage() {
                     </Typography>
                     <Box sx={{ mt: 0.5, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                       <Chip
-                        label={new Date(item.date).toLocaleDateString(lang, {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                        })}
+                        label={formatDate(
+                          item.date,
+                          lang,
+                          { day: '2-digit', month: '2-digit', year: 'numeric' }
+                        )}
                         size="small"
                       />
                       {item.time && <Chip label={item.time} size="small" />}
@@ -174,7 +174,7 @@ export default function CartPage() {
                     </Box>
                     <Box sx={{ mt: 0.5 }}>
                       <Chip
-                        label={t('cart:places_remaining', {
+                        label={t('cart:cart.remaining', {
                           count: item.availableQuantity,
                         })}
                         size="small"
@@ -251,18 +251,18 @@ export default function CartPage() {
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1 }}>
                 <Chip
-                  label={new Date(item.date).toLocaleDateString(lang, {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  })}
+                  label={formatDate(
+                    item.date,
+                    lang,
+                    { day: '2-digit', month: '2-digit', year: 'numeric' }
+                  )}
                   size="small"
                 />
                 {item.time && <Chip label={item.time} size="small" />}
                 <Chip label={item.location} size="small" />
               </Box>
               <Chip
-                label={t('cart:places_remaining', {
+                label={t('cart:cart.remaining', {
                   count: item.availableQuantity,
                 })}
                 size="small"
@@ -312,7 +312,7 @@ export default function CartPage() {
               {/* Total aligné à droite, avec “Total : ” */}
               <Box sx={{ textAlign: 'right' }}>
                 <Typography variant="body1">
-                  {t('cart:total_label', 'Total')}: {formatCurrency(item.quantity * item.price, lang, 'EUR')}
+                  {t('cart:table.total_price', {total:formatCurrency(item.quantity * item.price, lang, 'EUR')})}
                 </Typography>
               </Box>
             </Box>
@@ -330,7 +330,7 @@ export default function CartPage() {
           {/* Total du panier aligné à droite (mobile) */}
           <Box sx={{ textAlign: 'right', mb: 2 }}>
             <Typography variant="h6">
-              {t('cart:total')}: {formatCurrency(total, lang, 'EUR')}
+              {t('cart:table.total_price', {total:formatCurrency(total, lang, 'EUR')})}
             </Typography>
           </Box>
 
@@ -350,7 +350,7 @@ export default function CartPage() {
               disabled={!acceptedCGV}
               onClick={handlePay}
             >
-              {t('cart:checkout')}
+              {t('cart:checkout.checkout')}
             </Button>
 
             <Box
@@ -371,7 +371,7 @@ export default function CartPage() {
                 }}
               />
               <Typography variant="caption" sx={{ lineHeight: 1 }}>
-                {t('cart:accept_cgv')}
+                {t('cart:checkout.accept_cgv')}
               </Typography>
             </Box>
           </Box>
@@ -379,7 +379,7 @@ export default function CartPage() {
           {/* Bouton “Continuer vos achats” aligné à droite (mobile) */}
           <Box sx={{ textAlign: 'right', mt: 6 }}>
             <Button component={Link} to="/tickets" variant="outlined" size="small">
-              {t('common:continue_shopping')}
+              {t('cart:checkout.continue_shopping')}
             </Button>
           </Box>
         </Box>
@@ -391,7 +391,7 @@ export default function CartPage() {
           {/* Total du panier aligné à droite, juste sous la table */}
           <Box sx={{ textAlign: 'right', mb: 2 }}>
             <Typography variant="h6">
-              {t('cart:total')}: {formatCurrency(total, lang, 'EUR')}
+              {t('cart:table.total_price', {total:formatCurrency(total, lang, 'EUR')})}
             </Typography>
           </Box>
 
@@ -411,7 +411,7 @@ export default function CartPage() {
               disabled={!acceptedCGV}
               onClick={handlePay}
             >
-              {t('cart:checkout')}
+              {t('cart:checkout.checkout')}
             </Button>
 
             <Box
@@ -427,7 +427,7 @@ export default function CartPage() {
                 size="small"
               />
               <Typography variant="body2">
-                {t('cart:accept_cgv')}
+                {t('cart:checkout.accept_cgv')}
               </Typography>
             </Box>
           </Box>
@@ -435,7 +435,7 @@ export default function CartPage() {
           {/* Bouton “Continuer vos achats” aligné à droite, avec marge supérieure accrue */}
           <Box sx={{ textAlign: 'right', mt: 10 }}>
             <Button component={Link} to="/tickets" variant="outlined" size="small">
-              {t('common:continue_shopping')}
+              {t('cart:checkout.continue_shopping')}
             </Button>
           </Box>
         </Box>
@@ -448,7 +448,7 @@ export default function CartPage() {
       <Seo title={t('cart:seo.title')} description={t('cart:seo.description')} />
       <Box sx={{ p: { xs: 2, md: 4 } }}>
         <Typography variant="h4" gutterBottom>
-          {t('cart:title')}
+          {t('cart:cart.title')}
         </Typography>
 
         {isMobile ? renderCards() : renderTable()}

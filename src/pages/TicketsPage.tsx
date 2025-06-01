@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 import { formatCurrency, formatDate } from '../utils/format';
 import { useAddToCart } from '../hooks/useAddToCart';
-import { useCartStore } from '../stores/cartStore';
+import { useCartStore } from '../stores/useCartStore';
 
 export default function ProductsPage() {
   const { t } = useTranslation('ticket');

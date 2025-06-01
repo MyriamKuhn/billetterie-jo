@@ -1,4 +1,4 @@
-import { useCartStore } from '../stores/cartStore';
+import { useCartStore } from '../stores/useCartStore';
 import { useCustomSnackbar } from './useCustomSnackbar';
 import { useTranslation } from 'react-i18next';
 

@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
-import type { CartItem } from '../../stores/cartStore';
+import type { CartItem } from '../../stores/useCartStore';
 
 interface QuantityInputProps {
   item: CartItem;

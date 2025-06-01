@@ -11,7 +11,7 @@ import { ErrorDisplay } from '../ErrorDisplay';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency, formatDate } from '../../utils/format';
 import Chip from '@mui/material/Chip';
-import { useCartStore } from '../../stores/cartStore';
+import { useCartStore } from '../../stores/useCartStore';
 import { useAddToCart } from '../../hooks/useAddToCart';
 
 interface Props {

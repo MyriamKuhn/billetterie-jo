@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useCustomSnackbar } from '../hooks/useCustomSnackbar';
 import { useTranslation } from 'react-i18next';
-import type { CartItem } from '../stores/cartStore';
+import type { CartItem } from '../stores/useCartStore';
 
 export function useStockChangeNotifier(items: CartItem[], isReloading: boolean) {
   const prevRef = useRef<CartItem[]>([]);

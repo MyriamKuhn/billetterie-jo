@@ -19,7 +19,7 @@ import LoginIcon        from '@mui/icons-material/Login';
 
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useCartStore } from '../../stores/cartStore';
+import { useCartStore } from '../../stores/useCartStore';
 import { NavLinkList } from './NavLinkList';
 import logoSrc from '../../assets/logos/logo_arcs.png';
 import logoParis from '../../assets/logos/logo_paris.png';

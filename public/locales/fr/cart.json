@@ -17,7 +17,9 @@
     "max_reached": "Stock limité : {{count}} restants",
     "add_success": "Article ajouté au panier",
     "remove_success": "Article retiré du panier",
-    "update_success": "Quantité mise à jour"
+    "update_success": "Quantité mise à jour",
+    "remaining_one": "{{count}} restant",
+    "remaining_other": "{{count}} restants"
   },
   "errors": {
     "error_load": "Impossible de charger le panier, veuillez réessayer",
@@ -25,14 +27,13 @@
     "error_update": "Impossible de mettre à jour le panier",
     "error_loading": "Erreur de chargement",
     "error_loading_message": "Impossible de charger votre panier. Vérifiez votre connexion et réessayez.",
-    "empty": "Votre panier est vide",
     "empty_message": "Il semblerait que vous n’ayez encore ajouté aucun article. Parcourez notre catalogue pour commencer vos achats !"
   },
   "table": {
     "product": "Produit",
     "unit_price": "Prix unitaire",
     "quantity": "Quantité",
-    "total": "Total"
+    "total_price": "Total : {{total}}"
   },
   "checkout": {
     "accept_cgv": "J’accepte les Conditions Générales de Vente",

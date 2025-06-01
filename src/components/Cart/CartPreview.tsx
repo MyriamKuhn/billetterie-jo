@@ -13,7 +13,7 @@ import OlympicLoader from '../OlympicLoader';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AddIcon       from '@mui/icons-material/Add';
 import RemoveIcon    from '@mui/icons-material/Remove';
-import { useCartStore, type CartItem } from '../../stores/cartStore';
+import { useCartStore, type CartItem } from '../../stores/useCartStore';
 import { useLanguageStore } from '../../stores/useLanguageStore';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useCartStore } from '../stores/cartStore';
+import { useCartStore } from '../stores/useCartStore';
 import { useLanguageStore } from '../stores/useLanguageStore';
 import { useTranslation } from 'react-i18next';
 import type { AxiosError } from 'axios';
