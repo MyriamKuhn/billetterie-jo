@@ -1,0 +1,44 @@
+{
+  "seo": {
+    "title": "Your Cart - Paris 2024 Olympic Ticketing",
+    "description": "View and manage items in your cart, adjust quantities, and proceed to checkout."
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "total": "Total",
+    "view": "View cart",
+    "removed_unavailable": "{{name}} was removed from your cart (no longer in stock)",
+    "quantity_reduced": "{{name}} quantity reduced to {{count}} (limited stock)",
+    "unavailable": "Cart unavailable, please try again",
+    "remove_one": "Remove one",
+    "add_one": "Add one",
+    "not_enough_stock": "Quantity not available (max: {{count}})",
+    "max_reached": "Limited stock: {{count}} remaining",
+    "add_success": "Item added to cart",
+    "remove_success": "Item removed from cart",
+    "update_success": "Quantity updated",
+    "remaining": "{{count}} available"
+  },
+  "errors": {
+    "error_load": "Unable to load cart, please try again",
+    "error_not_found": "Cart not found",
+    "error_update": "Unable to update cart",
+    "error_loading": "Loading error",
+    "error_loading_message": "Unable to load your cart. Please check your connection and try again.",
+    "empty_message": "It seems you haven't added any items yet. Browse our catalog to start shopping!"
+  },
+  "table": {
+    "product": "Product",
+    "unit_price": "Unit Price",
+    "quantity": "Quantity",
+    "total_price": "Total: {{total}}"
+  },
+  "checkout": {
+    "accept_cgv_prefix": "I accept the",
+    "accept_cgv_link_text_mobile": "Terms and Conditions",
+    "accept_cgv_link_text": "General Terms and Conditions of Sale",
+    "checkout": "Checkout",
+    "continue_shopping": "Continue Shopping"
+  }
+}

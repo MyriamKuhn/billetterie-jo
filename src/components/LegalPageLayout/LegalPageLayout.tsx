@@ -11,8 +11,8 @@ interface LayoutProps {
   seoTitle: string;
   seoDescription: string;
   pageTitle: string;
-  sections: readonly [string, string][]; // [titreKey, contentKey]
-  namespace: string;                     // ex. 'legal', 'cgv', etc.
+  sections: readonly [string, string][]; 
+  namespace: string;                     
 }
 
 export default function LegalPageLayout({

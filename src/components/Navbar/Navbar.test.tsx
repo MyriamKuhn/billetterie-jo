@@ -1,6 +1,18 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, beforeEach, vi, expect } from 'vitest';
 
+// ─── MOCK de Badge pour exposer badgeContent dans le DOM ───────────────────────
+vi.mock('@mui/material/Badge', () => ({
+  __esModule: true,
+  default: ({ badgeContent, children }: any) => (
+    <div data-testid="mock-badge">
+      {children}
+      {/* On expose explicitement badgeContent en tant que texte */}
+      <span>{badgeContent}</span>
+    </div>
+  ),
+}));
+
 // ─── ❶ MOCK useMediaQuery ─────────────────────────────────────────────────────
 vi.mock('@mui/material/useMediaQuery', () => ({
   __esModule: true,
@@ -34,15 +46,26 @@ vi.mock('@mui/material/styles', () => ({
 }));
 
 // ─── ❺ MOCK react-i18next ────────────────────────────────────────────────────
-vi.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => ({ t: (k: string) => k }),
-}));
+vi.mock(
+  'react-i18next',
+  async (importOriginal) => {
+    // On récupère l'implémentation réelle, puis on l'étend
+    const actual = await importOriginal<typeof import('react-i18next')>();
+    return {
+      __esModule: true,
+      ...actual,
+      // On ajoute un stub pour initReactI18next pour que `.use(initReactI18next)` ne plante pas
+      initReactI18next: { type: '3rdParty', init: () => {} },
+      // On surcharge useTranslation pour renvoyer simplement la clé
+      useTranslation: () => ({ t: (k: string) => k }),
+    };
+  }
+);
 
 // ─── ❻ MOCK cartStore ────────────────────────────────────────────────────────
-vi.mock('../../stores/cartStore', () => ({
+vi.mock('../../stores/useCartStore', () => ({
   __esModule: true,
-  useCartStore: (sel: any) => sel({ items: [{ id: '1', quantity: 2 }] }),
+  useCartStore: (selector: any) => selector({ items: [{ id: '1', quantity: 2 }] }),
 }));
 
 // ─── ❼ MOCK du Drawer pour exposer data-testid="drawer" ───────────────────────
@@ -80,12 +103,14 @@ vi.mock('../ActiveButton', () => ({
 }));
 vi.mock('../ActiveLink', () => ({
   __esModule: true,
-  default: ({ to, 'aria-label': aria }: any) => (
-    <a data-testid="active-link" data-to={to} aria-label={aria} />
+  default: ({ to, 'aria-label': aria, children }: any) => (
+    <a data-testid="active-link" data-to={to} aria-label={aria}>
+      {children}
+    </a>
   ),
 }));
 // Et pour le lazy-loaded CartPreview :
-vi.mock('../Cart/CartPreview', () => ({
+vi.mock('../CartPreview/CartPreview', () => ({
   __esModule: true,
   default: () => <div data-testid="cart-preview" />,
 }));
@@ -152,5 +177,21 @@ describe('<Navbar />', () => {
     // Un seul CartPreview
     const carts = await screen.findAllByTestId('cart-preview');
     expect(carts).toHaveLength(1);
+  });
+
+  it('affiche bien le nombre d’articles (cartCount) dans le badge du drawer en mode mobile', async () => {
+    // 1) Simuler le mode “mobile”
+    useMediaQueryMock.mockReturnValue(true);
+
+    // 2) Par défaut, useCartStore renvoie [{ id: '1', quantity: 2 }]
+    render(<Navbar mode="light" toggleMode={toggleModeMock} />);
+
+    // 3) Ouvrir le drawer
+    fireEvent.click(screen.getByTestId('icon-button'));
+    expect(screen.getByTestId('drawer')).toBeInTheDocument();
+
+    // 4) Le <Badge> mocké doit afficher "2"
+    const badge = await screen.findByText('2');
+    expect(badge).toBeInTheDocument();
   });
 });
