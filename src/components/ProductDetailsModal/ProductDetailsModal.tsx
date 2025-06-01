@@ -11,6 +11,8 @@ import { ErrorDisplay } from '../ErrorDisplay';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency, formatDate } from '../../utils/format';
 import Chip from '@mui/material/Chip';
+import { useCartStore } from '../../stores/useCartStore';
+import { useAddToCart } from '../../hooks/useAddToCart';
 
 interface Props {
   open: boolean;
@@ -20,33 +22,68 @@ interface Props {
 }
 
 export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
-  const { t } = useTranslation('ticket');
+  const { t } = useTranslation(['ticket', 'cart']);
+  const cartItems = useCartStore(s => s.items);
+  const addToCart = useAddToCart();
 
   const { product, loading, error } = useProductDetails(open ? productId : null, lang);
 
-  const fmtCur = (v: number)   => formatCurrency(v, lang, 'EUR');
-  const dateStr  = product ? formatDate(product.product_details.date, lang) : '';
+  const titleId = 'product-title';
 
-  const soldOut = product?.stock_quantity === 0;
-  const finalPrice = (product?.price ?? 0) * (1 - (product?.sale ?? 0));
+  if (loading) {
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <DialogContent sx={{ textAlign: 'center', py: 4 }}>
+          <OlympicLoader />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  if (error || !product) {
+    return (
+      <Dialog open={open} onClose={onClose}>
+        <ErrorDisplay
+          title={t('ticket:errors.title')}
+          message={t('ticket:errors.not_found')}
+          showRetry={false}
+          showHome={false}
+        />
+      </Dialog>
+    );
+  }
+
+  const fmtCur = (v: number)   => formatCurrency(v, lang, 'EUR');
+  const dateStr  = formatDate(product.product_details.date, lang);
+
+  const soldOut = product.stock_quantity === 0;
+  const finalPrice = (product.price) * (1 - (product.sale));
+
+  const handleBuy = async () => {
+    const existing = cartItems.find(i => i.id === product.id.toString());
+    const newQty = (existing?.quantity ?? 0) + 1;
+
+    const ok = await addToCart(
+      product.id.toString(),
+      newQty,
+      product.stock_quantity
+    );
+    if (ok) onClose();
+  };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        {loading ? t('tickets.loading') : error ? t('tickets.error') : product?.name}
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      aria-labelledby={titleId}
+    >
+      <DialogTitle id={titleId}>
+        {product.name}
       </DialogTitle>
 
       <DialogContent dividers>
-        {loading && (
-          <Box sx={{ textAlign: 'center', py: 4 }}>
-            <OlympicLoader />
-          </Box>
-        )}
-
-        {error && (
-          <ErrorDisplay title={t('errors.title')} message={t('errors.not_found')} showRetry={false} showHome={false} />
-        )}
-
         {product && (
           <Box component="div">
             <Box
@@ -74,7 +111,7 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
             </Typography>
 
             <Typography variant="body1" color="text.secondary">
-              {t('tickets.places', { count: product.product_details.places })}
+              {t('ticket:tickets.places', { count: product.product_details.places })}
             </Typography>
 
             <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 , mt: 1 }}>
@@ -89,20 +126,20 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
               {product.sale > 0 && <Chip label={`–${Math.round(product.sale*100)}%`} size="small" />}
             </Box>
             <Typography variant="body2" color={soldOut ? 'error.main' : 'text.secondary'} sx={{ mt:1 }}>
-              { soldOut ? t('tickets.out_of_stock') : t('tickets.available', {count: product.stock_quantity}) }
+              { soldOut ? t('ticket:tickets.out_of_stock') : t('ticket:tickets.available', {count: product.stock_quantity}) }
             </Typography>
             </Box>
         )}
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>{t('tickets.close')}</Button>
+        <Button onClick={onClose}>{t('ticket:tickets.close')}</Button>
         <Button
           variant="contained"
-          disabled={product?.stock_quantity === 0 || loading || !!error}
-          href={`/tickets/${productId}`}
+          onClick={handleBuy}
+          disabled={soldOut}
         >
-          {soldOut ? t('tickets.out_of_stock') : t('tickets.buy')}
+          {soldOut ? t('ticket:tickets.out_of_stock') : t('ticket:tickets.buy')}
         </Button>
       </DialogActions>
     </Dialog>

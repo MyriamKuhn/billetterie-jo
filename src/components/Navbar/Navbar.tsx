@@ -19,7 +19,7 @@ import LoginIcon        from '@mui/icons-material/Login';
 
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useCartStore } from '../../stores/cartStore';
+import { useCartStore } from '../../stores/useCartStore';
 import { NavLinkList } from './NavLinkList';
 import logoSrc from '../../assets/logos/logo_arcs.png';
 import logoParis from '../../assets/logos/logo_paris.png';
@@ -28,7 +28,7 @@ import ActiveButton from '../ActiveButton';
 import LanguageSwitcher from '../LanguageSwitcher';
 import ThemeToggle from '../ThemeToggle';
 
-const CartPreview = React.lazy(() => import('../Cart/CartPreview'));
+const CartPreview = React.lazy(() => import('../CartPreview/CartPreview'));
 
 interface NavbarProps {
   mode: 'light' | 'dark';
@@ -39,7 +39,10 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const cartCount = useCartStore(s => s.items.reduce((sum, i) => sum + i.quantity, 0));
+
+  const items = useCartStore(s => s.items);
+  const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
+  
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer = () => setOpen(o => !o);

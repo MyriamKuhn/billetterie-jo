@@ -1,0 +1,45 @@
+{
+  "seo": {
+    "title": "Votre panier - Billetterie JO Paris 2024",
+    "description": "Consultez les articles de votre panier, ajustez les quantités et passez commande."
+  },
+  "cart": {
+    "title": "Votre panier",
+    "empty": "Votre panier est vide",
+    "total": "Total",
+    "view": "Voir le panier",
+    "removed_unavailable": "{{name}} a été retiré du panier (plus en stock)",
+    "quantity_reduced": "{{name}} a été réduit à {{count}} (stock limité)",
+    "unavailable": "Panier indisponible, veuillez réessayer",
+    "remove_one": "Retirer un",
+    "add_one": "Ajouter un",
+    "not_enough_stock": "Quantité non disponible (max : {{count}})",
+    "max_reached": "Stock limité : {{count}} restants",
+    "add_success": "Article ajouté au panier",
+    "remove_success": "Article retiré du panier",
+    "update_success": "Quantité mise à jour",
+    "remaining_one": "{{count}} disponible",
+    "remaining_other": "{{count}} disponibles"
+  },
+  "errors": {
+    "error_load": "Impossible de charger le panier, veuillez réessayer",
+    "error_not_found": "Panier introuvable",
+    "error_update": "Impossible de mettre à jour le panier",
+    "error_loading": "Erreur de chargement",
+    "error_loading_message": "Impossible de charger votre panier. Vérifiez votre connexion et réessayez.",
+    "empty_message": "Il semblerait que vous n’ayez encore ajouté aucun article. Parcourez notre catalogue pour commencer vos achats !"
+  },
+  "table": {
+    "product": "Produit",
+    "unit_price": "Prix unitaire",
+    "quantity": "Quantité",
+    "total_price": "Total : {{total}}"
+  },
+  "checkout": {
+    "accept_cgv_prefix": "J’accepte les",
+    "accept_cgv_link_text_mobile": "CGV",
+    "accept_cgv_link_text": "Conditions Générales de Vente",
+    "checkout": "Payer",
+    "continue_shopping": "Continuer vos achats"
+  }
+}

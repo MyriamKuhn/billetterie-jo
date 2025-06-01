@@ -14,10 +14,14 @@ import { ProductDetailsModal } from '../components/ProductDetailsModal';
 import { useTranslation } from 'react-i18next';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 import { formatCurrency, formatDate } from '../utils/format';
+import { useAddToCart } from '../hooks/useAddToCart';
+import { useCartStore } from '../stores/useCartStore';
 
 export default function ProductsPage() {
   const { t } = useTranslation('ticket');
   const lang = useLanguageStore(s => s.lang);
+  const cartItems = useCartStore(s => s.items);
+  const addToCart = useAddToCart();
 
   // --- États ---
   const [filters, setFilters] = useState<Filters>({
@@ -79,7 +83,23 @@ export default function ProductsPage() {
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
-              : <ProductGrid products={products} fmtCur={fmtCur} fmtDate={fmtDate} onViewDetails={setDetailsId} />}
+              : <ProductGrid
+                  products={products}
+                  fmtCur={fmtCur}
+                  fmtDate={fmtDate}
+                  onViewDetails={setDetailsId}
+                  onBuy={async (prod) => {
+                    const existing = cartItems.find(i => i.id === prod.id.toString());
+                    const currentQty = existing?.quantity ?? 0;
+                    const newQty = currentQty + 1;
+                    const ok = await addToCart(
+                      prod.id.toString(),
+                      newQty,
+                      prod.stock_quantity
+                    );
+                    if (ok) setDetailsId(null);}}
+                />
+              }
             {!loading && products.length>0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination

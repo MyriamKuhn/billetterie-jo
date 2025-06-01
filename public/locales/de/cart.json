@@ -1,0 +1,44 @@
+{
+  "seo": {
+    "title": "Ihr Einkaufskorb - Olympischer Ticketverkauf Paris 2024",
+    "description": "Überprüfen Sie die Artikel in Ihrem Einkaufskorb, passen Sie die Mengen an und schließen Sie Ihre Bestellung ab."
+  },
+  "cart": {
+    "title": "Ihr Einkaufskorb",
+    "empty": "Ihr Einkaufskorb ist leer",
+    "total": "Gesamt",
+    "view": "Anzeigen",
+    "removed_unavailable": "{{name}} wurde aus Ihrem Einkaufskorb entfernt (nicht mehr auf Lager)",
+    "quantity_reduced": "{{name}} Menge auf {{count}} reduziert (begrenzter Lagerbestand)",
+    "unavailable": "Einkaufskorb nicht verfügbar, bitte versuchen Sie es erneut",
+    "remove_one": "Einzeln entfernen",
+    "add_one": "Einzeln hinzufügen",
+    "not_enough_stock": "Menge nicht verfügbar (max: {{count}})",
+    "max_reached": "Begrenzter Lagerbestand: {{count}} verbleibend",
+    "add_success": "Artikel zum Einkaufskorb hinzugefügt",
+    "remove_success": "Artikel aus dem Einkaufskorb entfernt",
+    "update_success": "Menge aktualisiert",
+    "remaining": "{{count}} verfügbar"
+  },
+  "errors": {
+    "error_load": "Der Einkaufskorb konnte nicht geladen werden, bitte versuchen Sie es erneut",
+    "error_not_found": "Einkaufskorb nicht gefunden",
+    "error_update": "Der Einkaufskorb konnte nicht aktualisiert werden",
+    "error_loading": "Ladefehler",
+    "error_loading_message": "Ihr Einkaufskorb konnte nicht geladen werden. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    "empty_message": "Es scheint, dass Sie noch keine Artikel hinzugefügt haben. Durchsuchen Sie unseren Katalog, um mit dem Einkaufen zu beginnen!"
+  },
+  "table": {
+    "product": "Produkt",
+    "unit_price": "Einzelpreis",
+    "quantity": "Menge",
+    "total_price": "Gesamt: {{total}}"
+  },
+  "checkout": {
+    "accept_cgv_prefix": "Ich akzeptiere die",
+    "accept_cgv_link_text_mobile": "AVB",
+    "accept_cgv_link_text": "Allgemeinen Verkaufsbedingungen",
+    "checkout": "Zur Kasse",
+    "continue_shopping": "Einkauf fortsetzen"
+  }
+}
