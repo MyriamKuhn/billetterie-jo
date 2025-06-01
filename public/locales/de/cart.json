@@ -18,7 +18,7 @@
     "add_success": "Artikel zum Einkaufskorb hinzugefügt",
     "remove_success": "Artikel aus dem Einkaufskorb entfernt",
     "update_success": "Menge aktualisiert",
-    "remaining": "{{count}} verbleibend"
+    "remaining": "{{count}} verfügbar"
   },
   "errors": {
     "error_load": "Der Einkaufskorb konnte nicht geladen werden, bitte versuchen Sie es erneut",
@@ -35,7 +35,9 @@
     "total_price": "Gesamt: {{total}}"
   },
   "checkout": {
-    "accept_cgv": "Ich akzeptiere die Allgemeinen Verkaufsbedingungen",
+    "accept_cgv_prefix": "Ich akzeptiere die",
+    "accept_cgv_link_text_mobile": "AVB",
+    "accept_cgv_link_text": "Allgemeinen Verkaufsbedingungen",
     "checkout": "Zur Kasse",
     "continue_shopping": "Einkauf fortsetzen"
   }

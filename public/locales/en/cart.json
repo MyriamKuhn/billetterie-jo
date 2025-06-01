@@ -18,7 +18,7 @@
     "add_success": "Item added to cart",
     "remove_success": "Item removed from cart",
     "update_success": "Quantity updated",
-    "remaining": "{{count}} remaining"
+    "remaining": "{{count}} available"
   },
   "errors": {
     "error_load": "Unable to load cart, please try again",
@@ -35,7 +35,9 @@
     "total_price": "Total: {{total}}"
   },
   "checkout": {
-    "accept_cgv": "I accept the General Terms and Conditions of Sale",
+    "accept_cgv_prefix": "I accept the",
+    "accept_cgv_link_text_mobile": "Terms and Conditions",
+    "accept_cgv_link_text": "General Terms and Conditions of Sale",
     "checkout": "Checkout",
     "continue_shopping": "Continue Shopping"
   }

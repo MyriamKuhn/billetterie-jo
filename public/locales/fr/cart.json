@@ -18,8 +18,8 @@
     "add_success": "Article ajouté au panier",
     "remove_success": "Article retiré du panier",
     "update_success": "Quantité mise à jour",
-    "remaining_one": "{{count}} restant",
-    "remaining_other": "{{count}} restants"
+    "remaining_one": "{{count}} disponible",
+    "remaining_other": "{{count}} disponibles"
   },
   "errors": {
     "error_load": "Impossible de charger le panier, veuillez réessayer",
@@ -36,7 +36,9 @@
     "total_price": "Total : {{total}}"
   },
   "checkout": {
-    "accept_cgv": "J’accepte les Conditions Générales de Vente",
+    "accept_cgv_prefix": "J’accepte les",
+    "accept_cgv_link_text_mobile": "CGV",
+    "accept_cgv_link_text": "Conditions Générales de Vente",
     "checkout": "Payer",
     "continue_shopping": "Continuer vos achats"
   }
