@@ -54,13 +54,12 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
   }
 
   const fmtCur = (v: number)   => formatCurrency(v, lang, 'EUR');
-  const dateStr  = product ? formatDate(product.product_details.date, lang) : '';
+  const dateStr  = formatDate(product.product_details.date, lang);
 
-  const soldOut = product?.stock_quantity === 0;
-  const finalPrice = (product?.price ?? 0) * (1 - (product?.sale ?? 0));
+  const soldOut = product.stock_quantity === 0;
+  const finalPrice = (product.price) * (1 - (product.sale));
 
   const handleBuy = async () => {
-    if (!product) return;
     const existing = cartItems.find(i => i.id === product.id.toString());
     const newQty = (existing?.quantity ?? 0) + 1;
 

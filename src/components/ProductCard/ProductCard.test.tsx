@@ -41,6 +41,7 @@ describe('<ProductCard />', () => {
         fmtCur={fmtCur}
         fmtDate={fmtDate}
         onViewDetails={onViewDetails}
+        onBuy={() => {}}
       />
     );
 
@@ -59,9 +60,8 @@ describe('<ProductCard />', () => {
     expect(onViewDetails).toHaveBeenCalledWith(1);
 
     // Lien "buy"
-    const buyLink = screen.getByRole('link', { name: 'ticket:tickets.buy' });
-    expect(buyLink).toHaveAttribute('href', '/tickets/1');
-    expect(buyLink).not.toHaveAttribute('aria-disabled');
+    const buyButton = screen.getByRole('button', { name: 'ticket:tickets.buy' });
+    expect(buyButton).toBeEnabled();
   });
 
   it('renders sold out and sale correctly', () => {
@@ -79,6 +79,7 @@ describe('<ProductCard />', () => {
         fmtCur={fmtCur}
         fmtDate={fmtDate}
         onViewDetails={onViewDetails}
+        onBuy={() => {}}
       />
     );
 
@@ -96,8 +97,8 @@ describe('<ProductCard />', () => {
     expect(infoBtn).toBeInTheDocument();
 
     // Lien "buy" désactivé et label out_of_stock
-    const buyLink = screen.getByRole('link', { name: 'ticket:tickets.out_of_stock' });
-    expect(buyLink).toHaveAttribute('href', '/tickets/1');
-    expect(buyLink).toHaveAttribute('aria-disabled', 'true');
+    // On recherche un bouton désactivé dont le texte est "ticket:tickets.out_of_stock"
+    const buyButton = screen.getByRole('button', { name: 'ticket:tickets.out_of_stock' });
+    expect(buyButton).toBeDisabled();
   });
 });

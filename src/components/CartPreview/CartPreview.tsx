@@ -31,7 +31,7 @@ export default function CartPreview() {
   const { loading, hasError, reload, isReloading } = useReloadCart();
 
   // Items from store
-  const items = useCartStore(s => s.items) ?? [];
+  const items = useCartStore(s => s.items);
   useStockChangeNotifier(items, isReloading);
   const addItem = useCartStore.getState().addItem;
 
@@ -67,17 +67,12 @@ export default function CartPreview() {
           t('cart:cart.add_success'),
           'success'
         );
-        } else if (delta < 0) {
+        } else {
           notify(
             t('cart:cart.remove_success'), 
             'success'
           );
-        } else {
-          notify(
-            t('cart:cart.update_success'), 
-            'success'
-          );
-        }
+        } 
       } catch {
         notify(
           t('cart:errors.error_update'),

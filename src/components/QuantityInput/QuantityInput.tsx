@@ -48,16 +48,11 @@ export default function QuantityInput({
       return;
     }
 
-    // On annule l'ancien timer s'il existe
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
-    }
-
     // On démarre un nouveau timer
     debounceRef.current = window.setTimeout(() => {
       let newQty = rawVal;
 
-      // Clap : si la valeur est négative, on met 0
+      // Clamp : si la valeur est négative, on met 0
       if (newQty < 0) {
         newQty = 0;
       }

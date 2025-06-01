@@ -27,7 +27,7 @@ export default function CartPage() {
 
   // ── Hooks / Store / Snackbar ─────────────────────────────────────────────
   const { loading, hasError, reload } = useReloadCart();
-  const items = useCartStore((s) => s.items) ?? [];
+  const items = useCartStore((s) => s.items);
   const addItem = useCartStore.getState().addItem;
   const { notify } = useCustomSnackbar();
 

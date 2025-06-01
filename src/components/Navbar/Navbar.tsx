@@ -28,7 +28,7 @@ import ActiveButton from '../ActiveButton';
 import LanguageSwitcher from '../LanguageSwitcher';
 import ThemeToggle from '../ThemeToggle';
 
-const CartPreview = React.lazy(() => import('../Cart/CartPreview'));
+const CartPreview = React.lazy(() => import('../CartPreview/CartPreview'));
 
 interface NavbarProps {
   mode: 'light' | 'dark';
@@ -40,7 +40,7 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const items = useCartStore(s => s.items) ?? [];
+  const items = useCartStore(s => s.items);
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
   
   const [open, setOpen] = React.useState(false);
