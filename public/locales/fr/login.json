@@ -1,0 +1,31 @@
+{
+  "seo": {
+    "title": "Connexion – Mon Application",
+    "description": "Page de connexion pour accéder à votre compte"
+  },
+  "login": {
+    "pageTitle": "Connexion",
+    "emailLabel": "Adresse email",
+    "passwordLabel": "Mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "loginButton": "Se connecter",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas de compte ? S’inscrire",
+    "twoFATitle": "Vérification à deux facteurs (2FA)",
+    "twoFACodeLabel": "Code 2FA",
+    "verify2FAButton": "Vérifier le code",
+    "resend2FA": "Renvoyer le code",
+    "cancelLogin": "Annuler",
+    "hidePassword": "Masquer le mot de passe",
+    "showPassword": "Afficher le mot de passe"
+  },
+  "errors": {
+    "invalidCredentials": "Identifiants invalides",
+    "accountDisabled": "Compte désactivé",
+    "emailNotVerified": "Veuillez vérifier votre adresse email",
+    "twofaRequired": "Code 2FA requis",
+    "twofaInvalid": "Code 2FA invalide",
+    "genericError": "Une erreur est survenue",
+    "networkError": "Impossible de joindre le serveur"
+  }
+}
