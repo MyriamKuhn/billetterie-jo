@@ -8,7 +8,10 @@
     "language": "Language",
     "logoJO": "Olympic Games logo",
     "logoParis": "Paris 2024 logo",
-    "toggleTheme": "Toggle theme"
+    "toggleTheme": "Toggle theme",
+    "adminDashboard": "Admin dashboard",
+    "employeeDashboard": "Employee dashboard",
+    "userDashboard": "User dashboard"
   },
   "seo": {
     "title": "Reserve your tickets – Paris 2024 Olympic Ticketing",

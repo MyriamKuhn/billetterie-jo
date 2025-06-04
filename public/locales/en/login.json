@@ -1,0 +1,32 @@
+{
+  "seo": {
+    "title": "Login – Paris 2024 Olympic Ticketing",
+    "description": "Login page to access your Paris 2024 Olympic Ticketing account and purchase tickets for the Paris 2024 Olympics."
+  },
+  "login": {
+    "logoAlt": "Application Logo",
+    "pageTitle": "Login",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "rememberMe": "Remember Me",
+    "loginButton": "Login",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "No Account? Sign Up",
+    "twoFATitle": "Two-Factor Authentication (2FA)",
+    "twoFACodeLabel": "2FA Code",
+    "verify2FAButton": "Verify Code",
+    "cancelLogin": "Cancel",
+    "hidePassword": "Hide Password",
+    "showPassword": "Show Password"
+  },
+  "errors": {
+    "emailNotVerifiedSent": "Email address not verified. A new verification email has just been sent to you.",
+    "invalidCredentials": "Invalid credentials",
+    "accountDisabled": "Account disabled",
+    "emailNotVerified": "Please verify your email address",
+    "twofaRequired": "2FA code required",
+    "twofaInvalid": "Invalid 2FA code",
+    "genericError": "An error occurred",
+    "networkError": "Unable to reach the server"
+  }
+}

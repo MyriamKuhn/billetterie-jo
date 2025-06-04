@@ -1,5 +1,3 @@
-// src/pages/LoginPage.tsx
-
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -41,6 +39,50 @@ interface ApiResponse {
   twofa_enabled?: boolean;
 }
 
+// Utilitaire pour construire les en-têtes Axios
+function buildHeaders(lang: string, guestCartId: string | null): Record<string, string> {
+  const h: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Accept-Language': lang,
+  };
+  if (guestCartId) {
+    h['X-Guest-Cart-Id'] = guestCartId;
+  }
+  return h;
+}
+
+// Utilitaire pour gérer la réussite du login (stockage + reload panier + navigate)
+async function onLoginSuccess(
+  token: string,
+  role: UserRole,
+  remember: boolean,
+  setAuthToken: (t: string, r: boolean, role: UserRole) => void,
+  clearGuestCartIdInStore: (id: string | null) => void,
+  loadCart: () => Promise<void>,
+  navigate: (path: string) => void
+) {
+  setAuthToken(token, remember, role);
+  if (remember) {
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('authRole', role);
+  } else {
+    sessionStorage.setItem('authToken', token);
+    sessionStorage.setItem('authRole', role);
+  }
+
+  clearGuestCartIdInStore(null);
+  useCartStore.persist.clearStorage();
+  await loadCart();
+
+  if (role === 'admin') {
+    navigate('/admin/dashboard');
+  } else if (role === 'employee') {
+    navigate('/employee/dashboard');
+  } else {
+    navigate('/user/dashboard');
+  }
+}
+
 export default function LoginPage() {
   const { t } = useTranslation('login');
   const navigate = useNavigate();
@@ -51,6 +93,7 @@ export default function LoginPage() {
   const [show2FA, setShow2FA] = useState<boolean>(false);
   const [twoFACode, setTwoFACode] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -63,173 +106,85 @@ export default function LoginPage() {
   const guestCartId = useCartStore((s) => s.guestCartId);
   const loadCart = useCartStore((s) => s.loadCart);
 
-  const handleSubmitCredentials = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent, is2FA: boolean = false) => {
     e.preventDefault();
     setErrorMsg(null);
+    if (!is2FA) setShow2FA(false);
     setLoading(true);
 
     try {
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Accept-Language': useLanguageStore.getState().lang,
+      const headers = buildHeaders(useLanguageStore.getState().lang, guestCartId);
+
+      const payload = {
+        email,
+        password,
+        remember: rememberMe,
+        twofa_code: is2FA ? twoFACode : '',
       };
-      if (guestCartId) {
-        headers['X-Guest-Cart-Id'] = guestCartId;
-      }
 
       const response = await axios.post<ApiResponse>(
         `${API_BASE_URL}/api/auth/login`,
-        {
-          email,
-          password,
-          remember: rememberMe,
-          twofa_code: '',
-        },
+        payload,
         { headers }
       );
-
       const data = response.data;
 
-      // Si on reçoit un token, pas besoin de 2FA :
+      // Si token renvoyé, on gère la réussite (2FA ou pas)
       if (data.token && data.user) {
-        const role = data.user.role;
-        // 1) on stocke le token dans le store et en sessionStorage/localStorage
-        setAuthToken(data.token, rememberMe, role as UserRole);
-          if (rememberMe) {
-            localStorage.setItem('authToken', data.token);
-            localStorage.setItem('authRole', role);
-          } else {
-            sessionStorage.setItem('authToken', data.token);
-            sessionStorage.setItem('authRole', role);
-          }
-
-        // 2) on vide le guestCartId dans le store et on clr la persistence “cart-storage”
-        clearGuestCartIdInStore(null);
-        useCartStore.persist.clearStorage();
-
-        // 3) on recharge le panier (fusion déjà traitée côté back)
-        await loadCart();
-
-        if (role === 'admin') {
-          navigate('/admin/dashboard');
-        } else if (role === 'employee') {
-          navigate('/employee/dashboard');
-        } else {
-          navigate('/user/dashboard');
-        }
+        await onLoginSuccess(
+          data.token,
+          data.user.role as UserRole,
+          rememberMe,
+          setAuthToken,
+          clearGuestCartIdInStore,
+          loadCart,
+          navigate
+        );
+        return;
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         const status = err.response?.status;
         const data = err.response?.data as ApiResponse | undefined;
 
-        // 400 + code == twofa_required → on affiche l’étape 2FA
+        // ─── Cas 2FA requise ───────────────────────────────────────────────────
         if (status === 400 && data?.code === 'twofa_required') {
           setShow2FA(true);
           setLoading(false);
           return;
         }
 
-        // 404 → message générique
-        if (status === 404) {
-          setErrorMsg(t('genericError'));
+        // ─── Cas email non vérifiée ───────────────────────────────────────────
+        if (status === 400 && data?.code === 'email_not_verified') {
+          setErrorMsg(t('errors.emailNotVerifiedSent'));
+          setLoading(false);
+          return;
         }
-        else if (data?.code === 'invalid_credentials') {
-          setErrorMsg(t('invalidCredentials'));
-        }
-        else if (data?.code === 'account_disabled') {
-          setErrorMsg(t('accountDisabled'));
-        }
-        else if (data?.code === 'email_not_verified') {
-          setErrorMsg(t('emailNotVerified'));
+
+        // ─── Autres erreurs ───────────────────────────────────────────
+        if (status === 404 || data?.code) {
+          switch (data?.code) {
+            case 'invalid_credentials':
+              setErrorMsg(t('errors.invalidCredentials'));
+              break;
+            case 'account_disabled':
+              setErrorMsg(t('errors.accountDisabled'));
+              break;
+            case 'twofa_invalid':
+              setErrorMsg(t('errors.twofaInvalid'));
+              break;
+            default:
+              setErrorMsg(t('errors.genericError'));
+              break;
+          }
         }
         else {
-          // par défaut, on affiche le message retourné si existant, sinon générique
-          const msg = data?.message 
-            ? t(data.code || '', { defaultValue: data.message }) 
-            : t('genericError');
-          setErrorMsg(msg);
+          // par défaut, on affiche le message générique
+          setErrorMsg(t('errors.genericError'));
         }
       } else {
         logError('LoginPage:handleSubmitCredentials', err);
-        setErrorMsg(t('networkError'));
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmit2FA = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
-    setLoading(true);
-
-    try {
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-        'Accept-Language': useLanguageStore.getState().lang,
-      };
-      if (guestCartId) {
-        headers['X-Guest-Cart-Id'] = guestCartId;
-      }
-
-      const response = await axios.post<ApiResponse>(
-        `${API_BASE_URL}/api/auth/login`,
-        {
-          email,
-          password,
-          remember: rememberMe,
-          twofa_code: twoFACode,
-        },
-        { headers }
-      );
-
-      const data = response.data;
-
-      if (data.token && data.user) {
-        const role = data.user.role;
-        setAuthToken(data.token, rememberMe, role as UserRole);
-        if (rememberMe) {
-          localStorage.setItem('authToken', data.token);
-          localStorage.setItem('authRole', role);
-        } else {
-          sessionStorage.setItem('authToken', data.token);
-          sessionStorage.setItem('authRole', role);
-        }
-
-        clearGuestCartIdInStore(null);
-        useCartStore.persist.clearStorage();
-
-        await loadCart();
-
-        if (role === 'admin') {
-          navigate('/admin/dashboard');
-        } else if (role === 'employee') {
-          navigate('/employee/dashboard');
-        } else {
-          navigate('/user/dashboard');
-        }
-      }
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        const status = err.response?.status;
-        const data = err.response?.data as ApiResponse | undefined;
-
-        if (status === 404) {
-          setErrorMsg(t('genericError'));
-        }
-        else if (data?.code === 'twofa_invalid') {
-          setErrorMsg(t('twofaInvalid'));
-        }
-        else {
-          const msg = data?.message 
-            ? t(data.code || '', { defaultValue: data.message }) 
-            : t('genericError');
-          setErrorMsg(msg);
-        }
-      } else {
-        logError('LoginPage:handleSubmit2FA', err);
-        setErrorMsg(t('networkError'));
+        setErrorMsg(t('errors.networkError'));
       }
     } finally {
       setLoading(false);
@@ -237,6 +192,7 @@ export default function LoginPage() {
   };
 
   const handleCancelLogin = async () => {
+    setShow2FA(false);
     // 1) vider le token du store + session/localStorage
     clearAuthToken();
     localStorage.removeItem('authToken');
@@ -260,7 +216,7 @@ export default function LoginPage() {
       <PageWrapper disableCard>
         <Box
           component="form"
-          onSubmit={show2FA ? handleSubmit2FA : handleSubmitCredentials}
+          onSubmit={show2FA ? (e) => handleSubmit(e, true) : (e) => handleSubmit(e, false)}
           sx={{
             maxWidth: 400,
             mx: 'auto',
@@ -277,15 +233,16 @@ export default function LoginPage() {
             <Box
               component="img"
               src={logoImg}
-              alt={t('logoAlt')}
+              alt={t('login.logoAlt')}
               sx={{ height: 150, width: 'auto' }}
             />
           </Box>
 
           <Typography variant="h4" gutterBottom align="center">
-            {t('pageTitle')}
+            {t('login.pageTitle')}
           </Typography>
 
+          {/* Message d’erreur ou d’information */}
           {errorMsg && (
             <Typography color="error" variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
               {errorMsg}
@@ -299,7 +256,7 @@ export default function LoginPage() {
                 required
                 fullWidth
                 id="email"
-                label={t('emailLabel')}
+                label={t('login.emailLabel')}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -310,7 +267,7 @@ export default function LoginPage() {
                 required
                 fullWidth
                 id="password"
-                label={t('passwordLabel')}
+                label={t('login.passwordLabel')}
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -322,8 +279,8 @@ export default function LoginPage() {
                         <IconButton
                           aria-label={
                             showPassword
-                              ? t('hidePassword')
-                              : t('showPassword')
+                              ? t('login.hidePassword')
+                              : t('login.showPassword')
                           }
                           onClick={toggleShowPassword}
                           edge="end"
@@ -346,13 +303,13 @@ export default function LoginPage() {
                       color="primary"
                     />
                   }
-                  label={t('rememberMe')}
+                  label={t('login.rememberMe')}
                   sx={{ '.MuiFormControlLabel-label': { fontSize: '0.875rem' } }}
                 />
               </Box>
 
               <Button type="submit" variant="contained" fullWidth disabled={loading}>
-                {loading ? `${t('loginButton')}…` : t('loginButton')}
+                {loading ? `${t('login.loginButton')}…` : t('login.loginButton')}
               </Button>
 
               {/* Liens “Mot de passe oublié ?” et “S’inscrire” */}
@@ -364,7 +321,7 @@ export default function LoginPage() {
                     variant="body2"
                     sx={{ fontSize: '0.8rem' }}
                   >
-                    {t('forgotPassword')}
+                    {t('login.forgotPassword')}
                   </Link>
                   <Typography variant="body2" sx={{ fontSize: '0.8rem', mx: 0.5 }}>
                     |
@@ -375,10 +332,10 @@ export default function LoginPage() {
                     variant="body2"
                     sx={{ fontSize: '0.8rem' }}
                   >
-                    {t('noAccount')}
+                    {t('login.noAccount')}
                   </Link>
                 </Stack>
-              </Box>
+              </Box>   
             </Stack>
           )}
 
@@ -386,13 +343,13 @@ export default function LoginPage() {
           {show2FA && (
             <Box>
               <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-                {t('twoFATitle')}
+                {t('login.twoFATitle')}
               </Typography>
               <TextField
                 required
                 fullWidth
                 id="twoFACode"
-                label={t('twoFACodeLabel')}
+                label={t('login.twoFACodeLabel')}
                 type="text"
                 value={twoFACode}
                 onChange={(e) => setTwoFACode(e.target.value)}
@@ -405,22 +362,19 @@ export default function LoginPage() {
                 sx={{ mt: 3 }}
                 disabled={loading}
               >
-                {loading ? `${t('verify2FAButton')}…` : t('verify2FAButton')}
+                {loading ? `${t('login.verify2FAButton')}…` : t('login.verify2FAButton')}
               </Button>
 
               <Divider sx={{ my: 3 }} />
 
-              <Stack direction="row" justifyContent="space-between">
-                <Link href="/resend-2fa" underline="hover" variant="body2">
-                  {t('resend2FA')}
-                </Link>
+              <Stack direction="row" justifyContent="end">
                 <Link
                   component="button"
                   variant="body2"
                   onClick={handleCancelLogin}
                   sx={{ fontSize: '0.8rem' }}
                 >
-                  {t('cancelLogin')}
+                  {t('login.cancelLogin')}
                 </Link>
               </Stack>
             </Box>

@@ -20,6 +20,7 @@ import LoginIcon        from '@mui/icons-material/Login';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useCartStore } from '../../stores/useCartStore';
+import { useAuthStore } from '../../stores/useAuthStore';
 import { NavLinkList } from './NavLinkList';
 import logoSrc from '../../assets/logos/logo_arcs.png';
 import logoParis from '../../assets/logos/logo_paris.png';
@@ -40,11 +41,43 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  // ─── Récupération du panier ───────────────────────────────────────────────
   const items = useCartStore(s => s.items);
   const cartCount = items.reduce((sum, i) => sum + i.quantity, 0);
   
-  const [open, setOpen] = React.useState(false);
+  // ─── Récupération de l’authToken et du rôle, séparément ───────────────────
+  const authToken = useAuthStore((s) => s.authToken);
+  const role = useAuthStore((s) => s.role);
 
+  // ─── Calcul du texte et du lien du bouton « login » / « profil » ────────────
+  let computedText: string;
+  let computedLink: string;
+
+  if (!authToken) {
+    // Utilisateur non connecté
+    computedText = t('navbar.login');
+    computedLink = '/login';
+  } else {
+    // Utilisateur connecté
+    switch (role) {
+      case 'admin':
+        computedText = t('navbar.adminDashboard');
+        computedLink = '/admin/dashboard';
+        break;
+      case 'employee':
+        computedText = t('navbar.employeeDashboard');
+        computedLink = '/employee/dashboard';
+        break;
+      case 'user':
+      default:
+        computedText = t('navbar.userDashboard');
+        computedLink = '/user/dashboard';
+        break;
+    }
+  }
+
+  // ─── État du drawer mobile ───────────────────────────────────────────────
+  const [open, setOpen] = React.useState(false);
   const toggleDrawer = () => setOpen(o => !o);
 
   return (
@@ -91,8 +124,8 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
                   aria-label={t('navbar.toggleTheme')}
                 />
                 <LanguageSwitcher />
-                <ActiveButton to="/login" aria-label={t('navbar.login')}>
-                  {t('navbar.login')}
+                <ActiveButton to={computedLink} aria-label={computedText}>
+                  {computedText}
                 </ActiveButton>
                 <Suspense fallback={<CircularProgress size={24} />}>
                   <CartPreview />
@@ -132,9 +165,9 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
 
             <Divider sx={{ my: 1 }} />
 
-            <ListItemButton key="login" component={ActiveLink} to="/login" onClick={toggleDrawer} aria-label={t('navbar.login')}>
+            <ListItemButton key="loginOrDashboard" component={ActiveLink} to={computedLink} onClick={toggleDrawer} aria-label={computedText}>
               <ListItemIcon><LoginIcon /></ListItemIcon>
-              <ListItemText primary={t('navbar.login')} />
+              <ListItemText primary={computedText} />
             </ListItemButton>
           </List>
 

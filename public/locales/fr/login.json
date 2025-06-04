@@ -1,9 +1,10 @@
 {
   "seo": {
-    "title": "Connexion – Mon Application",
-    "description": "Page de connexion pour accéder à votre compte"
+    "title": "Connexion – Billetterie JO Paris 2024",
+    "description": "Page de connexion pour accéder à votre compte Billetterie JO Paris 2024 et acheter des billets pour les Jeux Olympiques de Paris 2024."
   },
   "login": {
+    "logoAlt": "Logo de l'application",
     "pageTitle": "Connexion",
     "emailLabel": "Adresse email",
     "passwordLabel": "Mot de passe",
@@ -14,12 +15,12 @@
     "twoFATitle": "Vérification à deux facteurs (2FA)",
     "twoFACodeLabel": "Code 2FA",
     "verify2FAButton": "Vérifier le code",
-    "resend2FA": "Renvoyer le code",
     "cancelLogin": "Annuler",
     "hidePassword": "Masquer le mot de passe",
     "showPassword": "Afficher le mot de passe"
   },
   "errors": {
+    "emailNotVerifiedSent": "Adresse e-mail non vérifiée. Un nouvel e-mail de vérification vient de vous être envoyé.",
     "invalidCredentials": "Identifiants invalides",
     "accountDisabled": "Compte désactivé",
     "emailNotVerified": "Veuillez vérifier votre adresse email",

@@ -8,7 +8,10 @@
     "language": "Langue",
     "logoJO": "Logo des Jeux Olympiques",
     "logoParis": "Logo Paris 2024",
-    "toggleTheme": "Changer le thème"
+    "toggleTheme": "Changer le thème",
+    "adminDashboard": "Espace admin",
+    "employeeDashboard": "Espace employé",
+    "userDashboard": "Espace client"
   },
   "seo": {
     "title": "Réservez vos billets – Billetterie JO Paris 2024",
