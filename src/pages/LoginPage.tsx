@@ -14,7 +14,6 @@ import Link from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
 import logoImg from '../assets/logos/jo_logo.png';
 import { useLanguageStore } from '../stores/useLanguageStore';
-import { API_BASE_URL } from '../config';
 import axios from 'axios';
 import { useAuthStore, type UserRole } from '../stores/useAuthStore';
 import { useCartStore } from '../stores/useCartStore';
@@ -23,8 +22,12 @@ import IconButton from '@mui/material/IconButton';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { logError } from '../utils/logger';
+import { loginUser, resendVerificationEmail } from '../services/authService';
+import { getErrorMessage } from '../utils/errorUtils';
+import AlertMessage from '../components/AlertMessage/AlertMessage';
+import { onLoginSuccess, logout } from '../utils/authHelper';
 
-interface ApiResponse {
+export interface ApiResponse {
   message: string;
   code?: string;
   token?: string;
@@ -39,50 +42,6 @@ interface ApiResponse {
   twofa_enabled?: boolean;
 }
 
-// Utilitaire pour construire les en-têtes Axios
-function buildHeaders(lang: string, guestCartId: string | null): Record<string, string> {
-  const h: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'Accept-Language': lang,
-  };
-  if (guestCartId) {
-    h['X-Guest-Cart-Id'] = guestCartId;
-  }
-  return h;
-}
-
-// Utilitaire pour gérer la réussite du login (stockage + reload panier + navigate)
-async function onLoginSuccess(
-  token: string,
-  role: UserRole,
-  remember: boolean,
-  setAuthToken: (t: string, r: boolean, role: UserRole) => void,
-  clearGuestCartIdInStore: (id: string | null) => void,
-  loadCart: () => Promise<void>,
-  navigate: (path: string) => void
-) {
-  setAuthToken(token, remember, role);
-  if (remember) {
-    localStorage.setItem('authToken', token);
-    localStorage.setItem('authRole', role);
-  } else {
-    sessionStorage.setItem('authToken', token);
-    sessionStorage.setItem('authRole', role);
-  }
-
-  clearGuestCartIdInStore(null);
-  useCartStore.persist.clearStorage();
-  await loadCart();
-
-  if (role === 'admin') {
-    navigate('/admin/dashboard');
-  } else if (role === 'employee') {
-    navigate('/employee/dashboard');
-  } else {
-    navigate('/user/dashboard');
-  }
-}
-
 export default function LoginPage() {
   const { t } = useTranslation('login');
   const navigate = useNavigate();
@@ -95,6 +54,9 @@ export default function LoginPage() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [emailNotVerified, setEmailNotVerified] = useState(false);
+  const [resendLoading, setResendLoading] = useState<boolean>(false);
+  const [resendSuccess, setResendSuccess] = useState<boolean>(false);
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const toggleShowPassword = () => setShowPassword((prev) => !prev);
@@ -110,25 +72,20 @@ export default function LoginPage() {
     e.preventDefault();
     setErrorMsg(null);
     if (!is2FA) setShow2FA(false);
+    setEmailNotVerified(false);
+    setResendSuccess(false);
     setLoading(true);
 
     try {
-      const headers = buildHeaders(useLanguageStore.getState().lang, guestCartId);
-
-      const payload = {
+      const data = await loginUser(
         email,
         password,
-        remember: rememberMe,
-        twofa_code: is2FA ? twoFACode : '',
-      };
-
-      const response = await axios.post<ApiResponse>(
-        `${API_BASE_URL}/api/auth/login`,
-        payload,
-        { headers }
+        rememberMe,
+        is2FA ? twoFACode : '',
+        useLanguageStore.getState().lang,
+        guestCartId
       );
-      const data = response.data;
-
+    
       // Si token renvoyé, on gère la réussite (2FA ou pas)
       if (data.token && data.user) {
         await onLoginSuccess(
@@ -157,26 +114,14 @@ export default function LoginPage() {
         // ─── Cas email non vérifiée ───────────────────────────────────────────
         if (status === 400 && data?.code === 'email_not_verified') {
           setErrorMsg(t('errors.emailNotVerifiedSent'));
+          setEmailNotVerified(true);
           setLoading(false);
           return;
         }
 
         // ─── Autres erreurs ───────────────────────────────────────────
         if (status === 404 || data?.code) {
-          switch (data?.code) {
-            case 'invalid_credentials':
-              setErrorMsg(t('errors.invalidCredentials'));
-              break;
-            case 'account_disabled':
-              setErrorMsg(t('errors.accountDisabled'));
-              break;
-            case 'twofa_invalid':
-              setErrorMsg(t('errors.twofaInvalid'));
-              break;
-            default:
-              setErrorMsg(t('errors.genericError'));
-              break;
-          }
+          setErrorMsg(getErrorMessage(t, data?.code));
         }
         else {
           // par défaut, on affiche le message générique
@@ -191,23 +136,48 @@ export default function LoginPage() {
     }
   };
 
+  const handleResendVerification = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResendLoading(true);
+    setErrorMsg(null);
+
+    try {
+      const { status, data } = await resendVerificationEmail(email, useLanguageStore.getState().lang);
+
+      if (status === 200 && data.message) {
+        setResendSuccess(true);
+        setEmailNotVerified(false);
+        return;
+      }
+      
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const data = err.response?.data as ApiResponse | undefined;
+
+        if (data?.code) {
+          setErrorMsg(getErrorMessage(t, data?.code));
+        }
+        else {
+          setErrorMsg(t('errors.genericError'));
+        }
+      } else {
+        logError('LoginPage:handleResendVerification', err);
+        setErrorMsg(t('errors.networkError'));
+      }
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   const handleCancelLogin = async () => {
     setShow2FA(false);
-    // 1) vider le token du store + session/localStorage
-    clearAuthToken();
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('authToken');
-    localStorage.removeItem('authRole');
-    sessionStorage.removeItem('authRole');
-
-    // 2) vider le panier invité
-    clearGuestCartIdInStore(null);
-    useCartStore.persist.clearStorage();
-
-    await loadCart();
-
-    // 3) retour à l’accueil
-    navigate('/');
+    await logout(
+      clearAuthToken,
+      clearGuestCartIdInStore,
+      loadCart,
+      navigate,
+      '/login'
+    );
   };
 
   return (
@@ -243,11 +213,10 @@ export default function LoginPage() {
           </Typography>
 
           {/* Message d’erreur ou d’information */}
-          {errorMsg && (
-            <Typography color="error" variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
-              {errorMsg}
-            </Typography>
-          )}
+          {errorMsg && <AlertMessage message={errorMsg} severity="error" />}
+
+          {/* Confirmation d’envoi manuel */}
+          {resendSuccess && <AlertMessage message={t('login.verificationEmailResent')} severity="success" />}
 
           {/* Étape 1 : Email + Mot de passe */}
           {!show2FA && (
@@ -336,6 +305,26 @@ export default function LoginPage() {
                   </Link>
                 </Stack>
               </Box>   
+
+              {/* Lien de secours si l’e-mail de vérification n’est pas reçu */}
+              {emailNotVerified && (
+                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
+                    {t('login.emailNotVerifiedHint')}{' '}
+                    <Link
+                      component="button"
+                      variant="body2"
+                      onClick={handleResendVerification}
+                      disabled={resendLoading || !/.+@.+\..+/.test(email)}
+                      sx={{ fontSize: '0.8rem' }}
+                    >
+                      {resendLoading
+                        ? `${t('login.resendLinkText')}…`
+                        : t('login.resendLinkText')}
+                    </Link>
+                  </Typography>
+                </Box>
+              )}
             </Stack>
           )}
 

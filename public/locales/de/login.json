@@ -17,7 +17,10 @@
     "verify2FAButton": "Code überprüfen",
     "cancelLogin": "Abbrechen",
     "hidePassword": "Passwort verbergen",
-    "showPassword": "Passwort anzeigen"
+    "showPassword": "Passwort anzeigen",
+    "emailNotVerifiedHint": "Wenn Sie die Bestätigungs-E-Mail nicht erhalten haben,",
+    "resendLinkText": "klicken Sie hier, um sie erneut zu senden",
+    "verificationEmailResent": "Die Bestätigungs-E-Mail wurde gesendet"
   },
   "errors": {
     "emailNotVerifiedSent": "E-Mail-Adresse nicht verifiziert. Eine neue Bestätigungs-E-Mail wurde Ihnen gerade gesendet.",
@@ -27,6 +30,9 @@
     "twofaRequired": "Code 2FA erforderlich",
     "twofaInvalid": "Ungültiger 2FA-Code",
     "genericError": "Ein Fehler ist aufgetreten",
-    "networkError": "Server nicht erreichbar"
+    "networkError": "Server nicht erreichbar",
+    "userNotFound": "Diese E-Mail-Adresse ist nicht registriert",
+    "alreadyVerified": "Ihre E-Mail-Adresse ist bereits verifiziert",
+    "tooManyRequests": "Zu viele Versuche! Bitte versuchen Sie es in 5 Minuten erneut."
   }
 }
