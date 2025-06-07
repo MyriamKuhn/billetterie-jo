@@ -68,7 +68,7 @@ export default function LoginPage() {
   const guestCartId = useCartStore((s) => s.guestCartId);
   const loadCart = useCartStore((s) => s.loadCart);
 
-  const handleSubmit = async (e: React.FormEvent, is2FA: boolean = false) => {
+  const handleSubmit = async (e: React.FormEvent, is2FA: boolean) => {
     e.preventDefault();
     setErrorMsg(null);
     if (!is2FA) setShow2FA(false);

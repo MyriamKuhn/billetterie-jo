@@ -19,6 +19,7 @@ interface CartItemDisplayProps {
 
 export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDisplayProps) {
   const { t } = useTranslation('cart');
+  const discountPct = Math.round((item.discountRate ?? 0) * 100)
   if (isMobile) {
     return (
       <Paper key={item.id} sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
@@ -77,8 +78,8 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
                   >
                     {formatCurrency(item.price, lang, 'EUR')}
                   </Typography>
-                  <Chip
-                    label={`-${Math.round((item.discountRate ?? 0) * 100)}%`}
+                  <Chip 
+                    label={`-${discountPct}%`}
                     size="small"
                     color="secondary"
                     sx={{ ml: 1 }}
@@ -167,8 +168,8 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
             >
               {formatCurrency(item.price, lang, 'EUR')}
             </Typography>
-            <Chip
-              label={`-${Math.round((item.discountRate ?? 0) * 100)}%`}
+            <Chip 
+              label={`-${discountPct}%`}
               size="small"
               color="secondary"
               sx={{ ml: 1 }}
