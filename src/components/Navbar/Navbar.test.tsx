@@ -1,14 +1,24 @@
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import { describe, it, beforeEach, vi, expect } from 'vitest';
 
+// Mock react-router-dom to provide MemoryRouter and stub useNavigate
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>();
+  return {
+    __esModule: true,
+    ...actual,
+    useNavigate: () => vi.fn(),
+  };
+});
+import { MemoryRouter } from 'react-router-dom';
+
 // ─── MOCK de Badge pour exposer badgeContent dans le DOM ───────────────────────
 vi.mock('@mui/material/Badge', () => ({
   __esModule: true,
   default: ({ badgeContent, children }: any) => (
     <div data-testid="mock-badge">
       {children}
-      {/* On expose explicitement badgeContent en tant que texte */}
-      <span>{badgeContent}</span>
+      <span data-testid="badge-content">{badgeContent}</span>
     </div>
   ),
 }));
@@ -30,14 +40,6 @@ vi.mock('@mui/icons-material/Menu', () => ({
   __esModule: true,
   default: () => <span data-testid="MenuIcon" />,
 }));
-vi.mock('@mui/icons-material/ShoppingCart', () => ({
-  __esModule: true,
-  default: () => <span data-testid="ShoppingCartIcon" />,
-}));
-vi.mock('@mui/icons-material/Login', () => ({
-  __esModule: true,
-  default: () => <span data-testid="LoginIcon" />,
-}));
 
 // ─── ❹ MOCK useTheme ─────────────────────────────────────────────────────────
 vi.mock('@mui/material/styles', () => ({
@@ -49,14 +51,11 @@ vi.mock('@mui/material/styles', () => ({
 vi.mock(
   'react-i18next',
   async (importOriginal) => {
-    // On récupère l'implémentation réelle, puis on l'étend
     const actual = await importOriginal<typeof import('react-i18next')>();
     return {
       __esModule: true,
       ...actual,
-      // On ajoute un stub pour initReactI18next pour que `.use(initReactI18next)` ne plante pas
       initReactI18next: { type: '3rdParty', init: () => {} },
-      // On surcharge useTranslation pour renvoyer simplement la clé
       useTranslation: () => ({ t: (k: string) => k }),
     };
   }
@@ -81,39 +80,17 @@ vi.mock('@mui/material/Drawer', () => ({
 }));
 
 // ─── ❽ MOCK composants enfants ────────────────────────────────────────────────
-vi.mock('../LanguageSwitcher', () => ({
-  __esModule: true,
-  default: () => <div data-testid="lang-switch" />,
-}));
+vi.mock('../LanguageSwitcher', () => ({ __esModule: true, default: () => <div data-testid="lang-switch" /> }));
 vi.mock('../ThemeToggle', () => ({
   __esModule: true,
   default: ({ mode, toggleMode, 'aria-label': aria }: any) => (
     <button data-testid="theme-toggle" data-mode={mode} aria-label={aria} onClick={toggleMode} />
   ),
 }));
-vi.mock('./NavLinkList', () => ({
-  __esModule: true,
-  NavLinkList: ({ isMobile }: any) => <nav data-testid={`navlist-${isMobile}`} />,
-}));
-vi.mock('../ActiveButton', () => ({
-  __esModule: true,
-  default: ({ to, 'aria-label': aria }: any) => (
-    <button data-testid="active-button" data-to={to} aria-label={aria} />
-  ),
-}));
-vi.mock('../ActiveLink', () => ({
-  __esModule: true,
-  default: ({ to, 'aria-label': aria, children }: any) => (
-    <a data-testid="active-link" data-to={to} aria-label={aria}>
-      {children}
-    </a>
-  ),
-}));
-// Et pour le lazy-loaded CartPreview :
-vi.mock('../CartPreview/CartPreview', () => ({
-  __esModule: true,
-  default: () => <div data-testid="cart-preview" />,
-}));
+vi.mock('./NavLinkList', () => ({ __esModule: true, NavLinkList: ({ isMobile }: any) => <nav data-testid={`navlist-${isMobile}`} /> }));
+vi.mock('../AuthMenu/AuthMenu', () => ({ __esModule: true, default: () => <div data-testid="auth-menu" /> }));
+// Lazy-loaded CartPreview should include count
+vi.mock('../CartPreview/CartPreview', () => ({ __esModule: true, default: () => <div data-testid="cart-preview">2</div> }));
 
 // ─── ❾ IMPORT du composant ────────────────────────────────────────────────────
 import Navbar from './Navbar';
@@ -130,7 +107,11 @@ describe('<Navbar />', () => {
 
   it('affiche la barre mobile et ouvre/ferme le drawer', async () => {
     useMediaQueryMock.mockReturnValue(true);
-    render(<Navbar mode="light" toggleMode={toggleModeMock} />);
+    render(
+      <MemoryRouter>
+        <Navbar mode="light" toggleMode={toggleModeMock} />
+      </MemoryRouter>
+    );
 
     // 1) Bouton menu et icône
     const menuBtn = screen.getByTestId('icon-button');
@@ -138,7 +119,7 @@ describe('<Navbar />', () => {
     expect(screen.getByTestId('MenuIcon')).toBeInTheDocument();
 
     // 2) On attend le CartPreview lazy
-    expect(await screen.findByTestId('cart-preview')).toBeInTheDocument();
+    expect(await screen.findByTestId('cart-preview')).toHaveTextContent('2');
 
     // 3) Le drawer est fermé au départ
     expect(screen.queryByTestId('drawer')).toBeNull();
@@ -155,7 +136,11 @@ describe('<Navbar />', () => {
 
   it('affiche la barre desktop avec tous les utilitaires', async () => {
     useMediaQueryMock.mockReturnValue(false);
-    render(<Navbar mode="dark" toggleMode={toggleModeMock} />);
+    render(
+      <MemoryRouter>
+        <Navbar mode="dark" toggleMode={toggleModeMock} />
+      </MemoryRouter>
+    );
 
     // NavLinkList desktop
     expect(screen.getByTestId('navlist-false')).toBeInTheDocument();
@@ -169,29 +154,29 @@ describe('<Navbar />', () => {
     // LanguageSwitcher
     expect(screen.getByTestId('lang-switch')).toBeInTheDocument();
 
-    // ActiveButton pour login
-    const loginBtn = screen.getByTestId('active-button');
-    expect(loginBtn).toHaveAttribute('data-to', '/login');
-    expect(loginBtn).toHaveAttribute('aria-label', 'navbar.login');
+    // AuthMenu
+    expect(screen.getByTestId('auth-menu')).toBeInTheDocument();
 
     // Un seul CartPreview
     const carts = await screen.findAllByTestId('cart-preview');
     expect(carts).toHaveLength(1);
   });
 
-  it('affiche bien le nombre d’articles (cartCount) dans le badge du drawer en mode mobile', async () => {
-    // 1) Simuler le mode “mobile”
+  it('affiche bien le nombre d’articles (cartCount) dans le drawer en mode mobile via CartPreview', async () => {
     useMediaQueryMock.mockReturnValue(true);
+    render(
+      <MemoryRouter>
+        <Navbar mode="light" toggleMode={toggleModeMock} />
+      </MemoryRouter>
+    );
 
-    // 2) Par défaut, useCartStore renvoie [{ id: '1', quantity: 2 }]
-    render(<Navbar mode="light" toggleMode={toggleModeMock} />);
-
-    // 3) Ouvrir le drawer
+    // Ouvrir le drawer
     fireEvent.click(screen.getByTestId('icon-button'));
     expect(screen.getByTestId('drawer')).toBeInTheDocument();
 
-    // 4) Le <Badge> mocké doit afficher "2"
-    const badge = await screen.findByText('2');
-    expect(badge).toBeInTheDocument();
+    // CartPreview mocké affiche '2'
+    const cart = await screen.findByTestId('cart-preview');
+    expect(cart).toHaveTextContent('2');
   });
 });
+

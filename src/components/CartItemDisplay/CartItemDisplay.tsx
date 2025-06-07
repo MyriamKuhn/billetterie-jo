@@ -19,6 +19,7 @@ interface CartItemDisplayProps {
 
 export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDisplayProps) {
   const { t } = useTranslation('cart');
+  const discountPct = Math.round((item.discountRate ?? 0) * 100)
   if (isMobile) {
     return (
       <Paper key={item.id} sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
@@ -57,7 +58,7 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {/* Prix unitaire centré */}
             <Box sx={{ textAlign: 'center' }}>
-              {item.discountRate !== null && item.originalPrice !== null ? (
+              {(item.discountRate ?? 0) > 0 ? (
                 <Box>
                   <Typography
                     variant="body2"
@@ -68,7 +69,7 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
                       mr: 0.5,
                     }}
                   >
-                    {formatCurrency(item.originalPrice, lang, 'EUR')}
+                    {formatCurrency(item.originalPrice ?? 0, lang, 'EUR')}
                   </Typography>
                   <Typography
                     variant="body1"
@@ -77,8 +78,8 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
                   >
                     {formatCurrency(item.price, lang, 'EUR')}
                   </Typography>
-                  <Chip
-                    label={`-${Math.round(item.discountRate * 100)}%`}
+                  <Chip 
+                    label={`-${discountPct}%`}
                     size="small"
                     color="secondary"
                     sx={{ ml: 1 }}
@@ -151,14 +152,14 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
 
       {/* Colonne “Prix unitaire” */}
       <TableCell align="right" sx={{ minWidth: 120 }}>
-        {item.discountRate !== null && item.originalPrice !== null ? (
+        {(item.discountRate ?? 0) > 0 ? (
           <Box sx={{ textAlign: 'right' }}>
             <Typography
               variant="body2"
               component="span"
               sx={{ textDecoration: 'line-through', color: 'text.secondary', mr: 0.5 }}
             >
-              {formatCurrency(item.originalPrice, lang, 'EUR')}
+              {formatCurrency(item.originalPrice ?? 0, lang, 'EUR')}
             </Typography>
             <Typography
               variant="body1"
@@ -167,8 +168,8 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
             >
               {formatCurrency(item.price, lang, 'EUR')}
             </Typography>
-            <Chip
-              label={`-${Math.round(item.discountRate * 100)}%`}
+            <Chip 
+              label={`-${discountPct}%`}
               size="small"
               color="secondary"
               sx={{ ml: 1 }}

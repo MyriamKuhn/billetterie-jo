@@ -1,22 +1,33 @@
-import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
-import { describe, it, beforeEach, vi, expect } from 'vitest';
+import { render, screen, fireEvent, cleanup, within } from '@testing-library/react'
+import { describe, it, beforeEach, vi, expect } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 
-// ❶ Stub du module navItems
+// ─── Stub du module navItems ─────────────────────────────────────────────────
 vi.mock('./navItems', () => ({
   __esModule: true,
   navItems: [
-    { key: 'home',  href: '/home',  icon: () => <span data-testid="icon-home" /> },
-    { key: 'about', href: '/about', icon: () => <span data-testid="icon-about"/> },
+    { key: 'home',      href: '/home',      icon: () => <span data-testid="icon-home" />,      group: 'public'    },
+    { key: 'about',     href: '/about',     icon: () => <span data-testid="icon-about" />,     group: 'public'    },
+    { key: 'login',     href: '/login',     icon: () => <span data-testid="icon-login" />,     group: 'login'     },
+    { key: 'signup',    href: '/signup',    icon: () => <span data-testid="icon-signup" />,    group: 'login'     },
+    { key: 'forgot',    href: '/forgot',    icon: () => <span data-testid="icon-forgot" />,    group: 'password'  },
+    { key: 'dashboard', href: '/dashboard', icon: () => <span data-testid="icon-dashboard" />, group: 'dashboard', role: 'user' },
+    { key: 'profile',   href: '/profile',   icon: () => <span data-testid="icon-profile" />,   group: 'auth',      role: 'user' },
+    { key: 'logout',    href: '',           icon: () => <span data-testid="icon-logout" />,    group: 'logout'    },
   ],
-}));
+}))
 
-// ❷ Stub react-i18next
-vi.mock('react-i18next', () => ({
-  __esModule: true,
-  useTranslation: () => ({ t: (k: string) => k }),
-}));
+// ─── Mock react-i18next ─────────────────────────────────────────────────────
+vi.mock('react-i18next', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-i18next')>()
+  return {
+    __esModule: true,
+    ...actual,
+    useTranslation: () => ({ t: (k: string) => k }),
+  }
+})
 
-// ❸ Stub ActiveLink (export default)
+// ─── Stub ActiveLink ─────────────────────────────────────────────────────────
 vi.mock('../ActiveLink', () => ({
   __esModule: true,
   default: ({ to, children, ...p }: any) => (
@@ -24,58 +35,146 @@ vi.mock('../ActiveLink', () => ({
       {children}
     </a>
   ),
-}));
+}))
 
-import { NavLinkList } from './NavLinkList';
-import { navItems }   from './navItems';
+// ─── Mock du helper logout ───────────────────────────────────────────────────
+// On crée directement le mock à l’intérieur du factory pour éviter le hoisting
+vi.mock('../../utils/authHelper', () => ({
+  __esModule: true,
+  logout: vi.fn(() => Promise.resolve()),
+}))
+
+// ─── Mock des stores ────────────────────────────────────────────────────────
+const mockClearToken      = vi.fn()
+const mockSetGuestCartId  = vi.fn()
+const mockLoadCart        = vi.fn()
+vi.mock('../../stores/useAuthStore', () => ({
+  __esModule: true,
+  useAuthStore: (sel: any) => sel({
+    authToken: null,
+    role: 'user',
+    clearToken: mockClearToken,
+    remember: false,
+    setToken: () => {},
+  }),
+}))
+vi.mock('../../stores/useCartStore', () => ({
+  __esModule: true,
+  useCartStore: (sel: any) => sel({
+    setGuestCartId: mockSetGuestCartId,
+    loadCart: mockLoadCart,
+  }),
+}))
+
+// ─── Import APRÈS mouture des mocks ─────────────────────────────────────────
+import { NavLinkList } from './NavLinkList'
+import { navItems }   from './navItems'
+import { logout }     from '../../utils/authHelper' // <-- ici on récupère la fn mockée
 
 describe('<NavLinkList />', () => {
   beforeEach(() => {
-    cleanup();
-    vi.restoreAllMocks();
-  });
+    cleanup()
+    vi.clearAllMocks()
+  })
 
-  it('mode mobile : rend un lien pour chaque item et ferme le drawer via onNavigate si fourni', () => {
-    const onNavigate = vi.fn();
-    render(<NavLinkList isMobile onNavigate={onNavigate} />);
+  it('MOBILE non connecté: public + login/signup + forgot', () => {
+    const toggle = vi.fn()
+    render(
+      <MemoryRouter>
+        <NavLinkList isMobile toggleDrawer={toggle} />
+      </MemoryRouter>
+    )
 
-    const links = screen.getAllByTestId('active-link');
-    expect(links).toHaveLength(navItems.length);
+    // public(2)+login(2)+forgot(1)=5
+    const links = screen.getAllByTestId('active-link')
+    expect(links).toHaveLength(5)
 
-    links.forEach((link, idx) => {
-      const cfg = navItems[idx];
-      expect(link).toHaveAttribute('data-to', cfg.href);
-      expect(within(link).getByTestId(`icon-${cfg.key}`)).toBeInTheDocument();
-      expect(link).toHaveTextContent(`navbar.${cfg.key}`);
+    navItems
+      .filter(i => ['public','login','password'].includes(i.group))
+      .forEach(item => {
+        const a = screen.getByLabelText(`navbar.${item.key}`)
+        expect(a).toHaveAttribute('data-to', item.href)
+        expect(within(a).getByTestId(`icon-${item.key}`)).toBeInTheDocument()
+        fireEvent.click(a)
+      })
 
-      fireEvent.click(link);
-      expect(onNavigate).toHaveBeenCalledTimes(idx + 1);
-    });
-  });
+    expect(toggle).toHaveBeenCalledTimes(5)
+  })
 
-  it('mode mobile sans onNavigate : ne scrolle plus, n\'appelle que la navigation', () => {
-    render(<NavLinkList isMobile />);
+  it('MOBILE connecté: public+dashboard+auth puis logout appelé', async () => {
+    // Remocker état connecté
+    vi.resetModules()
+    vi.doMock('../../stores/useAuthStore', () => ({
+      __esModule: true,
+      useAuthStore: (sel: any) => sel({
+        authToken: 'TOK',
+        role: 'user',
+        clearToken: mockClearToken,
+        remember: false,
+        setToken: () => {},
+      }),
+    }))
+    vi.doMock('../../stores/useCartStore', () => ({
+      __esModule: true,
+      useCartStore: (sel: any) => sel({
+        setGuestCartId: mockSetGuestCartId,
+        loadCart: mockLoadCart,
+      }),
+    }))
+    const { NavLinkList: Reloaded } = await import('./NavLinkList')
 
-    const links = screen.getAllByTestId('active-link');
-    expect(links).toHaveLength(navItems.length);
+    const toggle = vi.fn()
+    render(
+      <MemoryRouter>
+        <Reloaded isMobile toggleDrawer={toggle} />
+      </MemoryRouter>
+    )
 
-    // spy on scrollTo
-    const scrollSpy = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    // public(2) + dashboard(1) + auth(1) = 4 ActiveLink
+    const activeLinks = screen.getAllByTestId('active-link')
+    expect(activeLinks).toHaveLength(
+      navItems.filter(i => ['public','dashboard','auth'].includes(i.group)).length
+    )
 
-    fireEvent.click(links[0]);
-    expect(scrollSpy).not.toHaveBeenCalled();
-  });
+    // vérifier qu'on voit bien chacun
+    navItems
+      .filter(i => ['public','dashboard','auth'].includes(i.group))
+      .forEach(item => {
+        const a = screen.getByLabelText(`navbar.${item.key}`)
+        expect(a).toHaveAttribute('data-to', item.href)
+        expect(within(a).getByTestId(`icon-${item.key}`)).toBeInTheDocument()
+        fireEvent.click(a)
+      })
 
-  it('mode desktop : rend un lien pour chaque item sans onNavigate', () => {
-    render(<NavLinkList isMobile={false} />);
+    // Maintenant le bouton Logout
+    const logoutBtn = screen.getByLabelText('navbar.logout')
+    fireEvent.click(logoutBtn)
 
-    const links = screen.getAllByTestId('active-link');
-    expect(links).toHaveLength(navItems.length);
+    // toggleDrawer doit avoir été appelé sur chacune des 4 ActiveLink + 1 fois sur logout
+    expect(toggle).toHaveBeenCalledTimes(5)
 
-    links.forEach((link, idx) => {
-      const cfg = navItems[idx];
-      expect(link).toHaveAttribute('data-to', cfg.href);
-      expect(link).toHaveTextContent(`navbar.${cfg.key}`);
-    });
-  });
-});
+    // et logout helper
+    await expect(logout).toHaveBeenCalledWith(
+      mockClearToken,
+      mockSetGuestCartId,
+      mockLoadCart,
+      expect.any(Function),
+      '/login'
+    )
+  })
+
+  it('DESKTOP: n’affiche que publicItems', () => {
+    render(
+      <MemoryRouter>
+        <NavLinkList isMobile={false} />
+      </MemoryRouter>
+    )
+    const links = screen.getAllByTestId('active-link')
+    const pubs  = navItems.filter(i => i.group === 'public')
+    expect(links).toHaveLength(pubs.length)
+    links.forEach((a,i) => {
+      expect(a).toHaveAttribute('data-to', pubs[i].href)
+      expect(a).toHaveTextContent(`navbar.${pubs[i].key}`)
+    })
+  })
+})
