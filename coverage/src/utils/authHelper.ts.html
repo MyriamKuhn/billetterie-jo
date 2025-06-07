@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>23/23</span>
+                <span class='fraction'>28/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/23</span>
+                <span class='fraction'>28/28</span>
             </div>
         
             
@@ -147,7 +147,26 @@
 <a name='L82'></a><a href='#L82'>82</a>
 <a name='L83'></a><a href='#L83'>83</a>
 <a name='L84'></a><a href='#L84'>84</a>
-<a name='L85'></a><a href='#L85'>85</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -215,25 +234,41 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useCartStore } from '../stores/useCartStore';
 import type { UserRole } from '../stores/useAuthStore';
 import type { NavigateFunction } from 'react-router-dom';
+import { useAuthStore } from '../stores/useAuthStore';
+import { logoutUser } from '../services/authService';
+import { logError } from './logger';
 &nbsp;
 /**
  * Stocke le token, recharge le panier invité, puis redirige selon le rôle.
@@ -283,7 +318,8 @@ export async function onLoginSuccess(
 }
 &nbsp;
   /**
- * Déconnecte l’utilisateur : efface le token, vide le panier invité, recharge le panier, et navigue.
+ * Déconnecte l’utilisateur : révoque le token côté API, efface le token, vide le panier invité,
+ * recharge le panier, et navigue.
  *
  * @param clearAuthToken              Fonction de Zustand pour vider le token en mémoire.
  * @param clearGuestCartIdInStore     Fonction de Zustand pour vider l’ID du panier invité.
@@ -298,21 +334,33 @@ export async function logout(
   navigate: NavigateFunction,
   redirectPath: string = '/'
 ) {
-  // 1) Vider le token du store + session/localStorage
+  // 1) Récupérer le token et le rôle depuis le store
+  const { authToken: token } = useAuthStore.getState();
+&nbsp;
+  // 2) Appel à authService.logoutUser pour révoquer le token
+  if (token) {
+    try {
+      await logoutUser(token);
+    } catch (err) {
+      logError('logoutUser', err);
+    }
+  }
+&nbsp;
+  // 3) Vider token et rôle client
   clearAuthToken();
   localStorage.removeItem('authToken');
   sessionStorage.removeItem('authToken');
   localStorage.removeItem('authRole');
   sessionStorage.removeItem('authRole');
 &nbsp;
-  // 2) Vider le panier invité (store + storage persistant)
+  // 4) Vider le panier invité (store + persistant)
   clearGuestCartIdInStore(null);
   useCartStore.persist.clearStorage();
 &nbsp;
-  // 3) Recharger le panier (pour éventuellement afficher un panier “vide” ou un panier de guest différent)
+  // 5) Recharger le panier (potentiellement vide ou guest différent)
   await loadCart();
 &nbsp;
-  // 4) Redirection vers la page souhaitée (par défaut, la page d’accueil)
+  // 6) Redirection
   navigate(redirectPath);
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -322,7 +370,7 @@ export async function logout(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-07T18:29:52.872Z
+                at 2025-06-07T19:29:12.240Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
