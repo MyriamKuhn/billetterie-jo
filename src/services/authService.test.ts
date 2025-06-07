@@ -1,6 +1,5 @@
-// src/services/authService.test.ts
 import axios from 'axios'
-import { loginUser, resendVerificationEmail } from './authService'
+import { loginUser, resendVerificationEmail, logoutUser } from './authService'
 import { API_BASE_URL } from '../config'
 import type { ResendResponse } from './authService'
 import type { ApiResponse } from '../pages/LoginPage'
@@ -18,6 +17,7 @@ describe('authService', () => {
   const guestCartId = 'cart-xyz'
   const loginUrl = `${API_BASE_URL}/api/auth/login`
   const resendUrl = `${API_BASE_URL}/api/auth/email/resend`
+  const logoutUrl = `${API_BASE_URL}/api/auth/logout`
 
   const fakeResponseData: ApiResponse = {
     message: 'OK',
@@ -95,5 +95,42 @@ describe('authService', () => {
       }
     )
     expect(result).toEqual({ status: fakeRes.status, data: fakeRes.data })
+  })
+
+  it('logoutUser → envoie les bons headers et retourne status & data', async () => {
+    // Arrange
+    const fakeRes = { status: 204, data: fakeResponseData }
+    mockedPost.mockResolvedValueOnce(fakeRes as any)
+
+    const token = 'my-jwt-token'
+
+    // Act
+    const result: ResendResponse = await logoutUser(token)
+
+    // Assert
+    expect(mockedPost).toHaveBeenCalledWith(
+      logoutUrl,
+      {}, 
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      }
+    )
+    expect(result).toEqual({
+      status: fakeRes.status,
+      data: fakeRes.data,
+    })
+  })
+
+  it('logoutUser → rejette si axios.post échoue', async () => {
+    // Arrange
+    const token = 'invalid-token'
+    const error = new Error('Network error')
+    mockedPost.mockRejectedValueOnce(error)
+
+    // Act & Assert
+    await expect(logoutUser(token)).rejects.toThrow('Network error')
   })
 })

@@ -1,7 +1,18 @@
 // src/utils/authHelper.test.ts
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { onLoginSuccess, logout } from './authHelper'
 import { useCartStore } from '../stores/useCartStore'
+import { useAuthStore } from '../stores/useAuthStore'
+import { logoutUser } from '../services/authService'
+import { logError } from './logger'
+
+// Mock des modules
+vi.mock('../services/authService', () => ({
+  logoutUser: vi.fn(),
+}))
+vi.mock('./logger', () => ({
+  logError: vi.fn(),
+}))
 
 describe('authHelper', () => {
   let setAuthToken: ReturnType<typeof vi.fn>
@@ -9,10 +20,11 @@ describe('authHelper', () => {
   let loadCart: ReturnType<typeof vi.fn>
   let navigate: ReturnType<typeof vi.fn>
   let clearAuthToken: ReturnType<typeof vi.fn>
+  let getStateSpy: ReturnType<typeof vi.spyOn>
   const clearStorageSpy = vi.fn()
 
   beforeEach(() => {
-    // reset mocks and storages
+    // Réinitialise mocks et storages
     vi.clearAllMocks()
     localStorage.clear()
     sessionStorage.clear()
@@ -22,8 +34,17 @@ describe('authHelper', () => {
     loadCart = vi.fn().mockResolvedValue(undefined)
     navigate = vi.fn()
     clearAuthToken = vi.fn()
-    // stub the persist.clearStorage
     useCartStore.persist.clearStorage = clearStorageSpy
+
+    // Spy sur useAuthStore.getState()
+    getStateSpy = vi
+      .spyOn(useAuthStore, 'getState')
+      .mockReturnValue({ authToken: 'TOKEN' } as any)
+  })
+
+  afterEach(() => {
+    // Restaure le spy
+    getStateSpy.mockRestore()
   })
 
   describe('onLoginSuccess', () => {
@@ -38,29 +59,22 @@ describe('authHelper', () => {
         navigate
       )
 
-      // setAuthToken called
       expect(setAuthToken).toHaveBeenCalledWith('TK', false, 'user')
-      // stored in sessionStorage
       expect(sessionStorage.getItem('authToken')).toBe('TK')
       expect(sessionStorage.getItem('authRole')).toBe('user')
       expect(localStorage.getItem('authToken')).toBeNull()
-      // guest cart cleared and persistent storage cleared
       expect(clearGuestCartIdInStore).toHaveBeenCalledWith(null)
       expect(clearStorageSpy).toHaveBeenCalled()
-      // loadCart called
       expect(loadCart).toHaveBeenCalled()
-      // user dashboard
       expect(navigate).toHaveBeenCalledWith('/user/dashboard')
     })
 
     it('stores token in localStorage when remember=true and navigates by role', async () => {
-      // admin
       await onLoginSuccess('A', 'admin', true, setAuthToken, clearGuestCartIdInStore, loadCart, navigate)
       expect(localStorage.getItem('authToken')).toBe('A')
       expect(localStorage.getItem('authRole')).toBe('admin')
       expect(navigate).toHaveBeenLastCalledWith('/admin/dashboard')
 
-      // employee
       await onLoginSuccess('E', 'employee', true, setAuthToken, clearGuestCartIdInStore, loadCart, navigate)
       expect(localStorage.getItem('authToken')).toBe('E')
       expect(localStorage.getItem('authRole')).toBe('employee')
@@ -69,39 +83,65 @@ describe('authHelper', () => {
   })
 
   describe('logout', () => {
-    it('clears token storage, clears guest cart, reloads cart, and navigates to default path', async () => {
+    it('calls logoutUser when there is a token, then clears everything and navigates to default path', async () => {
+      // Arrange
+      ;(logoutUser as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ status: 204, data: {} })
+
+      // Act
       await logout(
         clearAuthToken,
         clearGuestCartIdInStore,
         loadCart,
-        navigate,
+        navigate
       )
 
-      // clearAuthToken called
+      // Assert
+      expect(logoutUser).toHaveBeenCalledWith('TOKEN')
       expect(clearAuthToken).toHaveBeenCalled()
-      // storages cleared
       expect(localStorage.getItem('authToken')).toBeNull()
       expect(sessionStorage.getItem('authToken')).toBeNull()
       expect(localStorage.getItem('authRole')).toBeNull()
       expect(sessionStorage.getItem('authRole')).toBeNull()
-      // guest cart cleared
       expect(clearGuestCartIdInStore).toHaveBeenCalledWith(null)
       expect(clearStorageSpy).toHaveBeenCalled()
-      // loadCart called
       expect(loadCart).toHaveBeenCalled()
-      // navigates to '/'
       expect(navigate).toHaveBeenCalledWith('/')
     })
 
-    it('navigates to provided redirectPath', async () => {
+    it('logs error and continues when logoutUser rejects', async () => {
+      const error = new Error('fail')
+      ;(logoutUser as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(error)
+
       await logout(
         clearAuthToken,
         clearGuestCartIdInStore,
         loadCart,
         navigate,
-        '/custom'
+        '/after-fail'
       )
-      expect(navigate).toHaveBeenCalledWith('/custom')
+
+      expect(logError).toHaveBeenCalledWith('logoutUser', error)
+      expect(clearAuthToken).toHaveBeenCalled()
+      expect(clearGuestCartIdInStore).toHaveBeenCalledWith(null)
+      expect(loadCart).toHaveBeenCalled()
+      expect(navigate).toHaveBeenCalledWith('/after-fail')
+    })
+
+    it('does not call logoutUser if there is no token', async () => {
+      getStateSpy.mockReturnValue({ authToken: null } as any)
+
+      await logout(
+        clearAuthToken,
+        clearGuestCartIdInStore,
+        loadCart,
+        navigate
+      )
+
+      expect(logoutUser).not.toHaveBeenCalled()
+      expect(clearAuthToken).toHaveBeenCalled()
+      expect(clearGuestCartIdInStore).toHaveBeenCalledWith(null)
+      expect(loadCart).toHaveBeenCalled()
+      expect(navigate).toHaveBeenCalledWith('/')
     })
   })
 })

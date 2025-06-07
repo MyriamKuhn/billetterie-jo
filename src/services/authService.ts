@@ -47,4 +47,27 @@ export async function resendVerificationEmail(
     status: response.status,
     data: response.data,
   };
+};
+
+/**
+ * Révoque le token côté serveur.
+ *
+ * @param token     Token JWT à révoquer
+ */
+export async function logoutUser(
+  token: string
+): Promise<ResendResponse> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  };
+  const response = await axios.post<ApiResponse>(
+    `${API_BASE_URL}/api/auth/logout`,
+    {},
+    { headers }
+  );
+  return {
+    status: response.status,
+    data: response.data,
+  };
 }
