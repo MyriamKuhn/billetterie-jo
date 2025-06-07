@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { CartItemDisplay } from './CartItemDisplay';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 
@@ -350,5 +350,77 @@ describe('<CartItemDisplay />', () => {
     const chip = screen.getByText('cart.remaining:0').closest('.MuiChip-root');
     expect(chip).toBeInTheDocument();
     expect(chip).toHaveClass('MuiChip-colorError');
+  });
+
+  it('desktop – avec discountRate != null (vérifie le style des Typography)', () => {
+    const item: CartItem = {
+      ...baseItem,
+      time: undefined,
+      originalPrice: 50,
+      discountRate: 0.2,
+      quantity: 1,
+      availableQuantity: 10,
+    };
+
+    render(
+      <table>
+        <tbody>
+          <CartItemDisplay
+            item={item}
+            lang="pt-PT"
+            adjustQty={adjustSpy}
+            isMobile={false}
+          />
+        </tbody>
+      </table>
+    );
+
+    // on clique pas, on se contente de "voir" le rendu
+    // on récupère tous les Typography du prix unitaire
+    const priceCell = screen.getByText('pt-PT-EUR-50.00').closest('td')!;
+
+    // 1) l'ancien prix doit être barré
+    const oldPrice = within(priceCell).getByText('pt-PT-EUR-50.00');
+    expect(oldPrice).toHaveStyle('text-decoration: line-through');
+
+    // 2) le nouveau prix doit être en font-weight:bold
+    const newPrice = within(priceCell).getByText('pt-PT-EUR-10.00');
+    expect(newPrice).toHaveStyle('font-weight: 700');
+
+    // 3) on conserve le test du chip "-20%"
+    expect(within(priceCell).getByText('-20%')).toBeInTheDocument();
+
+    // 4) et on vérifie le total (déjà fait par ton getAllByText)
+    const totals = screen.getAllByText('pt-PT-EUR-10.00');
+    expect(totals).toHaveLength(2);
+  });
+
+  it('mobile – branch discount pleinement couverte', () => {
+    const item: CartItem = {
+      ...baseItem,
+      originalPrice: 30,
+      discountRate: 0.4,
+      quantity: 3,
+      availableQuantity: 10,
+    };
+
+    render(
+      <CartItemDisplay
+        item={item}
+        lang="fr-FR"
+        adjustQty={adjustSpy}
+        isMobile={true}
+      />
+    );
+
+    // on ne s’intéresse qu’à la zone discount
+    // prix barré (originalPrice)
+    expect(screen.getByText('fr-FR-EUR-30.00')).toBeInTheDocument();
+
+    // prix remisé (price)
+    expect(screen.getByText('fr-FR-EUR-10.00')).toBeInTheDocument();
+
+    // chip "-40%"
+    expect(screen.getByText('-40%')).toBeInTheDocument();
   });
 });

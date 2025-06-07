@@ -158,7 +158,7 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
             <>
               <Divider sx={{ my: 1 }} />
 
-              <ListItemButton onClick={handleLogout} aria-label={t('navbar.logoutItem.key')}>
+              <ListItemButton onClick={handleLogout} aria-label={t(`navbar.${logoutItem.key}`)}>
                 <ListItemIcon sx={{ minWidth: 40 }}>
                   <logoutItem.icon fontSize="small" />
                 </ListItemIcon>
