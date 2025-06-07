@@ -1,6 +1,9 @@
 import { useCartStore } from '../stores/useCartStore';
 import type { UserRole } from '../stores/useAuthStore';
 import type { NavigateFunction } from 'react-router-dom';
+import { useAuthStore } from '../stores/useAuthStore';
+import { logoutUser } from '../services/authService';
+import { logError } from './logger';
 
 /**
  * Stocke le token, recharge le panier invité, puis redirige selon le rôle.
@@ -50,7 +53,8 @@ export async function onLoginSuccess(
 }
 
   /**
- * Déconnecte l’utilisateur : efface le token, vide le panier invité, recharge le panier, et navigue.
+ * Déconnecte l’utilisateur : révoque le token côté API, efface le token, vide le panier invité,
+ * recharge le panier, et navigue.
  *
  * @param clearAuthToken              Fonction de Zustand pour vider le token en mémoire.
  * @param clearGuestCartIdInStore     Fonction de Zustand pour vider l’ID du panier invité.
@@ -65,20 +69,32 @@ export async function logout(
   navigate: NavigateFunction,
   redirectPath: string = '/'
 ) {
-  // 1) Vider le token du store + session/localStorage
+  // 1) Récupérer le token et le rôle depuis le store
+  const { authToken: token } = useAuthStore.getState();
+
+  // 2) Appel à authService.logoutUser pour révoquer le token
+  if (token) {
+    try {
+      await logoutUser(token);
+    } catch (err) {
+      logError('logoutUser', err);
+    }
+  }
+
+  // 3) Vider token et rôle client
   clearAuthToken();
   localStorage.removeItem('authToken');
   sessionStorage.removeItem('authToken');
   localStorage.removeItem('authRole');
   sessionStorage.removeItem('authRole');
 
-  // 2) Vider le panier invité (store + storage persistant)
+  // 4) Vider le panier invité (store + persistant)
   clearGuestCartIdInStore(null);
   useCartStore.persist.clearStorage();
 
-  // 3) Recharger le panier (pour éventuellement afficher un panier “vide” ou un panier de guest différent)
+  // 5) Recharger le panier (potentiellement vide ou guest différent)
   await loadCart();
 
-  // 4) Redirection vers la page souhaitée (par défaut, la page d’accueil)
+  // 6) Redirection
   navigate(redirectPath);
 }
