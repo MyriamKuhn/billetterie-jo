@@ -1,0 +1,38 @@
+{
+  "seo": {
+    "title": "Connexion – Billetterie JO Paris 2024",
+    "description": "Page de connexion pour accéder à votre compte Billetterie JO Paris 2024 et acheter des billets pour les Jeux Olympiques de Paris 2024."
+  },
+  "login": {
+    "logoAlt": "Logo de l'application",
+    "pageTitle": "Connexion",
+    "emailLabel": "Adresse email",
+    "passwordLabel": "Mot de passe",
+    "rememberMe": "Se souvenir de moi",
+    "loginButton": "Se connecter",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas de compte ? S’inscrire",
+    "twoFATitle": "Vérification à deux facteurs (2FA)",
+    "twoFACodeLabel": "Code 2FA",
+    "verify2FAButton": "Vérifier le code",
+    "cancelLogin": "Annuler",
+    "hidePassword": "Masquer le mot de passe",
+    "showPassword": "Afficher le mot de passe",
+    "emailNotVerifiedHint": "Si vous n'avez pas reçu le mail de vérification,",
+    "resendLinkText": "cliquez ici pour le faire renvoyer",
+    "verificationEmailResent": "Le mail de vérification a été envoyé"
+  },
+  "errors": {
+    "emailNotVerifiedSent": "Adresse e-mail non vérifiée. Un nouvel e-mail de vérification vient de vous être envoyé.",
+    "invalidCredentials": "Identifiants invalides",
+    "accountDisabled": "Compte désactivé",
+    "emailNotVerified": "Veuillez vérifier votre adresse email",
+    "twofaRequired": "Code 2FA requis",
+    "twofaInvalid": "Code 2FA invalide",
+    "genericError": "Une erreur est survenue",
+    "networkError": "Impossible de joindre le serveur",
+    "userNotFound": "Cette adresse e-mail n'est pas enregistrée",
+    "alreadyVerified": "Votre adresse e-mail est déjà vérifiée",
+    "tooManyRequests": "Trop de tentatives! Veuillez réessayer dans 5 minutes."
+  }
+}

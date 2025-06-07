@@ -32,6 +32,7 @@ vi.mock('./pages/TermsPage',   () => ({ __esModule: true, default: () => <div da
 vi.mock('./pages/PolicyPage',  () => ({ __esModule: true, default: () => <div data-testid="page-policy">Policy</div> }));
 vi.mock('./pages/ContactPage', () => ({ __esModule: true, default: () => <div data-testid="page-contact">Contact</div> }));
 vi.mock('./pages/CartPage',       () => ({ __esModule: true, default: () => <div data-testid="page-cart">Cart</div> }));
+vi.mock('./pages/LoginPage', () => ({__esModule: true, default: () => <div data-testid="page-login">Login</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -143,11 +144,10 @@ describe('<App />', () => {
     await waitFor(() => expect(screen.getByTestId('page-cart')).toBeInTheDocument());
   });
 
-  it('affiche HomePage sur "/login"', async () => {
+  it('affiche LoginPage sur "/login"', async () => {
     window.history.pushState({}, '', '/login');
     render(<App mode="light" toggleMode={vi.fn()} />);
-    await waitFor(() => expect(screen.getByTestId('page-home')).toBeInTheDocument());
-    cleanup();
+    await waitFor(() => expect(screen.getByTestId('page-login')).toBeInTheDocument());
   });
 
   it('montre le loader dans le fallback de Suspense', async () => {

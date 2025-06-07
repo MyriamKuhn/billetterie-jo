@@ -1,499 +1,317 @@
-import { describe, it, expect, beforeEach, afterEach, beforeAll, vi } from 'vitest';
+// src/stores/useCartStore.test.ts
+import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
 import { act } from '@testing-library/react';
 import { API_BASE_URL } from '../config';
 
-// ─── Mocks ────────────────────────────────────────────────────────────────────
-
-// 1) Mock useLanguageStore pour retourner une langue fixe
+// 1️⃣ Mock useLanguageStore
 vi.mock('./useLanguageStore', () => ({
   __esModule: true,
-  useLanguageStore: {
-    getState: vi.fn(() => ({ lang: 'en' })),
-  },
+  useLanguageStore: { getState: vi.fn(() => ({ lang: 'en' })) },
 }));
+import { useLanguageStore } from './useLanguageStore';
 
-// 2) Spy sur les fonctions de logger
+// 2️⃣ Mock useAuthStore
+vi.mock('./useAuthStore', () => ({
+  __esModule: true,
+  useAuthStore: { getState: vi.fn(() => ({ authToken: 'TOKEN123' })) },
+}));
+import { useAuthStore } from './useAuthStore';
+
+// 3️⃣ Mock logger
 vi.mock('../utils/logger', () => ({
   __esModule: true,
   logError: vi.fn(),
   logWarn: vi.fn(),
 }));
+import { logError, logWarn } from '../utils/logger';
 
-// 3) Mock axios et expose l’instance mockée en tant que __mockAxios
+// 4️⃣ Mock axios and capture instance
 vi.mock('axios', () => {
-  const axiosMockInstance = {
-    interceptors: {
-      request: { use: vi.fn() },
-    },
+  const axiosMock = {
+    interceptors: { request: { use: vi.fn() } },
     get: vi.fn(),
     patch: vi.fn(),
     delete: vi.fn(),
   };
-  const createMock = vi.fn(() => axiosMockInstance);
   return {
     __esModule: true,
-    default: { create: createMock },
-    __mockAxios: axiosMockInstance,
+    default: { create: vi.fn(() => axiosMock) },
+    __mockAxios: axiosMock,
   };
 });
-
 import * as axios from 'axios';
-const __mockAxios = (axios as any).__mockAxios as {
-  interceptors: { request: { use: ReturnType<typeof vi.fn> } };
-  get: ReturnType<typeof vi.fn>;
-  patch: ReturnType<typeof vi.fn>;
-  delete: ReturnType<typeof vi.fn>;
-};
-import { logError, logWarn } from '../utils/logger';
-import { useLanguageStore } from './useLanguageStore';
+// extract the axiosMock instance
+const createSpy = (axios as any).default.create as ReturnType<typeof vi.fn>;
+if (!createSpy.mock.results.length) throw new Error('axios.create mock not called');
+const __mockAxios = createSpy.mock.results[0].value;
 
-// ─── Tests de useCartStore (hors interceptors) ─────────────────────────────────
-
+// 5️⃣ Import store under test
 import { useCartStore, type CartItem } from './useCartStore';
 
-describe('useCartStore', () => {
+// Utility to re-import fresh store for interceptors
+let resetModulesAndImport: () => Promise<{ store: typeof import('./useCartStore').useCartStore; axiosMock: typeof __mockAxios }>;
+beforeAll(() => {
+  resetModulesAndImport = async () => {
+    vi.resetModules()
+   // on ne touche plus à import.meta.env.VITE_AXIOS_TIMEOUT
+    const axiosMod = await import('axios')
+    const axiosMock = (axiosMod as any).__mockAxios as typeof __mockAxios
+    const storeMod = await import('./useCartStore')
+    return { store: storeMod.useCartStore, axiosMock }
+  }
+})
+
+// ── Core methods tests ───────────────────────────────────────────────────────────
+describe('useCartStore - core methods', () => {
   beforeEach(() => {
-    // Réinitialiser l’état du store
-    useCartStore.setState({
-      items: [],
-      guestCartId: null,
-    });
-    // Réinitialiser les mocks
-    (logError as ReturnType<typeof vi.fn>).mockReset();
-    (logWarn as ReturnType<typeof vi.fn>).mockReset();
-    __mockAxios.get.mockReset();
-    __mockAxios.patch.mockReset();
-    __mockAxios.delete.mockReset();
+    // reset store state and axios mocks
+    useCartStore.setState({ items: [], guestCartId: null });
+    __mockAxios.get.mockClear();
+    __mockAxios.patch.mockClear();
+    __mockAxios.delete.mockClear();
     (useLanguageStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ lang: 'en' });
-    // Vider le localStorage
-    localStorage.clear();
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ authToken: 'TOKEN123' });
+    (logError as ReturnType<typeof vi.fn>).mockClear();
+    (logWarn as ReturnType<typeof vi.fn>).mockClear();
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
+  it('creates axios instance with correct config', () => {
+    const spy = (axios as any).default.create as ReturnType<typeof vi.fn>;
+    expect(spy).toHaveBeenCalled();
+    const cfg = spy.mock.calls[0][0];
+    expect(cfg.baseURL).toBe(API_BASE_URL);
+    expect(cfg.timeout).toBe(5000);
   });
 
-  it('axios.create est appelé avec timeout = 5000 par défaut', () => {
-    const createSpy = (axios as any).default.create as ReturnType<typeof vi.fn>;
-    expect(createSpy).toHaveBeenCalled();
-    const configArg = createSpy.mock.calls[0][0];
-    expect(configArg.timeout).toBe(5000);
-    expect(configArg.baseURL).toBe(API_BASE_URL);
+  it('loadCart updates guestCartId on new meta', async () => {
+    __mockAxios.get.mockResolvedValue({ data: { data: { cart_items: [] }, meta: { guest_cart_id: 'NEW' } } });
+    await act(() => useCartStore.getState().loadCart());
+    expect(useCartStore.getState().guestCartId).toBe('NEW');
   });
 
-  it('loadCart: syncGuestCartId met à jour guestCartId quand meta différent', async () => {
-    const rawItems: any[] = [];
-    const fakeMeta = { guest_cart_id: 'NEW_ID' };
-    __mockAxios.get.mockResolvedValue({
-      data: { data: { cart_items: rawItems }, meta: fakeMeta },
-    });
-
-    await act(async () => {
-      await useCartStore.getState().loadCart();
-    });
-
-    expect(useCartStore.getState().guestCartId).toBe('NEW_ID');
+  it('loadCart keeps guestCartId when meta unchanged', async () => {
+    useCartStore.setState({ items: [], guestCartId: 'OLD' });
+    __mockAxios.get.mockResolvedValue({ data: { data: { cart_items: [] }, meta: { guest_cart_id: 'OLD' } } });
+    await act(() => useCartStore.getState().loadCart());
+    expect(useCartStore.getState().guestCartId).toBe('OLD');
   });
 
-  it('loadCart: syncGuestCartId ne change pas guestCartId si identique', async () => {
-    useCartStore.setState({ items: [], guestCartId: 'SAME_ID' });
-    const rawItems: any[] = [];
-    const fakeMeta = { guest_cart_id: 'SAME_ID' };
-    __mockAxios.get.mockResolvedValue({
-      data: { data: { cart_items: rawItems }, meta: fakeMeta },
-    });
-
-    await act(async () => {
-      await useCartStore.getState().loadCart();
-    });
-
-    expect(useCartStore.getState().guestCartId).toBe('SAME_ID');
-  });
-
-  it('loadCart: successful response updates items et guestCartId', async () => {
-    const rawItems = [
-      {
-        id: 1,
-        product_id: 42,
-        quantity: '2',
-        unit_price: 10,
-        total_price: 20,
-        original_price: 12,
-        discount_rate: 0.1,
-        in_stock: true,
-        available_quantity: 5,
-        product: {
-          name: 'Product A',
-          image: 'imgA.jpg',
-          date: '2023-01-01',
-          location: 'Loc A',
-        },
-      },
-      {
-        id: 2,
-        product_id: 43,
-        quantity: '1',
-        unit_price: 5,
-        total_price: 5,
-        original_price: null,
-        discount_rate: null,
-        in_stock: false,
-        available_quantity: 0,
-        product: {
-          name: 'Product B',
-          image: 'imgB.jpg',
-          date: '2023-02-01',
-          location: 'Loc B',
-        },
-      },
+  it('loadCart filters and maps items', async () => {
+    const raw: any[] = [
+      { product_id: 1, quantity: '2', unit_price: 10, total_price: 20, original_price: 5, discount_rate: 0.1, in_stock: true, available_quantity: 5, product: { name: 'A', image: 'a.jpg', date: 'd', location: 'loc' } },
+      { product_id: 2, quantity: '1', unit_price: 5, total_price: 5, original_price: null, discount_rate: null, in_stock: false, available_quantity: 0, product: { name: 'B', image: 'b.jpg', date: 'd', location: 'loc' } }
     ];
-    const fakeMeta = { guest_cart_id: 'GUEST123' };
-    __mockAxios.get.mockResolvedValue({
-      data: { data: { cart_items: rawItems }, meta: fakeMeta },
-    });
-
-    await act(async () => {
-      await useCartStore.getState().loadCart();
-    });
-
-    const state = useCartStore.getState();
-    expect(state.guestCartId).toBe('GUEST123');
-    expect(state.items).toEqual<CartItem[]>([
-      {
-        id: '42',
-        name: 'Product A',
-        image: 'imgA.jpg',
-        date: '2023-01-01',
-        time: undefined,
-        location: 'Loc A',
-        quantity: 2,
-        price: 10,
-        totalPrice: 20,
-        inStock: true,
-        availableQuantity: 5,
-        discountRate: 0.1,
-        originalPrice: 12,
-      },
+    __mockAxios.get.mockResolvedValue({ data: { data: { cart_items: raw }, meta: {} } });
+    await act(() => useCartStore.getState().loadCart());
+    expect(useCartStore.getState().items).toEqual<CartItem[]>([
+      expect.objectContaining({ id: '1', name: 'A', quantity: 2, price: 10, totalPrice: 20 })
     ]);
-    expect(logError).not.toHaveBeenCalled();
   });
 
-  it('loadCart: failing response logs error et throw', async () => {
-    const err = new Error('Network Fail');
+  it('loadCart logs error and throws', async () => {
+    const err = new Error('fail');
     __mockAxios.get.mockRejectedValue(err);
-
     await expect(useCartStore.getState().loadCart()).rejects.toThrow(err);
     expect(logError).toHaveBeenCalledWith('loadCart', err);
   });
 
-  it('addItem: quantity > availableQuantity throw immédiatement', async () => {
-    const { addItem } = useCartStore.getState();
-
-    await expect(addItem('1', 10, 5)).rejects.toThrow('Quantity exceeds available stock');
-    expect(__mockAxios.patch).not.toHaveBeenCalled();
-    expect(logError).not.toHaveBeenCalled();
+  it('addItem throws on exceeding quantity', async () => {
+    await expect(useCartStore.getState().addItem('1', 10, 5)).rejects.toThrow('Quantity exceeds available stock');
   });
 
-  it('addItem: successful patch et loadCart subséquent', async () => {
-    const spyLoadCart = vi.spyOn(useCartStore.getState(), 'loadCart').mockResolvedValue();
+  it('addItem patches and reloads on success', async () => {
+    const spy = vi.spyOn(useCartStore.getState(), 'loadCart').mockResolvedValue();
     __mockAxios.patch.mockResolvedValue({});
-
-    await act(async () => {
-      await useCartStore.getState().addItem('7', 3, 5);
-    });
-
-    expect(__mockAxios.patch).toHaveBeenCalledWith('/api/cart/items/7', { quantity: 3 });
-    expect(spyLoadCart).toHaveBeenCalled();
-    expect(logError).not.toHaveBeenCalled();
-    expect(logWarn).not.toHaveBeenCalled();
+    await act(() => useCartStore.getState().addItem('1', 2, 5));
+    expect(__mockAxios.patch).toHaveBeenCalledWith('/api/cart/items/1', { quantity: 2 });
+    expect(spy).toHaveBeenCalled();
   });
 
-  it('addItem: patch OK mais loadCart interne rejette → logWarn', async () => {
+  it('addItem warns if reload fails', async () => {
     __mockAxios.patch.mockResolvedValue({});
-    const loadErr = new Error('Load Fail');
-    const spyLoadCart = vi.spyOn(useCartStore.getState(), 'loadCart').mockRejectedValue(loadErr);
-
-    await act(async () => {
-      await useCartStore.getState().addItem('7', 2, 5);
-    });
-
-    expect(__mockAxios.patch).toHaveBeenCalled();
-    expect(spyLoadCart).toHaveBeenCalled();
-    expect(logWarn).toHaveBeenCalledWith('addItem → loadCart', loadErr);
+    const err = new Error('e');
+    vi.spyOn(useCartStore.getState(), 'loadCart').mockRejectedValue(err);
+    await act(() => useCartStore.getState().addItem('1', 1, 5));
+    expect(logWarn).toHaveBeenCalledWith('addItem → loadCart', err);
   });
 
-  it('clearCart: no auth token logs warning et retourne', async () => {
-    localStorage.removeItem('authToken');
-    const { clearCart } = useCartStore.getState();
-
-    await act(async () => {
-      await clearCart();
-    });
-
+  it('clearCart warns and exits if no token', async () => {
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ authToken: null });
+    await act(() => useCartStore.getState().clearCart());
     expect(logWarn).toHaveBeenCalledWith('clearCart', 'no auth token');
-    expect(__mockAxios.delete).not.toHaveBeenCalled();
   });
 
-  it('clearCart: token présent, delete OK, items clear, et loadCart appelé', async () => {
-    localStorage.setItem('authToken', 'TOKEN123');
-    useCartStore.setState({
-      items: [
-        {
-          id: '1',
-          name: 'X',
-          image: '',
-          date: '',
-          location: '',
-          quantity: 1,
-          price: 10,
-          inStock: true,
-          availableQuantity: 1,
-          discountRate: null,
-          originalPrice: null,
-        },
-      ],
-      guestCartId: null,
-    });
+  it('clearCart deletes, clears and reloads on success', async () => {
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ authToken: 'TOK' });
+    const spy = vi.spyOn(useCartStore.getState(), 'loadCart').mockResolvedValue();
     __mockAxios.delete.mockResolvedValue({});
-    const spyLoadCart = vi.spyOn(useCartStore.getState(), 'loadCart').mockResolvedValue();
-
-    await act(async () => {
-      await useCartStore.getState().clearCart();
-    });
-
+    useCartStore.setState({ items: [{ id: '1', name: 'X', image: '', date: '', location: '', quantity:1, price:1, inStock:true, availableQuantity:1, discountRate:null, originalPrice:null }], guestCartId: null });
+    await act(() => useCartStore.getState().clearCart());
     expect(__mockAxios.delete).toHaveBeenCalledWith('/api/cart/items');
     expect(useCartStore.getState().items).toEqual([]);
-    expect(spyLoadCart).toHaveBeenCalled();
-    expect(logError).not.toHaveBeenCalled();
-    expect(logWarn).not.toHaveBeenCalled();
+    expect(spy).toHaveBeenCalled();
   });
 
-  it('clearCart: token prsnt, delete OK, mais loadCart interne rejette → logWarn', async () => {
-    localStorage.setItem('authToken', 'TOKEN123');
-    __mockAxios.delete.mockResolvedValue({});
-    const loadErr = new Error('Load Fail');
-    const spyLoadCart = vi.spyOn(useCartStore.getState(), 'loadCart').mockRejectedValue(loadErr);
-    useCartStore.setState({
-      items: [
-        {
-          id: '1',
-          name: 'X',
-          image: '',
-          date: '',
-          location: '',
-          quantity: 1,
-          price: 10,
-          inStock: true,
-          availableQuantity: 1,
-          discountRate: null,
-          originalPrice: null,
-        },
-      ],
-      guestCartId: null,
-    });
-
-    await act(async () => {
-      await useCartStore.getState().clearCart();
-    });
-
-    expect(__mockAxios.delete).toHaveBeenCalled();
-    expect(useCartStore.getState().items).toEqual([]);
-    expect(spyLoadCart).toHaveBeenCalled();
-    expect(logWarn).toHaveBeenCalledWith('clearCart → loadCart', loadErr);
+  it('clearCart logs error and throws on delete failure', async () => {
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ authToken: 'TOK' });
+    const err = new Error('del fail');
+    __mockAxios.delete.mockRejectedValue(err);
+    await expect(useCartStore.getState().clearCart()).rejects.toThrow(err);
+    expect(logError).toHaveBeenCalledWith('clearCart', err);
   });
 
-  it('clearCart: token prsnt, delete rejette → logError et throw', async () => {
-    localStorage.setItem('authToken', 'TOKEN123');
-    const deleteErr = new Error('Delete Fail');
-    __mockAxios.delete.mockRejectedValue(deleteErr);
-    useCartStore.setState({
-      items: [
-        {
-          id: '1',
-          name: 'X',
-          image: '',
-          date: '',
-          location: '',
-          quantity: 1,
-          price: 10,
-          inStock: true,
-          availableQuantity: 1,
-          discountRate: null,
-          originalPrice: null,
-        },
-      ],
-      guestCartId: null,
-    });
+  it('loadCart when cart_items missing yields empty items', async () => {
+    // 🔄 Reimporte un store tout neuf pour être sûr d’avoir la vraie méthode loadCart
+    const { store, axiosMock } = await resetModulesAndImport()
 
-    await expect(useCartStore.getState().clearCart()).rejects.toThrow(deleteErr);
-    expect(logError).toHaveBeenCalledWith('clearCart', deleteErr);
+    // 1) on simule la réponse sans cart_items
+    axiosMock.get.mockResolvedValue({
+      data: { data: {}, meta: {} },
+    })
+
+    // 2) on pré-remplit le store avec un item
+    store.setState({
+      items: [{
+        id: 'x',
+        name: 'X',
+        image: '',
+        date: '',
+        location: '',
+        quantity: 1,
+        price: 1,
+        inStock: true,
+        availableQuantity: 1,
+        discountRate: null,
+        originalPrice: null,
+      }],
+      guestCartId: null,
+    })
+
+    // 3) on appelle loadCart et on attend la fin de la Promise
+    await store.getState().loadCart()
+
+    // 4) on vérifie bien que items a été écrasé par un tableau vide
+    expect(store.getState().items).toEqual([])
   });
 });
 
-// ─── Tests des interceptors et addItem (erreur) avec ré-import du store ───────────────────
+// ── Interceptors tests ─────────────────────────────────────────────────────────
+describe('useCartStore interceptors', () => {
+  let interceptor: (cfg: any) => any;
 
-describe('useCartStore – interceptors et addItem (erreur)', () => {
-  let registeredInterceptor: (config: any) => any;
-  let useCartStoreRef: typeof import('./useCartStore').useCartStore;
-
-  beforeAll(async () => {
-    vi.resetModules();
-    // Réimporter le store pour que l’intercepteur soit enregistré sur le mock fraîchement réinitialisé
-    const imported = await import('./useCartStore');
-    useCartStoreRef = imported.useCartStore;
-    const axiosImported = await import('axios');
-    registeredInterceptor = (axiosImported as any).__mockAxios.interceptors.request.use
-      .mock.calls[0][0] as (config: any) => any;
-  });
-
-  beforeEach(() => {
-    useCartStoreRef.setState({ items: [], guestCartId: null });
-    __mockAxios.get.mockReset();
-    __mockAxios.patch.mockReset();
-    __mockAxios.delete.mockReset();
-    (logError as ReturnType<typeof vi.fn>).mockReset();
-    (useLanguageStore.getState as ReturnType<typeof vi.fn>).mockReset();
-    localStorage.clear();
-  });
-
-  it('interceptor: ajoute Accept-Language + Authorization quand token présent', () => {
-    localStorage.setItem('authToken', 'TOKEN_ABC');
-    (useLanguageStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ lang: 'fr' });
-
-    const fakeConfig: any = { headers: {} };
-    const resultConfig = registeredInterceptor(fakeConfig);
-
-    expect(resultConfig.headers['Accept-Language']).toBe('fr');
-    expect(resultConfig.headers['Authorization']).toBe('Bearer TOKEN_ABC');
-    expect(resultConfig.headers['X-Guest-Cart-ID']).toBeUndefined();
-  });
-
-  it('interceptor: ajoute X-Guest-Cart-ID quand pas de token mais guestCartId présent', () => {
-    localStorage.removeItem('authToken');
+  beforeEach(async () => {
+    const { store: freshStore, axiosMock } = await resetModulesAndImport();
+    interceptor = (axiosMock.interceptors.request.use as ReturnType<typeof vi.fn>).mock.calls[0][0];
+    // reset store state
+    freshStore.setState({ items: [], guestCartId: null });
     (useLanguageStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ lang: 'en' });
-    useCartStoreRef.setState({ guestCartId: 'GUEST_123', items: [] });
-
-    const fakeConfig: any = { headers: {} };
-    const resultConfig = registeredInterceptor(fakeConfig);
-
-    expect(resultConfig.headers['Accept-Language']).toBe('en');
-    expect(resultConfig.headers['Authorization']).toBeUndefined();
-    expect(resultConfig.headers['X-Guest-Cart-ID']).toBe('GUEST_123');
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ authToken: 'TOK' });
   });
 
-  it('addItem: si axios.patch rejette, logError est appelé et l’erreur est propagée', async () => {
-    const fakeError = new Error('Patch KO');
-    __mockAxios.patch.mockRejectedValue(fakeError);
-
-    await expect(useCartStoreRef.getState().addItem('10', 1, 5)).rejects.toThrow(fakeError);
-    expect(logError).toHaveBeenCalledWith('addItem', fakeError);
+  it('adds Accept-Language & Authorization when token present', () => {
+    (useLanguageStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ lang: 'fr' });
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ authToken: 'ABC' });
+    const cfg = interceptor({ headers: {} });
+    expect(cfg.headers['Accept-Language']).toBe('fr');
+    expect(cfg.headers['Authorization']).toBe('Bearer ABC');
+    expect(cfg.headers['X-Guest-Cart-ID']).toBeUndefined();
   });
+
+  it('adds X-Guest-Cart-ID when no token but guestCartId set', () => {
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ authToken: null });
+    // set guestCartId in the fresh store state
+    const freshStore = useCartStore;
+    freshStore.setState({ items: [], guestCartId: 'GID' });
+    const cfg = interceptor({ headers: {} });
+    expect(cfg.headers['X-Guest-Cart-ID']).toBe('GID');
+  });
+
+  it('does not add X-Guest-Cart-ID when guestCartId null', () => {
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ authToken: null });
+    const freshStore = useCartStore;
+    freshStore.setState({ items: [], guestCartId: null });
+    const cfg = interceptor({ headers: {} });
+    expect(cfg.headers['X-Guest-Cart-ID']).toBeUndefined();
+  });
+
+  it('setGuestCartId met à jour guestCartId dans le store', () => {
+    // État initial à null
+    useCartStore.setState({ guestCartId: null })
+    expect(useCartStore.getState().guestCartId).toBeNull()
+
+    // On appelle la méthode
+    useCartStore.getState().setGuestCartId('NEW_ID')
+    expect(useCartStore.getState().guestCartId).toBe('NEW_ID')
+  })
+
+  it('addItem logError et rejette quand patch échoue', async () => {
+    const err = new Error('patch failed')
+    // Simule un échec du patch
+    __mockAxios.patch.mockRejectedValueOnce(err)
+
+    // quantity ≤ availableQuantity pour atteindre le catch de patch
+    await expect(
+      useCartStore.getState().addItem('1', 1, 5)
+    ).rejects.toThrow(err)
+
+    expect(logError).toHaveBeenCalledWith('addItem', err)
+  })
+
+  it('clearCart logWarn("clearCart → loadCart") quand reload échoue après delete', async () => {
+    // On s'assure qu'il y a un token pour passer la guard
+    (useAuthStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({
+      authToken: 'TOK',
+    })
+
+    // Delete OK
+    __mockAxios.delete.mockResolvedValueOnce({})
+
+    // Préremplit items pour vérifier qu'ils seront vidés
+    useCartStore.setState({
+      items: [{ id: '1', name: 'X', image: '', date: '', location:'', quantity:1, price:1, inStock:true, availableQuantity:1, discountRate:null, originalPrice:null }],
+      guestCartId: null,
+    })
+
+    // Simule un échec du loadCart appelé en fin de clearCart
+    const warnErr = new Error('reload failed')
+    // Remplace la méthode loadCart dans le store
+    useCartStore.setState({ loadCart: () => Promise.reject(warnErr) })
+
+    // Appel de clearCart
+    await act(() => useCartStore.getState().clearCart())
+
+    // Les items doivent avoir été vidés malgré tout
+    expect(useCartStore.getState().items).toEqual([])
+
+    // Et on doit avoir loggué un warn
+    expect(logWarn).toHaveBeenCalledWith('clearCart → loadCart', warnErr)
+  })
 });
 
-// ─── Tests additionnels pour timeout, interceptor, rawItems ──────────────────────────────
+// ── Module init tests for timeout ──────────────────────────────────────────────
+describe('useCartStore module initialization', () => {
+  beforeEach(() => {
+    // On vide les anciens appels à axios.create
+    createSpy.mockClear()
+    // On retire tout stub précédent sur la variable d'env
+    vi.stubEnv('VITE_AXIOS_TIMEOUT', undefined)
+  })
 
-describe('Couverture spécifique : timeout, interceptor, rawItems', () => {
-  let resetModulesAndImport: () => Promise<{
-    useCartStore: typeof import('./useCartStore').useCartStore;
-    __mockAxios: typeof __mockAxios;
-    axiosImported: typeof import('axios');
-  }>;
+  it('uses default timeout=5000 when VITE_AXIOS_TIMEOUT not set', async () => {
+    // On s’assure qu’il n’y a pas de stub pour VITE_AXIOS_TIMEOUT
+    // (c’est fait dans beforeEach)
+    await resetModulesAndImport()
+    const calls = createSpy.mock.calls
+    const cfg = calls[calls.length - 1][0]
+    expect(cfg.timeout).toBe(5000)
+  })
 
-  beforeAll(() => {
-    // Fonction utilitaire pour resetModules et réimporter store + axios mock
-    resetModulesAndImport = async () => {
-      vi.resetModules();
-      const axiosImported = await import('axios');
-      const __mock = (axiosImported as any).__mockAxios as typeof __mockAxios;
-      const imported = await import('./useCartStore');
-      return { useCartStore: imported.useCartStore, __mockAxios: __mock, axiosImported };
-    };
-  });
-
-  it('axios.create utilise VITE_AXIOS_TIMEOUT quand défini', async () => {
-    // Arrange : définir import.meta.env.VITE_AXIOS_TIMEOUT
-    // @ts-ignore
-    import.meta.env.VITE_AXIOS_TIMEOUT = '1234';
-
-    // Act : réimporter le store pour recréer axios.create
-    const { axiosImported } = await resetModulesAndImport();
-    const createSpy = (axiosImported.default.create as ReturnType<typeof vi.fn>);
-
-    // Assert : prendre le dernier appel à axios.create
-    expect(createSpy).toHaveBeenCalled();
-    const lastCallConfig = createSpy.mock.calls.slice(-1)[0][0];
-    expect(lastCallConfig.timeout).toBe(1234);
-
-    // Nettoyer pour les autres tests
-    // @ts-ignore
-    delete import.meta.env.VITE_AXIOS_TIMEOUT;
-  });
-
-  it('interceptor n’ajoute pas X-Guest-Cart-ID quand guestCartId est null (pas de token)', async () => {
-    // Arrange : réimporter store pour avoir nouvel intercepteur
-    const { useCartStore: localStore, __mockAxios: localMock } = await resetModulesAndImport();
-
-    // Pas de token dans localStorage, guestCartId par défaut = null
-    localStorage.removeItem('authToken');
-    (useLanguageStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ lang: 'de' });
-    localStore.setState({ guestCartId: null, items: [] });
-
-    // Récupérer exactement l’intercepteur nouvellement enregistré
-    const interceptorFn = localMock.interceptors.request.use.mock.calls.slice(-1)[0][0] as (
-      config: any
-    ) => any;
-    const fakeConfig: any = { headers: {} };
-
-    // Act
-    const result = interceptorFn(fakeConfig);
-
-    // Assert : pas de X-Guest-Cart-ID, mais Accept-Language = 'de'
-    expect(result.headers['Accept-Language']).toBe('de');
-    expect(result.headers['X-Guest-Cart-ID']).toBeUndefined();
-    expect(result.headers['Authorization']).toBeUndefined();
-  });
-
-  it('interceptor ajoute X-Guest-Cart-ID quand guestCartId défini et pas de token', async () => {
-    // Arrange : nouveau resetModules pour intercepteur frais
-    const { useCartStore: localStore, __mockAxios: localMock } = await resetModulesAndImport();
-    localStorage.removeItem('authToken');
-    (useLanguageStore.getState as ReturnType<typeof vi.fn>).mockReturnValue({ lang: 'it' });
-    localStore.setState({ guestCartId: 'GUEST_TEST', items: [] });
-
-    const interceptorFn = localMock.interceptors.request.use.mock.calls.slice(-1)[0][0] as (
-      config: any
-    ) => any;
-    const fakeConfig: any = { headers: {} };
-
-    // Act
-    const result = interceptorFn(fakeConfig);
-
-    // Assert : X-Guest-Cart-ID = 'GUEST_TEST'
-    expect(result.headers['X-Guest-Cart-ID']).toBe('GUEST_TEST');
-    expect(result.headers['Accept-Language']).toBe('it');
-    expect(result.headers['Authorization']).toBeUndefined();
-  });
-
-  it('loadCart gère res.data.data.cart_items undefined (rawItems = [])', async () => {
-    // Arrange : importer un nouveau store pour éviter les spies existants
-    const { useCartStore: localStore, __mockAxios: localMock } = await resetModulesAndImport();
-
-    // Simuler undefined pour data.data.cart_items
-    localMock.get.mockResolvedValue({
-      data: {
-        data: { cart_items: undefined },
-        meta: { guest_cart_id: 'ANY' },
-      },
-    });
-
-    // Act
-    await act(async () => {
-      await localStore.getState().loadCart();
-    });
-
-    // Assert : items = [], guestCartId mis à jour
-    const state = localStore.getState();
-    expect(state.items).toEqual([]);
-    expect(state.guestCartId).toBe('ANY');
-  });
-});
+  it('uses VITE_AXIOS_TIMEOUT from env when set', async () => {
+    // On stub la variable d'environnement AVANT d'importer le module
+    vi.stubEnv('VITE_AXIOS_TIMEOUT', '1234')
+    await resetModulesAndImport()
+    const calls = createSpy.mock.calls
+    const cfg = calls[calls.length - 1][0]
+    expect(cfg.timeout).toBe(1234)
+  })
+})

@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>18/18</span>
+                <span class='fraction'>24/24</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>5/5</span>
             </div>
         
             
@@ -258,7 +258,8 @@
 <a name='L193'></a><a href='#L193'>193</a>
 <a name='L194'></a><a href='#L194'>194</a>
 <a name='L195'></a><a href='#L195'>195</a>
-<a name='L196'></a><a href='#L196'>196</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -278,9 +279,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -363,7 +365,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -474,6 +476,7 @@ interface CartItemDisplayProps {
 &nbsp;
 export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDisplayProps) {
   const { t } = useTranslation('cart');
+  const discountPct = Math.round((item.discountRate ?? 0) * 100)
   if (isMobile) {
     return (
       &lt;Paper key={item.id} sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}&gt;
@@ -512,7 +515,7 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
           &lt;Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}&gt;
             {/* Prix unitaire centré */}
             &lt;Box sx={{ textAlign: 'center' }}&gt;
-              {item.discountRate !== null &amp;&amp; item.originalPrice !== null ? (
+              {(item.discountRate ?? 0) &gt; 0 ? (
                 &lt;Box&gt;
                   &lt;Typography
                     variant="body2"
@@ -523,7 +526,7 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
                       mr: 0.5,
                     }}
                   &gt;
-                    {formatCurrency(item.originalPrice, lang, 'EUR')}
+                    {formatCurrency(item.originalPrice ?? 0, lang, 'EUR')}
                   &lt;/Typography&gt;
                   &lt;Typography
                     variant="body1"
@@ -532,8 +535,8 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
                   &gt;
                     {formatCurrency(item.price, lang, 'EUR')}
                   &lt;/Typography&gt;
-                  &lt;Chip
-                    label={`-${Math.round(item.discountRate * 100)}%`}
+                  &lt;Chip 
+                    label={`-${discountPct}%`}
                     size="small"
                     color="secondary"
                     sx={{ ml: 1 }}
@@ -606,14 +609,14 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
 &nbsp;
       {/* Colonne “Prix unitaire” */}
       &lt;TableCell align="right" sx={{ minWidth: 120 }}&gt;
-        {item.discountRate !== null &amp;&amp; item.originalPrice !== null ? (
+        {(item.discountRate ?? 0) &gt; 0 ? (
           &lt;Box sx={{ textAlign: 'right' }}&gt;
             &lt;Typography
               variant="body2"
               component="span"
               sx={{ textDecoration: 'line-through', color: 'text.secondary', mr: 0.5 }}
             &gt;
-              {formatCurrency(item.originalPrice, lang, 'EUR')}
+              {formatCurrency(item.originalPrice ?? 0, lang, 'EUR')}
             &lt;/Typography&gt;
             &lt;Typography
               variant="body1"
@@ -622,8 +625,8 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
             &gt;
               {formatCurrency(item.price, lang, 'EUR')}
             &lt;/Typography&gt;
-            &lt;Chip
-              label={`-${Math.round(item.discountRate * 100)}%`}
+            &lt;Chip 
+              label={`-${discountPct}%`}
               size="small"
               color="secondary"
               sx={{ ml: 1 }}
@@ -655,7 +658,7 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-01T22:31:16.282Z
+                at 2025-06-07T18:29:52.872Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

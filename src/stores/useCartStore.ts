@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import axios, { type AxiosInstance } from 'axios';
 import { useLanguageStore } from './useLanguageStore';
+import { useAuthStore } from './useAuthStore';
 import { API_BASE_URL } from '../config';
 import { logError, logWarn } from '../utils/logger';
 
@@ -44,29 +45,32 @@ interface CartState {
   items: CartItem[];
   guestCartId: string | null;
   loadCart: () => Promise<void>;
-  addItem(id: string, quantity: number, availableQuantity: number): Promise<void>
+  addItem: (id: string, quantity: number, availableQuantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
+  setGuestCartId: (id: string | null) => void; // pour vider du store
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => {
-      // axios instance
+      // Crée une instance Axios
       const axiosInstance: AxiosInstance = axios.create({
         baseURL: API_BASE_URL,
         timeout: Number(import.meta.env.VITE_AXIOS_TIMEOUT) || 5000,
         headers: { 'Content-Type': 'application/json' },
       });
 
-      // intercepteur
-      axiosInstance.interceptors.request.use(config => {
-        const token = localStorage.getItem('authToken');
+      // Intercepteur de requêtes
+      axiosInstance.interceptors.request.use((config) => {
+        // Récupère le token depuis le store Zustand
+        const token = useAuthStore.getState().authToken;
         const lang = useLanguageStore.getState().lang;
         config.headers!['Accept-Language'] = lang;
 
         if (token) {
           config.headers!['Authorization'] = `Bearer ${token}`;
         } else {
+          // Si pas de token, on envoie l’UUID du panier invité (s’il existe)
           const guestCartId = get().guestCartId;
           if (guestCartId) {
             config.headers!['X-Guest-Cart-ID'] = guestCartId;
@@ -75,7 +79,7 @@ export const useCartStore = create<CartState>()(
         return config;
       });
 
-      // sync du guestCartId
+      // Synchronise le guestCartId reçu par l’API dans le store
       const syncGuestCartId = (meta: any) => {
         const apiId = meta?.guest_cart_id;
         if (apiId && apiId !== get().guestCartId) {
@@ -84,20 +88,21 @@ export const useCartStore = create<CartState>()(
       };
 
       return {
-        // initial state
         items: [],
         guestCartId: null,
+
+        setGuestCartId: (id: string | null) => set({ guestCartId: id }),
 
         loadCart: async () => {
           try {
             const res = await axiosInstance.get('/api/cart');
-            // 3.1 Met à jour le guestCartId (ou le réinitialise TTL)
+            // Met à jour le guestCartId si l'API en retourne un (ou remet à jour le TTL)
             syncGuestCartId(res.data?.meta);
 
-            // 3.2 Mappe les items
+            // Mappe les RawCartItem vers CartItem
             const raw: RawCartItem[] = res.data?.data?.cart_items ?? [];
             const items: CartItem[] = raw
-              .filter(ci => ci.in_stock)
+              .filter((ci) => ci.in_stock)
               .map((ci: RawCartItem) => ({
                 id: ci.product_id.toString(),
                 name: ci.product.name,
@@ -130,7 +135,7 @@ export const useCartStore = create<CartState>()(
             logError('addItem', err);
             throw err;
           }
-          // Tentative de rafraîchissement du panier, mais on ne propage pas l'erreur de refresh
+          // Tente de recharger le panier sans bloquer sur l’erreur
           try {
             await get().loadCart();
           } catch (warn) {
@@ -139,20 +144,19 @@ export const useCartStore = create<CartState>()(
         },
 
         clearCart: async () => {
-          const token = localStorage.getItem('authToken');
+          const token = useAuthStore.getState().authToken;
           if (!token) {
             logWarn('clearCart', 'no auth token');
             return;
           }
-          // Suppression du panier côté serveur
           try {
             await axiosInstance.delete('/api/cart/items');
           } catch (err) {
             logError('clearCart', err);
             throw err;
           }
-          // Effacement local et tentative de rafraîchissement sans throw
           set({ items: [] });
+          // Tente de recharger le panier sans bloquer sur l’erreur
           try {
             await get().loadCart();
           } catch (warn) {
@@ -164,7 +168,7 @@ export const useCartStore = create<CartState>()(
     {
       name: 'cart-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: state => ({ guestCartId: state.guestCartId }),
+      partialize: (state) => ({ guestCartId: state.guestCartId }),
     }
   )
 );
