@@ -1,0 +1,43 @@
+{
+  "seo": {
+    "title": "Inscription – Billetterie JO Paris 2024",
+    "description": "Créez un compte pour acheter des billets pour les Jeux Olympiques de Paris 2024. Remplissez le formulaire d'inscription pour commencer."
+  },
+  "signup": {
+    "logoAlt": "Logo de l'application",
+    "signupButton": "S’inscrire",
+    "signupButtonLoad": "Inscription",
+    "pageTitle": "Créer un compte",
+    "successMessage": "Inscription réussie ! Un e-mail de vérification vient de vous être envoyé. Cliquez sur le lien pour valider votre compte, vous allez être redirigé…",
+    "firstnameLabel": "Prénom",
+    "lastnameLabel": "Nom",
+    "emailLabel": "Adresse e-mail",
+    "passwordLabel": "Mot de passe",
+    "confirmPasswordLabel": "Confirmer le mot de passe",
+    "agreeTOS": "J’accepte la ",
+    "termsLink": "Politique de confidentialité",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "loginLink": "Se connecter",
+    "hintCaptchaRequired":    "Vous devez valider le captcha.",
+    "hintPasswordCriteria":   "Votre mot de passe n’est pas assez fort.",
+    "hintPasswordsDontMatch": "Les mots de passe doivent correspondre.",
+    "hintMustAgreeTOS":       "Vous devez accepter la Politique de confidentialité.",
+    "goToLogin": "Aller à la page de connexion"
+  },
+  "passwordCriteria": {
+    "length": "Au moins 15 caractères",
+    "upper": "Au moins une majuscule",
+    "lower": "Au moins une minuscule",
+    "number": "Au moins un chiffre",
+    "special": "Au moins un caractère spécial"
+  },
+  "errors": {
+    "passwordNotStrong":   "Le mot de passe doit contenir au moins 15 caractères, une majuscule, une minuscule, un chiffre et un symbole.",
+    "passwordsDontMatch":  "Les mots de passe ne correspondent pas.",
+    "mustAgreeTOS":        "Vous devez accepter les conditions d’utilisation.",
+    "captchaRequired":     "Veuillez valider le captcha.",
+    "firstnameRequired": "Le prénom est requis.",
+    "lastnameRequired":  "Le nom est requis.",
+    "invalidEmail":      "Format d’adresse e-mail invalide."
+  }
+}

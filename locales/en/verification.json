@@ -1,0 +1,24 @@
+{
+  "seo": {
+    "title": "Email Verification – Paris 2024 Olympic Ticketing",
+    "description": "Confirm your email address to activate your account. Click the link in the email you received to verify your address."
+  },
+  "success": {
+    "title": "Email Verified!",
+    "message": "Your email address has been successfully confirmed. You can now log in."
+  },
+  "invalid": {
+    "title": "Invalid Link",
+    "message": "This verification link is invalid or has expired. Please try logging in to receive a new verification link."
+  },
+  "alreadyVerified": {
+    "title": "Already Verified",
+    "message": "Your email address has already been confirmed. You may log in."
+  },
+  "error": {
+    "title": "An Error Occurred",
+    "message": "We couldn't verify your email. Please try again or contact support."
+  },
+  "loginLink": "Log In",
+  "homeButton": "Home Page"
+}
