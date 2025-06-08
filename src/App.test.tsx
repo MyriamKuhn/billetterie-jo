@@ -46,6 +46,8 @@ vi.mock('./pages/CartPage',       () => ({ __esModule: true, default: () => <div
 vi.mock('./pages/LoginPage', () => ({__esModule: true, default: () => <div data-testid="page-login">Login</div> }));
 vi.mock('./pages/SignupPage', () => ({ __esModule: true, default: () => <div data-testid="page-signup">Signup</div> }));
 vi.mock('./pages/VerificationResultPage', () => ({__esModule: true, default: () => <div data-testid="page-verification-result">Verification Result</div>}));
+vi.mock('./pages/ForgotPasswordPage', () => ({ __esModule: true, default: () => <div data-testid="page-forgot-password">Forgot Password</div> }));
+vi.mock('./pages/PasswordResetPage', () => ({ __esModule: true, default: () => <div data-testid="page-password-reset">Password Reset</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -175,6 +177,18 @@ describe('<App />', () => {
     await waitFor(() =>
       expect(screen.getByTestId('page-verification-result')).toBeInTheDocument()
     );
+  });
+
+  it('affiche ForgotPasswordPage sur "/forgot-password"', async () => {
+    window.history.pushState({}, '', '/forgot-password');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-forgot-password')).toBeInTheDocument());
+  });
+
+  it('affiche PasswordResetPage sur "/password-reset"', async () => {
+    window.history.pushState({}, '', '/password-reset');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-password-reset')).toBeInTheDocument());
   });
 
   it('montre le loader dans le fallback de Suspense', async () => {

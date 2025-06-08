@@ -21,6 +21,9 @@ const CartPage = lazy(() => import('./pages/CartPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
 const VerificationResultPage = lazy(() => import('./pages/VerificationResultPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const PasswordResetPage = lazy(() => import('./pages/PasswordResetPage'));
+
 
 interface AppProps {
   mode: 'light' | 'dark';
@@ -64,6 +67,8 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="/verification-result/:status" element={<VerificationResultPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/password-reset" element={<PasswordResetPage />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>
