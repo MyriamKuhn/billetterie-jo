@@ -108,3 +108,41 @@ export async function registerUser(
     data: response.data,
   };
 }
+
+export async function passwordForgottenDemand(
+  email: string,
+  lang: string
+): Promise<ResendResponse> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Accept-Language': lang,
+  };
+  const response = await axios.post<ApiResponse>(
+    `${API_BASE_URL}/api/auth/password/forgot`,
+    { email },
+    { headers }
+  );
+  return {
+    status: response.status,
+    data: response.data,
+  };
+};
+
+export async function resetPassword(
+  token: string,
+  email: string,
+  password: string,
+  password_confirmation: string,
+  lang: string
+): Promise<{ status: number; data: ApiResponse }> {
+  const headers: Record<string,string> = {
+    'Content-Type': 'application/json',
+    'Accept-Language': lang,
+  };
+  const response = await axios.post<ApiResponse>(
+    `${API_BASE_URL}/api/auth/password/reset`,
+    { token, email, password, password_confirmation },
+    { headers }
+  );
+  return { status: response.status, data: response.data };
+}

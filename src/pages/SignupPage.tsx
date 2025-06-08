@@ -181,7 +181,7 @@ export default function SignupPage() {
           {successMsg && (
             <>
               <AlertMessage message={successMsg} severity="success" />
-              <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Box sx={{ textAlign: 'center', my: 2 }}>
                 <Button component={Link} href="/login" variant="outlined">
                   {t('signup.goToLogin')}
                 </Button>
