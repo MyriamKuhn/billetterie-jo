@@ -330,7 +330,7 @@ export default function LoginPage() {
                       sx={{ fontSize: '0.8rem' }}
                     >
                       {resendLoading
-                        ? `${t('login.resendLinkTextLoad')}…`
+                        ? `${t('login.resendLinkText')}…`
                         : t('login.resendLinkText')}
                       {resendLoading && (
                         <CircularProgress

@@ -1,10 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 import LoginPage, { type ApiResponse } from './LoginPage'
 import * as authService from '../services/authService'
-import { getErrorMessage } from '../utils/errorUtils'
 import { logError } from '../utils/logger'
 
 // ————————————————
@@ -19,6 +18,7 @@ vi.mock('react-i18next', async (importActual) => {
           'login.emailLabel': 'Email',
           'login.passwordLabel': 'Mot de passe',
           'login.loginButton': 'Se connecter',
+          'login.loginButtonLoad': 'Connexion',
           'login.emailNotVerifiedHint': 'E-mail non vérifié',
           'login.resendLinkText': 'Renvoyer le mail',
           'login.verificationEmailResent': 'E-mail renvoyé',
@@ -31,6 +31,7 @@ vi.mock('react-i18next', async (importActual) => {
           'login.twoFATitle': 'Code 2FA requis',
           'login.twoFACodeLabel': 'Code 2FA',
           'login.verify2FAButton': 'Vérifier le code',
+          'login.verify2FALoad':    'Vérifier le code',
           'login.cancelLogin': 'Annuler',
         }
         return dict[key] ?? key
@@ -72,7 +73,18 @@ vi.mock('react-router-dom', async () => {
 
 // ————————————————
 // 4) Mock errorUtils & logger
-vi.mock('../utils/errorUtils', () => ({ getErrorMessage: vi.fn() }))
+vi.mock('../utils/errorUtils', () => ({
+  getErrorMessage: (_t: unknown, code?: string) => {
+    switch (code) {
+      case 'some_code':
+          return 'Erreur spécifique'
+        case 'network_error':
+          return 'Erreur réseau'
+        default:
+          return 'Une erreur est survenue'
+      }
+    },
+  }))
 vi.mock('../utils/logger', () => ({ logError: vi.fn() }))
 
 describe('LoginPage – resendVerification et rememberMe', () => {
@@ -81,19 +93,20 @@ describe('LoginPage – resendVerification et rememberMe', () => {
   })
 
   it('erreur spécifique quand resendVerificationEmail rejette avec data.code', async () => {
+    // 1️⃣ on force l’erreur email_not_verified pour afficher le lien
     vi.spyOn(authService, 'loginUser').mockRejectedValue({
       response: { status: 400, data: { code: 'email_not_verified' } },
       isAxiosError: true,
     })
+    // 2️⃣ on force resendVerificationEmail à rejeter avec code = 'some_code'
     vi.spyOn(authService, 'resendVerificationEmail').mockRejectedValue({
       response: { status: 400, data: { code: 'some_code' } },
       isAxiosError: true,
     })
-    ;(getErrorMessage as Mock).mockReturnValue('Erreur spécifique')
 
     render(<LoginPage />, { wrapper: MemoryRouter })
 
-    // on déclenche l’état emailNotVerified
+    // on passe par l'étape email_not_verified
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: 'a@b.com' },
     })
@@ -103,13 +116,16 @@ describe('LoginPage – resendVerification et rememberMe', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: /se connecter/i }))
 
-    // lien de renvoi
+    // on attend le lien de renvoi
     await waitFor(() =>
       expect(screen.getByText(/renvoyer le mail/i)).toBeInTheDocument()
     )
+
+    // on clique, et la rejection avec 'some_code' appelle
+    // getErrorMessage(..., 'some_code') → 'Erreur spécifique'
     fireEvent.click(screen.getByText(/renvoyer le mail/i))
 
-    // message d’erreur spécifique
+    // enfin, l’alert doit contenir 'Erreur spécifique'
     await waitFor(() =>
       expect(screen.getByRole('alert')).toHaveTextContent('Erreur spécifique')
     )
