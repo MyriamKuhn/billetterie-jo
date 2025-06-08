@@ -21,7 +21,8 @@
     "hintCaptchaRequired": "Sie müssen das Captcha vervollständigen.",
     "hintPasswordCriteria": "Ihr Passwort ist nicht stark genug.",
     "hintPasswordsDontMatch": "Die Passwörter müssen übereinstimmen.",
-    "hintMustAgreeTOS": "Sie müssen der Datenschutzerklärung zustimmen."
+    "hintMustAgreeTOS": "Sie müssen der Datenschutzerklärung zustimmen.",
+    "goToLogin": "Zur Anmeldeseite gehen"
   },
   "passwordCriteria": {
     "length": "Mindestens 15 Zeichen",

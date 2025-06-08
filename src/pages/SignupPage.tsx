@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import Seo from '../components/Seo';
 import { PageWrapper } from '../components/PageWrapper';
 import Box from '@mui/material/Box';
@@ -16,7 +15,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import { registerUser } from '../services/authService';
 import AlertMessage from '../components/AlertMessage/AlertMessage';
 import { getErrorMessage } from '../utils/errorUtils';
-import { RECAPTCHA_SITE_KEY } from '../config';
+import { RECAPTCHA_SITE_KEY } from '../config'
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useLanguageStore } from '../stores/useLanguageStore';
@@ -28,7 +27,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function SignupPage() {
   const { t } = useTranslation('signup');
   const lang = useLanguageStore(state => state.lang);
-  const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isDarkMode = theme.palette.mode === 'dark';
@@ -104,8 +102,6 @@ export default function SignupPage() {
         setSuccessMsg(t('signup.successMessage'));
         // reset captcha pour éviter double envoi
         captchaRef.current?.reset();
-        // rediriger vers login
-        setTimeout(() => navigate('/login'), 5000);
       }
     } catch (err: any) {
       setLoading(false);
@@ -182,7 +178,16 @@ export default function SignupPage() {
 
           {/* Messages */}
           {errorMsg && <AlertMessage message={errorMsg} severity="error" />}
-          {successMsg && <AlertMessage message={successMsg} severity="success" />}
+          {successMsg && (
+            <>
+              <AlertMessage message={successMsg} severity="success" />
+              <Box sx={{ textAlign: 'center', mt: 2 }}>
+                <Button component={Link} href="/login" variant="outlined">
+                  {t('signup.goToLogin')}
+                </Button>
+              </Box>
+            </>
+          )}
 
           <Stack spacing={2}>
             <TextField

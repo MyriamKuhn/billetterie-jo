@@ -2,7 +2,7 @@
 
 This is the React/Vite frontend client for the Olympic Games Paris 2024 ticketing platform. It consumes our REST API via Axios and React Query, and offers a rich UI built with Material UI, typed forms, internationalization, lightweight state management, and more.
 
-![Tests](https://img.shields.io/badge/tests-441_passed-4caf50.svg) ![Test Coverage](https://img.shields.io/badge/coverage-100%25-darkgreen)
+![Tests](https://img.shields.io/badge/tests-510_passed-4caf50.svg) ![Test Coverage](https://img.shields.io/badge/coverage-100%25-darkgreen)
 ![Vite](https://img.shields.io/badge/vite-6.3.5-blue) ![React](https://img.shields.io/badge/react-19.1.0-61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)
 
 ---
@@ -35,6 +35,9 @@ This is the React/Vite frontend client for the Olympic Games Paris 2024 ticketin
 - **Data fetching & caching** with Axios + React Query  
 - **Rich selects** with country flags (react-world-flags)  
 - **Responsive design** and theme switching (light/dark)  
+- **Loading state**: shows a spinner and loading text in the submit button during the API request  
+- **Dynamic hints**: helper messages appear under the submit button when reCAPTCHA or TOS acceptance is missing
+- **Full API branching**: tests cover both `status === 201` (success) and `status !== 201` (no-op) responses
 - **Unit tests** with Vitest + React Testing Library + jest-dom  
 - **Coverage reports** automatically generated  
 
@@ -132,7 +135,7 @@ The application has a **full feature test coverage**.
 
 Full HTML report available under [Coverage HTML](https://myriamkuhn.github.io/billetterie-jo/).  
 
-✅ **441 tests passed**.  
+✅ **510 tests passed**.  
 📊 **Coverage: 100%**
 
 To run all automated tests:
@@ -197,6 +200,9 @@ Planned improvements:
 - **Dev Utilities:**  
   - identity-obj-proxy (for CSS modules in tests)  
   - jsdom (test environment)  
+
+- **Third-Party Integrations:**  
+  - Google reCAPTCHA (`react-google-recaptcha`)
 
 ---
 

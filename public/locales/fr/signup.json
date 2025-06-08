@@ -21,7 +21,8 @@
     "hintCaptchaRequired":    "Vous devez valider le captcha.",
     "hintPasswordCriteria":   "Votre mot de passe n’est pas assez fort.",
     "hintPasswordsDontMatch": "Les mots de passe doivent correspondre.",
-    "hintMustAgreeTOS":       "Vous devez accepter la Politique de confidentialité."
+    "hintMustAgreeTOS":       "Vous devez accepter la Politique de confidentialité.",
+    "goToLogin": "Aller à la page de connexion"
   },
   "passwordCriteria": {
     "length": "Au moins 15 caractères",

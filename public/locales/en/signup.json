@@ -21,7 +21,8 @@
     "hintCaptchaRequired": "You must complete the captcha.",
     "hintPasswordCriteria": "Your password is not strong enough.",
     "hintPasswordsDontMatch": "Passwords must match.",
-    "hintMustAgreeTOS": "You must agree to the Privacy Policy."
+    "hintMustAgreeTOS": "You must agree to the Privacy Policy.",
+    "goToLogin": "Go to Login Page"
   },
   "passwordCriteria": {
     "length": "At least 15 characters",
