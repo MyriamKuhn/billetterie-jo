@@ -1,0 +1,42 @@
+{
+  "seo": {
+    "title": "Registrierung – Olympischer Ticketverkauf Paris 2024",
+    "description": "Erstellen Sie ein Konto, um Tickets für die Olympischen Spiele Paris 2024 zu kaufen. Füllen Sie das Registrierungsformular aus, um zu beginnen."
+  },
+  "signup": {
+    "logoAlt": "Anwendungslogo",
+    "signupButton": "Registrieren",
+    "signupButtonLoad": "Registrierung",
+    "pageTitle": "Konto erstellen",
+    "successMessage": "Registrierung erfolgreich! Eine Bestätigungs-E-Mail wurde versandt. Klicken Sie auf den Link, um Ihr Konto zu aktivieren – Sie werden gleich weitergeleitet…",
+    "firstnameLabel": "Vorname",
+    "lastnameLabel": "Nachname",
+    "emailLabel": "E-Mail-Adresse",
+    "passwordLabel": "Passwort",
+    "confirmPasswordLabel": "Passwort bestätigen",
+    "agreeTOS": "Ich akzeptiere die ",
+    "termsLink": "Datenschutzerklärung",
+    "alreadyHaveAccount": "Sie haben bereits ein Konto?",
+    "loginLink": "Anmelden",
+    "hintCaptchaRequired": "Sie müssen das Captcha vervollständigen.",
+    "hintPasswordCriteria": "Ihr Passwort ist nicht stark genug.",
+    "hintPasswordsDontMatch": "Die Passwörter müssen übereinstimmen.",
+    "hintMustAgreeTOS": "Sie müssen der Datenschutzerklärung zustimmen."
+  },
+  "passwordCriteria": {
+    "length": "Mindestens 15 Zeichen",
+    "upper": "Mindestens ein Großbuchstabe",
+    "lower": "Mindestens ein Kleinbuchstabe",
+    "number": "Mindestens eine Zahl",
+    "special": "Mindestens ein Sonderzeichen"
+  },
+  "errors": {
+    "passwordNotStrong":   "Das Passwort muss mindestens 15 Zeichen lang sein und einen Groß- sowie einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.",
+    "passwordsDontMatch":  "Die Passwörter stimmen nicht überein.",
+    "mustAgreeTOS":        "Sie müssen die Datenschutzerklärung akzeptieren.",
+    "captchaRequired":     "Bitte vervollständigen Sie das Captcha.",
+    "firstnameRequired": "Vorname ist erforderlich.",
+    "lastnameRequired":  "Nachname ist erforderlich.",
+    "invalidEmail":      "Ungültiges E-Mail-Format."
+  }
+}

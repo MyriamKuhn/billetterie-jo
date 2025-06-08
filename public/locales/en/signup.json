@@ -1,0 +1,42 @@
+{
+  "seo": {
+    "title": "Sign Up – Paris 2024 Olympic Ticketing",
+    "description": "Create an account to purchase tickets for the Paris 2024 Olympic Games. Fill out the registration form to get started."
+  },
+  "signup": {
+    "logoAlt": "Application logo",
+    "signupButton": "Sign Up",
+    "signupButtonLoad": "Signing Up",
+    "pageTitle": "Create an Account",
+    "successMessage": "Registration successful! A verification email has been sent. Click the link to activate your account—you’ll be redirected shortly…",
+    "firstnameLabel": "First Name",
+    "lastnameLabel": "Last Name",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm Password",
+    "agreeTOS": "I agree to the ",
+    "termsLink": "Privacy Policy",
+    "alreadyHaveAccount": "Already have an account?",
+    "loginLink": "Log In",
+    "hintCaptchaRequired": "You must complete the captcha.",
+    "hintPasswordCriteria": "Your password is not strong enough.",
+    "hintPasswordsDontMatch": "Passwords must match.",
+    "hintMustAgreeTOS": "You must agree to the Privacy Policy."
+  },
+  "passwordCriteria": {
+    "length": "At least 15 characters",
+    "upper": "At least one uppercase letter",
+    "lower": "At least one lowercase letter",
+    "number": "At least one number",
+    "special": "At least one special character"
+  },
+  "errors": {
+    "passwordNotStrong":   "The password must be at least 15 characters long and include an uppercase letter, a lowercase letter, a number, and a special character.",
+    "passwordsDontMatch":  "The passwords do not match.",
+    "mustAgreeTOS":        "You must accept the Privacy Policy.",
+    "captchaRequired":     "Please complete the captcha.",
+    "firstnameRequired": "First name is required.",
+    "lastnameRequired":  "Last name is required.",
+    "invalidEmail":      "Invalid email format."
+  }
+}

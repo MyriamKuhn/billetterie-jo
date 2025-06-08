@@ -1,0 +1,20 @@
+{
+  "invalidCredentials": "Email or password is incorrect.",
+  "accountDisabled": "Your account has been disabled. Please contact support.",
+  "twofaInvalid": "The 2FA code is invalid.",
+  "twofaRequired": "A 2FA code is required to log in.",
+  "userNotFound": "No account found for that email address.",
+  "alreadyVerified": "Your email address is already verified.",
+  "emailNotVerified": "Your email address has not been verified yet.",
+  "tooManyRequests": "Too many attempts. Please try again shortly.",
+  "validationError": "Some fields are invalid.",
+  "emailAlreadyRegistered": "This email address is already registered.",
+  "passwordTooWeak": "The password is too weak.",
+  "captchaFailed": "Captcha verification failed.",
+  "captchaInvalid": "The captcha is invalid or has expired.",
+  "termsNotAccepted": "You must accept the terms of service.",
+  "genericError": "An unexpected error occurred. Please try again.",
+  "internalError": "A server error occurred, please try again later.",
+  "serviceUnavailable": "The service is temporarily unavailable, please try again later.",
+  "networkError": "Unable to reach the server, please check your connection."
+}

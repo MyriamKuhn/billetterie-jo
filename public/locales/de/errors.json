@@ -1,0 +1,20 @@
+{
+  "invalidCredentials": "E-Mail oder Passwort ist falsch.",
+  "accountDisabled": "Ihr Konto wurde deaktiviert. Bitte wenden Sie sich an den Administrator.",
+  "twofaInvalid": "Der 2FA-Code ist ungültig.",
+  "twofaRequired": "Ein 2FA-Code ist erforderlich, um sich anzumelden.",
+  "userNotFound": "Kein Konto für diese E-Mail-Adresse gefunden.",
+  "alreadyVerified": "Ihre E-Mail-Adresse ist bereits verifiziert.",
+  "emailNotVerified": "Ihre E-Mail-Adresse wurde noch nicht verifiziert.",
+  "tooManyRequests": "Zu viele Versuche. Bitte versuchen Sie es in Kürze erneut.",
+  "validationError": "Einige Felder sind ungültig.",
+  "emailAlreadyRegistered": "Diese E-Mail-Adresse ist bereits registriert.",
+  "passwordTooWeak": "Das Passwort ist zu schwach.",  
+  "captchaFailed": "Die Captcha-Überprüfung ist fehlgeschlagen.",
+  "captchaInvalid": "Das Captcha ist ungültig oder abgelaufen.",
+  "termsNotAccepted": "Sie müssen die Nutzungsbedingungen akzeptieren.",
+  "genericError": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+  "internalError": "Ein Serverfehler ist aufgetreten. Bitte versuchen Sie es später erneut.",
+  "serviceUnavailable": "Der Dienst ist vorübergehend nicht verfügbar. Bitte versuchen Sie es später erneut.",
+  "networkError": "Der Server konnte nicht erreicht werden. Bitte überprüfen Sie Ihre Verbindung."
+}
