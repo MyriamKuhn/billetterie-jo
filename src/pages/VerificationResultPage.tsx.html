@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/hooks/useProductDetails.ts</title>
+    <title>Code coverage report for src/pages/VerificationResultPage.tsx</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../prettify.css" />
     <link rel="stylesheet" href="../../base.css" />
@@ -19,20 +19,20 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/hooks</a> useProductDetails.ts</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/pages</a> VerificationResultPage.tsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/18</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/6</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>18/18</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -118,7 +118,17 @@
 <a name='L53'></a><a href='#L53'>53</a>
 <a name='L54'></a><a href='#L54'>54</a>
 <a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -127,31 +137,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -161,72 +151,112 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useState, useEffect } from 'react';
-import axios from 'axios';
-import type { Product } from '../types/products';
-import { API_BASE_URL } from '../config';
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { PageWrapper } from '../components/PageWrapper';
+import Seo from '../components/Seo';
 &nbsp;
-export interface UseProductDetailsReturn {
-  product: Product | null;
-  loading: boolean;
-  error: string | null;
-}
+export default function VerificationResultPage() {
+  const { status } = useParams&lt;'status'&gt;();
+  const navigate = useNavigate();
+  const { t } = useTranslation(['verification']);
 &nbsp;
-export function useProductDetails(
-  productId: number | null,
-  lang: string
-): UseProductDetailsReturn {
-  const [product, setProduct] = useState&lt;Product | null&gt;(null);
-  const [loading, setLoading] = useState&lt;boolean&gt;(false);
-  const [error, setError] = useState&lt;string | null&gt;(null);
-&nbsp;
-  useEffect(() =&gt; {
-    if (productId == null) {
-      setProduct(null);
-      setError(null);
-      setLoading(false);
-      return;
+  const config = {
+    success: {
+      title: t('success.title'),
+      message: t('success.message'),
+      action: {
+        label: t('loginLink'),
+        onClick: () =&gt; navigate('/login'),
+      }
+    },
+    invalid: {
+      title: t('invalid.title'),
+      message: t('invalid.message'),
+      action: {
+        label: t('loginLink'),
+        onClick: () =&gt; navigate('/login'),
+      }
+    },
+    'already-verified': {
+      title: t('alreadyVerified.title'),
+      message: t('alreadyVerified.message'),
+      action: {
+        label: t('loginLink'),
+        onClick: () =&gt; navigate('/login'),
+      }
+    },
+    error: {
+      title: t('verification:error.title'),
+      message: t('verification:error.message'),
+      action: {
+        label: t('homeButton'),
+        onClick: () =&gt; navigate('/'),
+      }
     }
+  };
 &nbsp;
-    setLoading(true);
-    setError(null);
-    setProduct(null);
+  const ctx = config[status as keyof typeof config] || config.error;
 &nbsp;
-    axios
-      .get&lt;{ data: Product }&gt;(
-        `${API_BASE_URL}/api/products/${productId}`,
-        {
-          headers: { 'Accept-Language': lang },
-        }
-      )
-      .then(res =&gt; {
-        setProduct(res.data.data);
-      })
-      .catch(err =&gt; {
-        const msg =
-          axios.isAxiosError(err) &amp;&amp; err.response?.data?.message
-            ? err.response.data.message
-            : err.message;
-        setError(msg);
-      })
-      .finally(() =&gt; {
-        setLoading(false);
-      });
-  }, [productId, lang]);
-&nbsp;
-  return { product, loading, error };
+  return (
+    &lt;&gt;
+      &lt;Seo title={t('seo.title')} description={t('seo.description')} /&gt;
+      &lt;PageWrapper&gt;
+        &lt;Box textAlign="center" mt={2}&gt;
+          &lt;Typography variant="h4" gutterBottom&gt;{ctx.title}&lt;/Typography&gt;
+          &lt;Typography variant="body1" sx={{ mb: 4 }}&gt;{ctx.message}&lt;/Typography&gt;
+          &lt;Button variant="contained" onClick={ctx.action.onClick}&gt;
+            {ctx.action.label}
+          &lt;/Button&gt;
+        &lt;/Box&gt;
+      &lt;/PageWrapper&gt;
+    &lt;/&gt;
+  );
 }
 &nbsp;</pre></td></tr></table></pre>
 
