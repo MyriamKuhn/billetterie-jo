@@ -1,0 +1,24 @@
+{
+  "seo": {
+    "title": "E-Mail-Verifizierung – Olympischer Ticketverkauf Paris 2024",
+    "description": "Bestätigen Sie Ihre E-Mail-Adresse, um Ihr Konto zu aktivieren. Klicken Sie auf den Link in der E-Mail, die Sie erhalten haben, um Ihre Adresse zu verifizieren."
+  },
+  "success": {
+    "title": "E-Mail verifiziert!",
+    "message": "Ihre E-Mail-Adresse wurde erfolgreich bestätigt. Sie können sich jetzt anmelden."
+  },
+  "invalid": {
+    "title": "Ungültiger Link",
+    "message": "Dieser Verifizierungslink ist ungültig oder abgelaufen. Bitte melden Sie sich an, um einen neuen Verifizierungslink zu erhalten."
+  },
+  "alreadyVerified": {
+    "title": "Bereits verifiziert",
+    "message": "Ihre E-Mail-Adresse wurde bereits bestätigt. Sie können sich anmelden."
+  },
+  "error": {
+    "title": "Ein Fehler ist aufgetreten",
+    "message": "Wir konnten Ihre E-Mail nicht verifizieren. Bitte versuchen Sie es erneut oder kontaktieren Sie den Support."
+  },
+  "loginLink": "Anmelden",
+  "homeButton": "Startseite"
+}

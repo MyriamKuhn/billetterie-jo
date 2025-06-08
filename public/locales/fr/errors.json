@@ -1,0 +1,20 @@
+{
+  "invalidCredentials":        "Email ou mot de passe incorrect.",
+  "accountDisabled":           "Votre compte a été désactivé, contactez l'administrateur.",
+  "twofaInvalid":              "Le code 2FA est invalide.",
+  "twofaRequired":             "Un code 2FA est requis pour vous connecter.",
+  "userNotFound":              "Aucun compte n’est associé à cet email.",
+  "alreadyVerified":           "Votre adresse e-mail est déjà vérifiée.",
+  "emailNotVerified":          "Votre adresse e-mail n'est pas encore vérifiée.",
+  "tooManyRequests":           "Trop de tentatives. Réessayez dans quelques instants.",
+  "validationError":           "Certains champs sont invalides.",
+  "emailAlreadyRegistered":    "Cette adresse e-mail est déjà utilisée.",
+  "passwordTooWeak":           "Le mot de passe est trop faible.",
+  "captchaFailed":             "Échec de la vérification du captcha.",
+  "captchaInvalid":            "Le captcha est invalide ou expiré.",
+  "termsNotAccepted":          "Vous devez accepter les conditions d’utilisation.",
+  "genericError":              "Une erreur est survenue, veuillez réessayer.",
+  "internalError":          "Une erreur serveur est survenue, veuillez réessayer plus tard.",
+  "serviceUnavailable":     "Le service est temporairement indisponible, merci de réessayer plus tard.",
+  "networkError":           "Impossible de joindre le serveur, vérifiez votre connexion."
+}

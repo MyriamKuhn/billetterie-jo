@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { loginUser, resendVerificationEmail, logoutUser } from './authService'
+import { loginUser, resendVerificationEmail, logoutUser, registerUser } from './authService'
 import { API_BASE_URL } from '../config'
 import type { ResendResponse } from './authService'
 import type { ApiResponse } from '../pages/LoginPage'
@@ -132,5 +132,46 @@ describe('authService', () => {
 
     // Act & Assert
     await expect(logoutUser(token)).rejects.toThrow('Network error')
+  })
+})
+
+// ------- registerUser tests -------
+describe('registerUser', () => {
+  const payload = {
+    firstname: 'Alice',
+    lastname: 'Liddell',
+    email: 'alice@example.com',
+    password: 'rabbitHole',
+    password_confirmation: 'rabbitHole',
+    captcha_token: 'tok123',
+    accept_terms: true,
+  }
+  const lang = 'en'
+  const registerUrl = `${API_BASE_URL}/api/auth/register`
+  const fakeRes = { status: 201, data: { message: 'Created' } as ApiResponse }
+
+  it('→ envoie le bon payload et renvoie status + data', async () => {
+    mockedPost.mockResolvedValueOnce(fakeRes as any)
+
+    const result = await registerUser(payload, lang)
+
+    expect(mockedPost).toHaveBeenCalledWith(
+      registerUrl,
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Language': lang,
+        },
+      }
+    )
+    expect(result).toEqual({ status: fakeRes.status, data: fakeRes.data })
+  })
+
+  it('→ rejette si axios.post échoue', async () => {
+    const error = new Error('Network down')
+    mockedPost.mockRejectedValueOnce(error)
+
+    await expect(registerUser(payload, lang)).rejects.toThrow('Network down')
   })
 })

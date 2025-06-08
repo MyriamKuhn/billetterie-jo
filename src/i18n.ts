@@ -22,8 +22,9 @@ i18n
       order: ['querystring', 'cookie', 'navigator'],
       caches: ['cookie'],
     },
-    ns: ['common', 'legal', 'privacy', 'terms', 'contact', 'home', 'ticket', 'cart', 'login'],    
+    ns: ['common', 'legal', 'privacy', 'terms', 'contact', 'home', 'ticket', 'cart', 'login', 'errors', 'signup', 'verification'],
     defaultNS: 'common',
+    fallbackNS: 'errors',
     interpolation: { escapeValue: false },
     react: { useSuspense: false },
   });
