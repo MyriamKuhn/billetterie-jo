@@ -20,6 +20,7 @@ const ContactPage = lazy(() => import('./pages/ContactPage'));
 const CartPage = lazy(() => import('./pages/CartPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const SignupPage = lazy(() => import('./pages/SignupPage'));
+const VerificationResultPage = lazy(() => import('./pages/VerificationResultPage'));
 
 interface AppProps {
   mode: 'light' | 'dark';
@@ -62,6 +63,7 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/privacy-policy" element={<PolicyPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
+                <Route path="/verification-result/:status" element={<VerificationResultPage />} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

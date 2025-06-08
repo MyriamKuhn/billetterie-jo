@@ -53,6 +53,7 @@ export default function PasswordWithConfirmation({
         value={password}
         onChange={e => onPasswordChange(e.target.value)}
         onBlur={onBlur}
+        autoComplete="new-password"
         error={touched && !pwStrong}
         helperText={
           touched && !pwStrong
@@ -102,6 +103,7 @@ export default function PasswordWithConfirmation({
         value={confirmPassword}
         onChange={e => onConfirmChange(e.target.value)}
         onBlur={onBlur}
+        autoComplete="new-password"
         error={touched && !pwsMatch}
         helperText={
           touched && !pwsMatch
