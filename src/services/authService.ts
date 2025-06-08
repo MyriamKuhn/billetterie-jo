@@ -7,6 +7,16 @@ export type ResendResponse = {
   data: ApiResponse;
 };
 
+export interface RegisterPayload {
+  firstname: string;
+  lastname: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+  captcha_token: string;
+  accept_terms: boolean;
+};
+
 export async function loginUser(
   email: string,
   password: string,
@@ -66,6 +76,33 @@ export async function logoutUser(
     {},
     { headers }
   );
+  return {
+    status: response.status,
+    data: response.data,
+  };
+};
+
+/**
+ * Enregistre un nouvel utilisateur.
+ *
+ * @param payload   Données du formulaire d'inscription
+ * @param lang      Code de langue pour l'en-tête Accept-Language
+ */
+export async function registerUser(
+  payload: RegisterPayload,
+  lang: string
+): Promise<ResendResponse> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Accept-Language': lang,
+  };
+
+  const response = await axios.post<ApiResponse>(
+    `${API_BASE_URL}/api/auth/register`,
+    payload,
+    { headers }
+  );
+
   return {
     status: response.status,
     data: response.data,

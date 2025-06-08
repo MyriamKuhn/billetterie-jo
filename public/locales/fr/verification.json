@@ -1,0 +1,24 @@
+{
+  "seo": {
+    "title": "Vérification de l'adresse e-mail – Billetterie JO Paris 2024",
+    "description": "Confirmez votre adresse e-mail pour activer votre compte. Cliquez sur le lien dans l'e-mail que vous avez reçu pour vérifier votre adresse e-mail."
+  },
+  "success": {
+    "title": "Email vérifié !",
+    "message": "Votre adresse e-mail a bien été confirmée. Vous pouvez maintenant vous connecter."
+  },
+  "invalid": {
+    "title": "Lien invalide",
+    "message": "Ce lien de vérification n’est pas valide ou a expiré. Veuillez tenter de vous connecter afin de recevoir un nouveau lien de vérification."
+  },
+  "alreadyVerified": {
+    "title": "Déjà vérifié",
+    "message": "Votre adresse e-mail a déjà été confirmée. Vous pouvez vous connecter."
+  },
+  "error": {
+    "title": "Une erreur est survenue",
+    "message": "Nous n’avons pas pu valider votre e-mail. Veuillez réessayer ou contacter le support."
+  },
+  "loginLink": "Se connecter",
+  "homeButton": "Page d'accueil"
+}

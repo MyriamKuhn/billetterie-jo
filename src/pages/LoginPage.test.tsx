@@ -7,7 +7,8 @@ vi.mock('react-i18next', async (importActual) => {
   return {
     ...actual,
     useTranslation: () => ({
-      t: (key: string) => {
+      t: (key: string, opts?: { ns?: string }) => {
+        const fullKey = opts?.ns ? `${opts.ns}.${key}` : key;
         const dict: Record<string, string> = {
           // labels & buttons
           'login.emailLabel': 'Email',
@@ -15,6 +16,7 @@ vi.mock('react-i18next', async (importActual) => {
           'login.showPassword': 'Afficher le mot de passe',
           'login.hidePassword': 'Cacher le mot de passe',
           'login.loginButton': 'Se connecter',
+          'login.loginButtonLoad': 'Connexion',
           'login.forgotPassword': 'Mot de passe oublié ?',
           'login.noAccount': 'Je n’ai pas de compte',
           // email verification
@@ -25,13 +27,14 @@ vi.mock('react-i18next', async (importActual) => {
           'login.twoFATitle': 'Code 2FA requis',
           'login.twoFACodeLabel': 'Code 2FA',
           'login.verify2FAButton': 'Vérifier le code',
+          'login.verify2FALoad':   'Vérification',
           'login.cancelLogin': 'Annuler',
           // erreurs
           'errors.genericError': 'Une erreur est survenue',
           'errors.networkError': 'Erreur réseau',
           'errors.emailNotVerifiedSent': "Votre e-mail n'est pas vérifié",
         }
-        return dict[key] ?? key
+        return dict[fullKey] ?? fullKey
       },
       i18n: { language: 'fr' },
     }),

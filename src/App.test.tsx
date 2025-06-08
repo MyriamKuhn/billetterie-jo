@@ -8,8 +8,19 @@ vi.mock('react-router-dom', () => {
     __esModule: true,
     BrowserRouter: ({ children }: any) => <div data-testid="router">{children}</div>,
     Routes: ({ children }: any) => <div data-testid="routes">{children}</div>,
-    Route: ({ path, element }: any) =>
-      window.location.pathname === path ? <React.Fragment>{element}</React.Fragment> : null,
+    Route: ({ path, element }: any) => {
+      // on convertit "/foo/:bar/baz" en regex ^/foo/[^/]+/baz$
+      const regex = new RegExp(
+        '^' +
+          path
+            .replace(/:[^/]+/g, '[^/]+')
+            .replace(/\//g, '\\/') +
+          '$'
+      );
+      return regex.test(window.location.pathname)
+        ? <React.Fragment>{element}</React.Fragment>
+        : null;
+    },
   };
 });
 
@@ -33,6 +44,8 @@ vi.mock('./pages/PolicyPage',  () => ({ __esModule: true, default: () => <div da
 vi.mock('./pages/ContactPage', () => ({ __esModule: true, default: () => <div data-testid="page-contact">Contact</div> }));
 vi.mock('./pages/CartPage',       () => ({ __esModule: true, default: () => <div data-testid="page-cart">Cart</div> }));
 vi.mock('./pages/LoginPage', () => ({__esModule: true, default: () => <div data-testid="page-login">Login</div> }));
+vi.mock('./pages/SignupPage', () => ({ __esModule: true, default: () => <div data-testid="page-signup">Signup</div> }));
+vi.mock('./pages/VerificationResultPage', () => ({__esModule: true, default: () => <div data-testid="page-verification-result">Verification Result</div>}));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -148,6 +161,20 @@ describe('<App />', () => {
     window.history.pushState({}, '', '/login');
     render(<App mode="light" toggleMode={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('page-login')).toBeInTheDocument());
+  });
+
+  it('affiche SignupPage sur "/signup"', async () => {
+    window.history.pushState({}, '', '/signup');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-signup')).toBeInTheDocument());
+  });
+
+  it('affiche VerificationResultPage sur "/verification-result/:status"', async () => {
+    window.history.pushState({}, '', '/verification-result/success');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() =>
+      expect(screen.getByTestId('page-verification-result')).toBeInTheDocument()
+    );
   });
 
   it('montre le loader dans le fallback de Suspense', async () => {

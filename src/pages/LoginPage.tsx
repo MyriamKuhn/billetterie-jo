@@ -26,6 +26,7 @@ import { loginUser, resendVerificationEmail } from '../services/authService';
 import { getErrorMessage } from '../utils/errorUtils';
 import AlertMessage from '../components/AlertMessage/AlertMessage';
 import { onLoginSuccess, logout } from '../utils/authHelper';
+import CircularProgress from '@mui/material/CircularProgress';
 
 export interface ApiResponse {
   message: string;
@@ -125,11 +126,11 @@ export default function LoginPage() {
         }
         else {
           // par défaut, on affiche le message générique
-          setErrorMsg(t('errors.genericError'));
+          setErrorMsg(getErrorMessage(t, 'generic_error'));
         }
       } else {
         logError('LoginPage:handleSubmitCredentials', err);
-        setErrorMsg(t('errors.networkError'));
+        setErrorMsg(getErrorMessage(t, 'network_error'));
       }
     } finally {
       setLoading(false);
@@ -158,11 +159,11 @@ export default function LoginPage() {
           setErrorMsg(getErrorMessage(t, data?.code));
         }
         else {
-          setErrorMsg(t('errors.genericError'));
+          setErrorMsg(getErrorMessage(t, 'generic_error'));
         }
       } else {
         logError('LoginPage:handleResendVerification', err);
-        setErrorMsg(t('errors.networkError'));
+        setErrorMsg(getErrorMessage(t, 'network_error'));
       }
     } finally {
       setResendLoading(false);
@@ -190,7 +191,7 @@ export default function LoginPage() {
           sx={{
             maxWidth: 400,
             mx: 'auto',
-            mt: { xs: 2, sm: 4, md: 8 },
+            mt: { xs: 1, sm: 4, md: 8 },
             p: 4,
             borderRadius: 2,
             boxShadow: 3,
@@ -277,8 +278,18 @@ export default function LoginPage() {
                 />
               </Box>
 
-              <Button type="submit" variant="contained" fullWidth disabled={loading}>
-                {loading ? `${t('login.loginButton')}…` : t('login.loginButton')}
+              <Button 
+                type="submit" 
+                variant="contained" 
+                fullWidth 
+                disabled={loading}
+                startIcon={
+                  loading
+                    ? <CircularProgress color="inherit" size={16} />
+                    : undefined
+                }
+              >
+                {loading ? `${t('login.loginButtonLoad')}…` : t('login.loginButton')}
               </Button>
 
               {/* Liens “Mot de passe oublié ?” et “S’inscrire” */}
@@ -321,6 +332,13 @@ export default function LoginPage() {
                       {resendLoading
                         ? `${t('login.resendLinkText')}…`
                         : t('login.resendLinkText')}
+                      {resendLoading && (
+                        <CircularProgress
+                          color="inherit"
+                          size={12}
+                          sx={{ mr: 0.5 }}
+                        />
+                      )}
                     </Link>
                   </Typography>
                 </Box>
@@ -350,8 +368,13 @@ export default function LoginPage() {
                 fullWidth
                 sx={{ mt: 3 }}
                 disabled={loading}
+                startIcon={
+                  loading
+                    ? <CircularProgress color="inherit" size={16} />
+                    : undefined
+                }
               >
-                {loading ? `${t('login.verify2FAButton')}…` : t('login.verify2FAButton')}
+                {loading ? `${t('login.verify2FALoad')}…` : t('login.verify2FAButton')}
               </Button>
 
               <Divider sx={{ my: 3 }} />

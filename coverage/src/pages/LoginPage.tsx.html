@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>56/56</span>
+                <span class='fraction'>62/62</span>
             </div>
         
             
@@ -438,7 +438,31 @@
 <a name='L373'></a><a href='#L373'>373</a>
 <a name='L374'></a><a href='#L374'>374</a>
 <a name='L375'></a><a href='#L375'>375</a>
-<a name='L376'></a><a href='#L376'>376</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a>
+<a name='L379'></a><a href='#L379'>379</a>
+<a name='L380'></a><a href='#L380'>380</a>
+<a name='L381'></a><a href='#L381'>381</a>
+<a name='L382'></a><a href='#L382'>382</a>
+<a name='L383'></a><a href='#L383'>383</a>
+<a name='L384'></a><a href='#L384'>384</a>
+<a name='L385'></a><a href='#L385'>385</a>
+<a name='L386'></a><a href='#L386'>386</a>
+<a name='L387'></a><a href='#L387'>387</a>
+<a name='L388'></a><a href='#L388'>388</a>
+<a name='L389'></a><a href='#L389'>389</a>
+<a name='L390'></a><a href='#L390'>390</a>
+<a name='L391'></a><a href='#L391'>391</a>
+<a name='L392'></a><a href='#L392'>392</a>
+<a name='L393'></a><a href='#L393'>393</a>
+<a name='L394'></a><a href='#L394'>394</a>
+<a name='L395'></a><a href='#L395'>395</a>
+<a name='L396'></a><a href='#L396'>396</a>
+<a name='L397'></a><a href='#L397'>397</a>
+<a name='L398'></a><a href='#L398'>398</a>
+<a name='L399'></a><a href='#L399'>399</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -781,7 +805,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -841,6 +887,7 @@ import { loginUser, resendVerificationEmail } from '../services/authService';
 import { getErrorMessage } from '../utils/errorUtils';
 import AlertMessage from '../components/AlertMessage/AlertMessage';
 import { onLoginSuccess, logout } from '../utils/authHelper';
+import CircularProgress from '@mui/material/CircularProgress';
 &nbsp;
 export interface ApiResponse {
   message: string;
@@ -940,11 +987,11 @@ export default function LoginPage() {
         }
         else {
           // par défaut, on affiche le message générique
-          setErrorMsg(t('errors.genericError'));
+          setErrorMsg(getErrorMessage(t, 'generic_error'));
         }
       } else {
         logError('LoginPage:handleSubmitCredentials', err);
-        setErrorMsg(t('errors.networkError'));
+        setErrorMsg(getErrorMessage(t, 'network_error'));
       }
     } finally {
       setLoading(false);
@@ -973,11 +1020,11 @@ export default function LoginPage() {
           setErrorMsg(getErrorMessage(t, data?.code));
         }
         else {
-          setErrorMsg(t('errors.genericError'));
+          setErrorMsg(getErrorMessage(t, 'generic_error'));
         }
       } else {
         logError('LoginPage:handleResendVerification', err);
-        setErrorMsg(t('errors.networkError'));
+        setErrorMsg(getErrorMessage(t, 'network_error'));
       }
     } finally {
       setResendLoading(false);
@@ -1005,7 +1052,7 @@ export default function LoginPage() {
           sx={{
             maxWidth: 400,
             mx: 'auto',
-            mt: { xs: 2, sm: 4, md: 8 },
+            mt: { xs: 1, sm: 4, md: 8 },
             p: 4,
             borderRadius: 2,
             boxShadow: 3,
@@ -1092,8 +1139,18 @@ export default function LoginPage() {
                 /&gt;
               &lt;/Box&gt;
 &nbsp;
-              &lt;Button type="submit" variant="contained" fullWidth disabled={loading}&gt;
-                {loading ? `${t('login.loginButton')}…` : t('login.loginButton')}
+              &lt;Button 
+                type="submit" 
+                variant="contained" 
+                fullWidth 
+                disabled={loading}
+                startIcon={
+                  loading
+                    ? &lt;CircularProgress color="inherit" size={16} /&gt;
+                    : undefined
+                }
+              &gt;
+                {loading ? `${t('login.loginButtonLoad')}…` : t('login.loginButton')}
               &lt;/Button&gt;
 &nbsp;
               {/* Liens “Mot de passe oublié ?” et “S’inscrire” */}
@@ -1136,6 +1193,13 @@ export default function LoginPage() {
                       {resendLoading
                         ? `${t('login.resendLinkText')}…`
                         : t('login.resendLinkText')}
+                      {resendLoading &amp;&amp; (
+                        &lt;CircularProgress
+                          color="inherit"
+                          size={12}
+                          sx={{ mr: 0.5 }}
+                        /&gt;
+                      )}
                     &lt;/Link&gt;
                   &lt;/Typography&gt;
                 &lt;/Box&gt;
@@ -1165,8 +1229,13 @@ export default function LoginPage() {
                 fullWidth
                 sx={{ mt: 3 }}
                 disabled={loading}
+                startIcon={
+                  loading
+                    ? &lt;CircularProgress color="inherit" size={16} /&gt;
+                    : undefined
+                }
               &gt;
-                {loading ? `${t('login.verify2FAButton')}…` : t('login.verify2FAButton')}
+                {loading ? `${t('login.verify2FALoad')}…` : t('login.verify2FAButton')}
               &lt;/Button&gt;
 &nbsp;
               &lt;Divider sx={{ my: 3 }} /&gt;
@@ -1195,7 +1264,7 @@ export default function LoginPage() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-07T19:29:12.240Z
+                at 2025-06-08T16:26:42.310Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
