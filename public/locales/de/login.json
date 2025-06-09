@@ -22,7 +22,8 @@
     "showPassword": "Passwort anzeigen",
     "emailNotVerifiedHint": "Wenn Sie die Bestätigungs-E-Mail nicht erhalten haben,",
     "resendLinkText": "klicken Sie hier, um sie erneut zu senden",
-    "verificationEmailResent": "Die Bestätigungs-E-Mail wurde gesendet"
+    "verificationEmailResent": "Die Bestätigungs-E-Mail wurde gesendet",
+    "welcomeUser": "Willkommen, {{name}}!"
   },
   "errors": {
     "emailNotVerifiedSent": "E-Mail-Adresse nicht verifiziert. Eine neue Bestätigungs-E-Mail wurde Ihnen gerade gesendet."

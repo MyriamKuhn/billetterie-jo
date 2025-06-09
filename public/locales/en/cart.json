@@ -18,7 +18,8 @@
     "add_success": "Item added to cart",
     "remove_success": "Item removed from cart",
     "update_success": "Quantity updated",
-    "remaining": "{{count}} available"
+    "remaining": "{{count}} available",
+    "cgv_not_accepted": "You must accept the General Terms and Conditions of Sale to proceed"
   },
   "errors": {
     "error_load": "Unable to load cart, please try again",

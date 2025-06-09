@@ -22,7 +22,8 @@
     "showPassword": "Afficher le mot de passe",
     "emailNotVerifiedHint": "Si vous n'avez pas reçu le mail de vérification,",
     "resendLinkText": "cliquez ici pour le faire renvoyer",
-    "verificationEmailResent": "Le mail de vérification a été envoyé"
+    "verificationEmailResent": "Le mail de vérification a été envoyé",
+    "welcomeUser": "Bienvenue, {{name}} !"
   },
   "errors": {
     "emailNotVerifiedSent": "Adresse e-mail non vérifiée. Un nouvel e-mail de vérification vient de vous être envoyé."

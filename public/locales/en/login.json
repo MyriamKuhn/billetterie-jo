@@ -22,7 +22,8 @@
     "showPassword": "Show Password",
     "emailNotVerifiedHint": "If you haven't received the verification email,",
     "resendLinkText": "click here to resend it",
-    "verificationEmailResent": "The verification email has been sent"
+    "verificationEmailResent": "The verification email has been sent",
+    "welcomeUser": "Welcome, {{name}}!"
   },
   "errors": {
     "emailNotVerifiedSent": "Email address not verified. A new verification email has just been sent to you."

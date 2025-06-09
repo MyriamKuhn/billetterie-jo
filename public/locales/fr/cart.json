@@ -19,7 +19,8 @@
     "remove_success": "Article retiré du panier",
     "update_success": "Quantité mise à jour",
     "remaining_one": "{{count}} disponible",
-    "remaining_other": "{{count}} disponibles"
+    "remaining_other": "{{count}} disponibles",
+    "cgv_not_accepted": "Vous devez accepter les Conditions Générales de Vente pour continuer"
   },
   "errors": {
     "error_load": "Impossible de charger le panier, veuillez réessayer",

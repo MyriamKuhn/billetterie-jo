@@ -16,20 +16,24 @@ import { useTranslation } from 'react-i18next';
 import { useLanguageStore } from '../stores/useLanguageStore';
 import { useCartStore, type CartItem } from '../stores/useCartStore';
 import { useReloadCart } from '../hooks/useReloadCart';
+import { useAuthStore } from '../stores/useAuthStore';
 import { useCustomSnackbar } from '../hooks/useCustomSnackbar';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 import { CartItemDisplay } from '../components/CartItemDisplay';
 import { CartSummary } from '../components/CartSummary';
+import { useNavigate } from 'react-router-dom';
 
 export default function CartPage() {
   const { t } = useTranslation(['cart', 'common']);
   const lang = useLanguageStore((s) => s.lang);
+  const navigate = useNavigate();
 
   // ── Hooks / Store / Snackbar ─────────────────────────────────────────────
   const { loading, hasError, reload } = useReloadCart();
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore.getState().addItem;
   const { notify } = useCustomSnackbar();
+  const token = useAuthStore(s => s.authToken);
 
   // CGV
   const [acceptedCGV, setAcceptedCGV] = useState(false);
@@ -76,7 +80,17 @@ export default function CartPage() {
 
   // Clic “Payer”
   const handlePay = () => {
-    notify(t('cart:checkout_not_implemented'), 'info');
+    if (!acceptedCGV) {
+      notify(t('cart:cart.cgv_not_accepted'), 'warning');
+      return;
+    }
+    if (!token) {
+      // on redirige vers login avec next vers le panier
+      navigate('/login?next=/cart');
+      return;
+    }
+    // déjà connecté
+    navigate('/checkout');
   };
 
   // ── ÉTAT DE CHARGEMENT / ERREUR / PANIER VIDE ────────────────────────────────
