@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Seo from '../components/Seo';
 import { PageWrapper } from '../components/PageWrapper';
 import Box from '@mui/material/Box';
@@ -27,6 +27,7 @@ import { getErrorMessage } from '../utils/errorUtils';
 import AlertMessage from '../components/AlertMessage/AlertMessage';
 import { onLoginSuccess, logout } from '../utils/authHelper';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useCustomSnackbar } from '../hooks/useCustomSnackbar';
 
 export interface ApiResponse {
   message: string;
@@ -46,6 +47,8 @@ export interface ApiResponse {
 export default function LoginPage() {
   const { t } = useTranslation('login');
   const navigate = useNavigate();
+  const location = useLocation();
+  const { notify } = useCustomSnackbar();
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -89,6 +92,12 @@ export default function LoginPage() {
     
       // Si token renvoyé, on gère la réussite (2FA ou pas)
       if (data.token && data.user) {
+        // Afficher le snackbar de bienvenue
+        notify(t('login.welcomeUser', { name: data.user.firstname }), 'success');
+        // extraire le next paramètre de l'URL
+        const params = new URLSearchParams(location.search);
+        const next = params.get('next') ?? undefined;
+
         await onLoginSuccess(
           data.token,
           data.user.role as UserRole,
@@ -96,7 +105,8 @@ export default function LoginPage() {
           setAuthToken,
           clearGuestCartIdInStore,
           loadCart,
-          navigate
+          navigate,
+          next
         );
         return;
       }

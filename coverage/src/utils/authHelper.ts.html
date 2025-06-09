@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>28/28</span>
+                <span class='fraction'>30/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>9/9</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>28/28</span>
+                <span class='fraction'>30/30</span>
             </div>
         
             
@@ -163,7 +163,11 @@
 <a name='L98'></a><a href='#L98'>98</a>
 <a name='L99'></a><a href='#L99'>99</a>
 <a name='L100'></a><a href='#L100'>100</a>
-<a name='L101'></a><a href='#L101'>101</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -191,23 +195,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -280,6 +288,7 @@ import { logError } from './logger';
  * @param clearGuestCart Id du panier invité à effacer (on passe toujours null ici).
  * @param loadCart       Fonction de Zustand qui recharge le contenu du panier.
  * @param navigate       Callback `useNavigate` pour rediriger l’utilisateur.
+ * @param nextPath      (optionnel) chemin vers lequel rediriger l’utilisateur après login.
  */
 export async function onLoginSuccess(
   token: string,
@@ -288,7 +297,8 @@ export async function onLoginSuccess(
   setAuthToken: (token: string, remember: boolean, role: UserRole) =&gt; void,
   clearGuestCartIdInStore: (id: string | null) =&gt; void,
   loadCart: () =&gt; Promise&lt;void&gt;,
-  navigate: (path: string) =&gt; void
+  navigate: (path: string) =&gt; void,
+  nextPath?: string
 ) {
   // 1) Enregistre le token en mémoire (Zustand) et en localStorage/sessionStorage
   setAuthToken(token, remember, role);
@@ -307,8 +317,10 @@ export async function onLoginSuccess(
   // 3) Recharge le panier (maintient la continuité de l’ancien panier si l’utilisateur en avait un)
   await loadCart();
 &nbsp;
-  // 4) Redirection selon le rôle
-  if (role === 'admin') {
+  // 4) si on a un next, on y va, sinon dashboard selon role
+  if (nextPath) {
+    navigate(nextPath);
+  } else if (role === 'admin') {
     navigate('/admin/dashboard');
   } else if (role === 'employee') {
     navigate('/employee/dashboard');
@@ -370,7 +382,7 @@ export async function logout(
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-08T21:53:12.602Z
+                at 2025-06-09T11:01:26.867Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

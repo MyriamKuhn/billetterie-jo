@@ -80,6 +80,31 @@ describe('authHelper', () => {
       expect(localStorage.getItem('authRole')).toBe('employee')
       expect(navigate).toHaveBeenLastCalledWith('/employee/dashboard')
     })
+
+    it('redirige vers le nextPath si fourni', async () => {
+      // Arrange  
+      const customPath = '/mon-chemin';
+      // Clear les storage pour être certain
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Act  
+      await onLoginSuccess(
+        'XYZ',                     // token
+        'user',                    // rôle
+        false,                     // remember
+        setAuthToken,
+        clearGuestCartIdInStore,
+        loadCart,
+        navigate,
+        customPath                // ← on passe nextPath
+      );
+
+      // Assert  
+      // On s’attend à ce que navigate ait été appelé UNE SEULE fois, avec customPath
+      expect(navigate).toHaveBeenCalledTimes(1);
+      expect(navigate).toHaveBeenCalledWith(customPath);
+    });
   })
 
   describe('logout', () => {

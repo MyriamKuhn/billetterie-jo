@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 
 // ─── 1) MOCK DES DÉPENDANCES ─────────────────────────────────────────────────
 
@@ -186,13 +187,13 @@ describe('<CartPage />', () => {
 
   it('rend le loader quand loading = true', () => {
     mockReloadState.loading = true;
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
   it('rend l’écran d’erreur quand hasError = true', () => {
     mockReloadState.hasError = true;
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     const err = screen.getByTestId('error-display');
     expect(err).toHaveAttribute('data-title', 'error_loading');
     expect(err).toHaveAttribute('data-message', 'error_loading_message');
@@ -202,7 +203,7 @@ describe('<CartPage />', () => {
 
   it('rend le message de panier vide si items = [] et pas d’erreur ni loading', () => {
     mockItems.length = 0;
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     const err = screen.getByTestId('error-display');
     expect(err).toHaveAttribute('data-title', 'empty');
     expect(err).toHaveAttribute('data-message', 'empty_message');
@@ -213,7 +214,7 @@ describe('<CartPage />', () => {
   it('rend la table (desktop) avec items et le résumé', () => {
     mockItems.push({ id: '1', price: 10, quantity: 2, availableQuantity: 5, name: 'X' });
     mockItems.push({ id: '2', price: 3, quantity: 1, availableQuantity: 2, name: 'Y' });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
 
     // On doit voir les en-têtes (les clés brutes “cart:table...” sont renvoyées par t())
     expect(screen.getByText('cart:table.product')).toBeInTheDocument();
@@ -234,7 +235,7 @@ describe('<CartPage />', () => {
   it('rend les “cartes” (mobile) quand useMediaQuery retourne true', () => {
     (useMediaQuery as any).mockReturnValue(true);
     mockItems.push({ id: '3', price: 7, quantity: 3, availableQuantity: 10, name: 'Z' });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     // Notre stub affiche <span data-testid="mobile-3">yes</span>
     expect(screen.getByTestId('mobile-3')).toHaveTextContent('yes');
     expect(screen.getByTestId('mobile-summary')).toHaveTextContent('yes');
@@ -242,7 +243,7 @@ describe('<CartPage />', () => {
 
   it('adjustQty : incrémenter dans les limites appelle addItem et affiche “add_success”', async () => {
     mockItems.push({ id: '1', price: 5, quantity: 1, availableQuantity: 3, name: 'A' });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     await act(async () => {
       fireEvent.click(screen.getByTestId('inc-1'));
     });
@@ -252,7 +253,7 @@ describe('<CartPage />', () => {
 
   it('adjustQty : décrémenter appelle addItem puis “remove_success”', async () => {
     mockItems.push({ id: '1', price: 5, quantity: 2, availableQuantity: 5, name: 'A' });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     await act(async () => {
       fireEvent.click(screen.getByTestId('dec-1'));
     });
@@ -262,7 +263,7 @@ describe('<CartPage />', () => {
 
   it('adjustQty : overflow (quantité > disponible) affiche “not_enough” et n’appelle pas addItem', () => {
     mockItems.push({ id: '1', price: 5, quantity: 2, availableQuantity: 2, name: 'A' });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     fireEvent.click(screen.getByTestId('overflow-1'));
     expect(mockAddItem).not.toHaveBeenCalled();
     expect(mockNotify).toHaveBeenCalledWith('not_enough:2', 'warning');
@@ -271,28 +272,29 @@ describe('<CartPage />', () => {
   it('adjustQty : si addItem rejette, affiche “error_update”', async () => {
     mockItems.push({ id: '1', price: 5, quantity: 1, availableQuantity: 5, name: 'A' });
     mockAddItem.mockRejectedValue(new Error('fail'));
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     await act(async () => {
       fireEvent.click(screen.getByTestId('inc-1'));
     });
     expect(mockNotify).toHaveBeenCalledWith('error_update', 'error');
   });
 
-  it('clic sur “Pay” déclenche “checkout_not_implemented”', () => {
+  it('clic sur “Pay” sans avoir accepté les CGV affiche un warning CGV', () => {
     mockItems.push({ id: '1', price: 5, quantity: 1, availableQuantity: 5, name: 'A' });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     fireEvent.click(screen.getByTestId('pay-button'));
-    expect(mockNotify).toHaveBeenCalledWith('checkout_not_implemented', 'info');
+    // on n'a pas coché la CGV → on doit voir notre message de cgv_not_accepted
+    expect(mockNotify).toHaveBeenCalledWith('cart:cart.cgv_not_accepted', 'warning');
   });
 
   it('appel de reload au montage et quand la langue change', () => {
     // 1) Premier render → reload() appelé une fois
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     expect(mockReload).toHaveBeenCalledTimes(1);
 
     // 2) On simule un changement de langue via le même hook mocké
     (useLanguageStore as any).mockReturnValue('fr');
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     expect(mockReload).toHaveBeenCalledTimes(2);
   });
 });
