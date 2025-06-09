@@ -15,6 +15,7 @@ import { logError } from './logger';
  * @param clearGuestCart Id du panier invité à effacer (on passe toujours null ici).
  * @param loadCart       Fonction de Zustand qui recharge le contenu du panier.
  * @param navigate       Callback `useNavigate` pour rediriger l’utilisateur.
+ * @param nextPath      (optionnel) chemin vers lequel rediriger l’utilisateur après login.
  */
 export async function onLoginSuccess(
   token: string,
@@ -23,7 +24,8 @@ export async function onLoginSuccess(
   setAuthToken: (token: string, remember: boolean, role: UserRole) => void,
   clearGuestCartIdInStore: (id: string | null) => void,
   loadCart: () => Promise<void>,
-  navigate: (path: string) => void
+  navigate: (path: string) => void,
+  nextPath?: string
 ) {
   // 1) Enregistre le token en mémoire (Zustand) et en localStorage/sessionStorage
   setAuthToken(token, remember, role);
@@ -42,8 +44,10 @@ export async function onLoginSuccess(
   // 3) Recharge le panier (maintient la continuité de l’ancien panier si l’utilisateur en avait un)
   await loadCart();
 
-  // 4) Redirection selon le rôle
-  if (role === 'admin') {
+  // 4) si on a un next, on y va, sinon dashboard selon role
+  if (nextPath) {
+    navigate(nextPath);
+  } else if (role === 'admin') {
     navigate('/admin/dashboard');
   } else if (role === 'employee') {
     navigate('/employee/dashboard');

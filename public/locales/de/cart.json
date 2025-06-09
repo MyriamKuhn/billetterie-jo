@@ -18,7 +18,8 @@
     "add_success": "Artikel zum Einkaufskorb hinzugefügt",
     "remove_success": "Artikel aus dem Einkaufskorb entfernt",
     "update_success": "Menge aktualisiert",
-    "remaining": "{{count}} verfügbar"
+    "remaining": "{{count}} verfügbar",
+    "cgv_not_accepted": "Sie müssen die Allgemeinen Verkaufsbedingungen akzeptieren, um fortzufahren"
   },
   "errors": {
     "error_load": "Der Einkaufskorb konnte nicht geladen werden, bitte versuchen Sie es erneut",

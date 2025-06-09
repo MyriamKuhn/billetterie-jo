@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, act, cleanup } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 
 // ─── 1) MOCK DES DÉPENDANCES ─────────────────────────────────────────────────
 
@@ -177,18 +178,18 @@ describe('<CartPage /> – coverage complet', () => {
   });
 
   it('appel de reload au montage et quand la langue change', () => {
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     expect(mockReload).toHaveBeenCalledTimes(1);
 
     (useLanguageStore as any).mockReturnValue('fr');
     cleanup();
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
     expect(mockReload).toHaveBeenCalledTimes(2);
   });
 
   it('render table (desktop) + résumé + onCgvChange', () => {
     mockItems.push({ id: '1', price: 10, quantity: 2, availableQuantity: 5 });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
 
     // Vérifier total
     expect(screen.getByTestId('total')).toHaveTextContent('20');
@@ -206,7 +207,7 @@ describe('<CartPage /> – coverage complet', () => {
 
   it('adjustQty = même quantité → update_success', async () => {
     mockItems.push({ id: '1', price: 5, quantity: 3, availableQuantity: 5 });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
 
     await act(async () => {
       fireEvent.click(screen.getByTestId('same-1'));

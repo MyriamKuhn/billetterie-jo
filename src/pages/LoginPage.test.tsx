@@ -140,7 +140,8 @@ describe('LoginPage', () => {
         mockSetToken,
         mockSetGuestCartId,
         mockLoadCart,
-        mockNavigate
+        mockNavigate,
+        undefined
       )
     })
   })

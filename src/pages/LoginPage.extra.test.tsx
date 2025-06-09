@@ -386,7 +386,8 @@ describe('LoginPage – 2FA submission et loading', () => {
         mockSetToken,
         mockSetGuestCartId,
         mockLoadCart,
-        mockNavigate
+        mockNavigate,
+        undefined
       )
     })
   })
