@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 
 // Stub i18n initialization to prevent i18next.use errors
 vi.mock('../i18n', () => ({}));
@@ -50,7 +51,7 @@ describe('CartPage useLanguageStore selector', () => {
   it('should call useLanguageStore with a selector that returns lang', () => {
     const spy = vi.spyOn(languageStore, 'useLanguageStore').mockReturnValue('fr');
 
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
 
     expect(spy).toHaveBeenCalled();
     const selector = spy.mock.calls[0][0];

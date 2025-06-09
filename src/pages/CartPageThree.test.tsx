@@ -1,5 +1,6 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { MemoryRouter } from 'react-router-dom';
 
 // ─── 1) MÊMES MOCKS QUE DANS CartPage.additional.test.tsx ───────────────────────
 
@@ -177,7 +178,7 @@ describe('<CartPage /> – couverture des branches manquantes', () => {
   it('adjustQty : newQty < 0 devient 0 et déclenche update_success', async () => {
     // Simuler un item dont quantity = 0
     mockItems.push({ id: '1', price: 5, quantity: 0, availableQuantity: 5 });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
 
     // Cliquer sur le bouton "dec" → newQty = -1, mais interne setter met newQty = 0
     await act(async () => {
@@ -193,7 +194,7 @@ describe('<CartPage /> – couverture des branches manquantes', () => {
     // Deux items pour tester reduce
     mockItems.push({ id: '1', price: 2, quantity: 3, availableQuantity: 10 });
     mockItems.push({ id: '2', price: 4, quantity: 1, availableQuantity: 10 });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
 
     // Total attendu = 2*3 + 4*1 = 10
     expect(screen.getByTestId('total')).toHaveTextContent('10');
@@ -203,7 +204,7 @@ describe('<CartPage /> – couverture des branches manquantes', () => {
     // On force isMobile = true
     (useMediaQuery as any).mockReturnValue(true);
     mockItems.push({ id: '5', price: 7, quantity: 2, availableQuantity: 10 });
-    render(<CartPage />);
+    render(<CartPage />, { wrapper: MemoryRouter });
 
     // Le stub CartItemDisplay affiche mobile="yes"
     expect(screen.getByTestId('mobile-5')).toHaveTextContent('yes');

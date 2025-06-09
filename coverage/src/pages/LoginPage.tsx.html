@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>86/86</span>
+                <span class='fraction'>91/91</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>62/62</span>
+                <span class='fraction'>64/64</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>77/77</span>
+                <span class='fraction'>82/82</span>
             </div>
         
             
@@ -461,7 +461,17 @@
 <a name='L396'></a><a href='#L396'>396</a>
 <a name='L397'></a><a href='#L397'>397</a>
 <a name='L398'></a><a href='#L398'>398</a>
-<a name='L399'></a><a href='#L399'>399</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L399'></a><a href='#L399'>399</a>
+<a name='L400'></a><a href='#L400'>400</a>
+<a name='L401'></a><a href='#L401'>401</a>
+<a name='L402'></a><a href='#L402'>402</a>
+<a name='L403'></a><a href='#L403'>403</a>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -507,6 +517,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">112x</span>
+<span class="cline-any cline-yes">112x</span>
 <span class="cline-any cline-yes">112x</span>
 <span class="cline-any cline-yes">112x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -552,7 +565,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -861,7 +881,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Seo from '../components/Seo';
 import { PageWrapper } from '../components/PageWrapper';
 import Box from '@mui/material/Box';
@@ -888,6 +908,7 @@ import { getErrorMessage } from '../utils/errorUtils';
 import AlertMessage from '../components/AlertMessage/AlertMessage';
 import { onLoginSuccess, logout } from '../utils/authHelper';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useCustomSnackbar } from '../hooks/useCustomSnackbar';
 &nbsp;
 export interface ApiResponse {
   message: string;
@@ -907,6 +928,8 @@ export interface ApiResponse {
 export default function LoginPage() {
   const { t } = useTranslation('login');
   const navigate = useNavigate();
+  const location = useLocation();
+  const { notify } = useCustomSnackbar();
 &nbsp;
   const [email, setEmail] = useState&lt;string&gt;('');
   const [password, setPassword] = useState&lt;string&gt;('');
@@ -950,6 +973,12 @@ export default function LoginPage() {
     
       // Si token renvoyé, on gère la réussite (2FA ou pas)
       if (data.token &amp;&amp; data.user) {
+        // Afficher le snackbar de bienvenue
+        notify(t('login.welcomeUser', { name: data.user.firstname }), 'success');
+        // extraire le next paramètre de l'URL
+        const params = new URLSearchParams(location.search);
+        const next = params.get('next') ?? undefined;
+&nbsp;
         await onLoginSuccess(
           data.token,
           data.user.role as UserRole,
@@ -957,7 +986,8 @@ export default function LoginPage() {
           setAuthToken,
           clearGuestCartIdInStore,
           loadCart,
-          navigate
+          navigate,
+          next
         );
         return;
       }
@@ -1264,7 +1294,7 @@ export default function LoginPage() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-08T21:53:12.602Z
+                at 2025-06-09T11:01:26.867Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
