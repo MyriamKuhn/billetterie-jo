@@ -1,0 +1,76 @@
+{
+  "seo": {
+    "title": "Mon tableau de bord – Billetterie JO Paris 2024",
+    "description": "Gérez vos informations personnelles et paramètres de sécurité sur le tableau de bord de votre compte."
+  },
+  "dashboard": {
+    "title": "Espace client",
+    "subtitle": "Gérez vos informations personnelles et paramètres de sécurité",
+    "name": "Nom et prénom",
+    "firstname": "Prénom",
+    "lastname": "Nom",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saveLoad": "Enregistrement",
+    "updateNameSuccess": "Nom et prénom mis à jour avec succès.",
+    "successMessage": "Votre nom et prénom ont été mis à jour avec succès."
+  },
+  "errors": {
+    "fetchProfile": "Impossible de récupérer votre profil. Veuillez réessayer plus tard.",
+    "genericErrorTitle": "Oops… une erreur est survenue",
+    "retry": "Réessayer",
+    "home": "Accueil",
+    "nameRequired": "Le prénom et le nom sont requis.",
+    "nameUpdate": "Erreur lors de la mise à jour du nom et du prénom. Veuillez réessayer.",
+    "firstnameRequired": "Le prénom est requis.",
+    "lastnameRequired": "Le nom est requis."
+  },
+  "sections": {
+    "email": "Email",
+    "password": "Mot de passe",
+    "twoFA": "Authentification à deux facteurs"
+  },
+  "fields": {
+    "newEmail": "Nouvel email",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "otpCode": "Code OTP"
+  },
+  "buttons": {
+    "confirm": "Confirmer"
+  },
+  "errors1": {
+    "sameEmail": "Le nouvel email doit être différent de l'email actuel.",
+    "invalidEmail": "Veuillez entrer une adresse email valide.",
+    "currentPasswordRequired": "Le mot de passe actuel est requis.",
+    "updateEmail": "Erreur lors de la mise à jour de l'email.",
+    "passwordFieldsRequired": "Tous les champs de mot de passe sont requis.",
+    "passwordsDontMatch": "Les mots de passe ne correspondent pas.",
+    "passwordNotStrong": "Le mot de passe doit contenir au moins 8 caractères.",
+    "updatePassword": "Erreur lors de la mise à jour du mot de passe.",
+    "2faSetup": "Erreur lors de la configuration de l'authentification à deux facteurs.",
+    "2faConfirm": "Code invalide ou erreur de confirmation."
+  },
+  "success": {
+    "emailChangeInitiated": "Changement d'email initié. Vérifiez votre boîte pour confirmer.",
+    "passwordUpdated": "Mot de passe mis à jour avec succès.",
+    "2faEnabled": "Authentification à deux facteurs activée.",
+    "2faDisabled": "Authentification à deux facteurs désactivée."
+  },
+  "dialog": {
+    "scanQRCode": "Scannez ce code QR avec votre application d’authentification.",
+    "enable2faTitle": "Activer l'authentification à deux facteurs",
+    "disable2faTitle": "Désactiver l'authentification à deux facteurs"
+  },
+  "info": {
+    "2faEnabled": "L'authentification à deux facteurs est activée.",
+    "2faDisabled": "L'authentification à deux facteurs est désactivée."
+  },
+  "enabled": "Activé",
+  "disabled": "Désactivé",
+  "common": {
+    "loginAgain": "Se reconnecter"
+  }
+}
+      

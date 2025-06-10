@@ -204,6 +204,80 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
           }),             
         },
       },
+      MuiAccordion: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            backgroundColor: theme.palette.background.paper,
+            borderRadius: theme.shape.borderRadius,
+            border: `1px solid ${theme.palette.divider}`,
+            '&:before': { display: 'none' }
+          }),
+        },
+      },
+      MuiAccordionSummary: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            backgroundColor: theme.palette.background.paper,
+            borderRadius: theme.shape.borderRadius,
+            '&.Mui-expanded': {
+              borderBottomLeftRadius: 0,
+              borderBottomRightRadius: 0,
+            },
+          }),
+          expandIconWrapper: ({ theme }) => {
+            const iconColor = theme.palette.mode === 'dark'
+              ? theme.palette.text.primary
+              : theme.palette.info.main;
+            return {
+              color: iconColor,
+              borderRadius: '50%',
+              padding: 4,
+              '&:hover': {
+                backgroundColor: theme.palette.action.hover
+              },
+            };
+          },
+        },
+      },
+      MuiAccordionDetails: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            backgroundColor: theme.palette.background.paper,
+            borderBottomLeftRadius: theme.shape.borderRadius,
+            borderBottomRightRadius: theme.shape.borderRadius,
+            '&.Mui-expanded': {
+              borderBottomLeftRadius: theme.shape.borderRadius,
+              borderBottomRightRadius: theme.shape.borderRadius,
+            },
+          }),
+        },
+      },
+      MuiSwitch: {
+        styleOverrides: {
+          switchBase: ({ theme }) => ({
+            color: theme.palette.mode === 'dark'
+                ? theme.palette.primary.dark
+                : theme.palette.info.main,
+          }),
+          root: ({ theme }) => ({
+            '& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb': {
+              color: theme.palette.mode === 'dark'
+                ? theme.palette.primary.dark
+                : theme.palette.info.main,
+            },
+            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+              backgroundColor: theme.palette.mode === 'dark'
+                ? theme.palette.primary.dark
+                : theme.palette.info.main,
+            },
+            '& .MuiSwitch-track': {
+              backgroundColor: (theme.palette.mode === 'dark'
+                ? theme.palette.primary.dark
+                : theme.palette.info.main) + '80',
+            },
+          }),
+        },
+      },
     },
   });
 };

@@ -2,6 +2,7 @@
 if ('scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual';
 }
+import './services/axiosConfig';
 
 import ReactDOM from 'react-dom/client';
 import { Root } from './Root';
