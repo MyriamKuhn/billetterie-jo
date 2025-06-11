@@ -7,13 +7,15 @@
     "title": "Espace client",
     "subtitle": "Gérez vos informations personnelles et paramètres de sécurité",
     "name": "Nom et prénom",
+    "email": "Email",
     "firstname": "Prénom",
     "lastname": "Nom",
     "cancel": "Annuler",
     "save": "Enregistrer",
     "saveLoad": "Enregistrement",
     "updateNameSuccess": "Nom et prénom mis à jour avec succès.",
-    "successMessage": "Votre nom et prénom ont été mis à jour avec succès."
+    "successMessageProfileUpdate": "Votre nom et prénom ont été mis à jour avec succès.",
+    "successMessageEmailUpdate": "Votre email a été mis à jour avec succès. Veuillez vérifier votre boîte de réception pour confirmer."
   },
   "errors": {
     "fetchProfile": "Impossible de récupérer votre profil. Veuillez réessayer plus tard.",
@@ -21,7 +23,10 @@
     "retry": "Réessayer",
     "home": "Accueil",
     "nameRequired": "Le prénom et le nom sont requis.",
+    "emailRequired": "L'email est requis.",
+    "emailInvalid": "Veuillez entrer une adresse email valide.",
     "nameUpdate": "Erreur lors de la mise à jour du nom et du prénom. Veuillez réessayer.",
+    "emailUpdate": "Erreur lors de la mise à jour de l'email. Veuillez réessayer.",
     "firstnameRequired": "Le prénom est requis.",
     "lastnameRequired": "Le nom est requis."
   },

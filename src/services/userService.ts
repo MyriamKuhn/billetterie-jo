@@ -44,3 +44,26 @@ export async function updateUserProfile(
     data: response.data,
   };
 }
+
+export async function updateUserEmail(
+  token: string,
+  email: string,
+  lang: string
+): Promise<ResendResponse> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    'Accept-Language': lang
+  };
+
+  const response = await axios.patch<ApiResponse>(
+    `${API_BASE_URL}/api/auth/email`,
+    { email },
+    { headers },
+  );
+
+  return {
+    status: response.status,
+    data: response.data,
+  };
+}

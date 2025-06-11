@@ -1,65 +1,58 @@
-import { useTranslation } from "react-i18next";
-import type { UserProfile } from "../../pages/UserDashboardPage";
-import { useEffect, useState, type JSX } from "react";
-import axios from "axios";
 import Accordion from "@mui/material/Accordion";
+import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import Stack from "@mui/material/Stack";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { useEffect, useState, type JSX } from "react";
+import { useTranslation } from "react-i18next";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { updateUserProfile } from "../../services/userService";
 import { useAuthStore } from "../../stores/useAuthStore";
+import { isEmailValid } from '../../utils/validation';
 import { useNavigate } from "react-router-dom";
+import { updateUserEmail } from "../../services/userService";
+import axios from "axios";
 import { getErrorMessage } from "../../utils/errorUtils";
 import AlertMessage from "../AlertMessage";
+import { useLanguageStore } from "../../stores/useLanguageStore";
 
-interface NameSectionProps {
-  user: UserProfile;
-  onUpdate: (vals: Partial<UserProfile>) => void;
+interface EmailSectionProps {
+  currentEmail: string;
+  onUpdate: (newEmail: string) => void;
 }
 
-export function NameSection({ user, onUpdate }: NameSectionProps): JSX.Element {
+export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX.Element {
   const { t } = useTranslation('userDashboard');
   const token = useAuthStore((state) => state.authToken);
   const navigate = useNavigate();
-  
-  const [expanded, setExpanded] = useState<boolean>(false);
-  const [firstname, setFirstname] = useState<string>(user.firstname);
-  const [lastname, setLastname] = useState<string>(user.lastname);
-  const [firstnameTouched, setFirstnameTouched] = useState(false);
-  const [lastnameTouched, setLastnameTouched]   = useState(false);
+  const lang = useLanguageStore(state => state.lang);
 
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const [newEmail, setNewEmail] = useState<string>(currentEmail);
+  const [newEmailTouched, setNewEmailTouched] = useState(false);
+  
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  const firstnameError = firstnameTouched && firstname.trim() === '';
-  const lastnameError  = lastnameTouched  && lastname.trim() === '';
-  const isFirstnameValid = firstname.trim() !== '';
-  const isLastnameValid = lastname.trim()  !== '';
+  const emailError = newEmailTouched && !isEmailValid(newEmail);
 
   useEffect(() => {
-    setFirstname(user.firstname);
-    setLastname(user.lastname);
-    setFirstnameTouched(false);
-    setLastnameTouched(false);
+    setNewEmail(currentEmail);
+    setNewEmailTouched(false);
     setErrorMsg(null);
-  }, [user.firstname, user.lastname]);
+  }, [currentEmail]);
 
   const handleAccordionChange = () => {
     if (expanded) {
       // On est sur le point de fermer
       setErrorMsg(null);
       setSuccessMsg(null);
-      setFirstnameTouched(false);
-      setLastnameTouched(false);
-      setFirstname(user.firstname);
-      setLastname(user.lastname);
+      setNewEmailTouched(false);
+      setNewEmail(currentEmail);
     }
     setExpanded(prev => !prev);
   };
@@ -69,8 +62,8 @@ export function NameSection({ user, onUpdate }: NameSectionProps): JSX.Element {
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    if (!isFirstnameValid || !isLastnameValid) {
-      setErrorMsg(t('errors.nameRequired'));
+    if (!isEmailValid(newEmail)) {
+      setErrorMsg(t('errors.emailRequired'));
       return;
     }
 
@@ -81,13 +74,13 @@ export function NameSection({ user, onUpdate }: NameSectionProps): JSX.Element {
 
     setLoading(true);
     try {
-      const { status } = await updateUserProfile(token, { firstname, lastname });
+      const { status } = await updateUserEmail(token, newEmail, lang);
 
       if (status === 204 || status === 200) {
-        onUpdate({ firstname, lastname });
-        setSuccessMsg(t('dashboard.successMessageProfileUpdate'));
+        onUpdate(newEmail);
+        setSuccessMsg(t('dashboard.successMessageEmailUpdate'));
       } else {
-        setErrorMsg(t('errors.nameUpdate'));
+        setErrorMsg(t('errors.emailUpdate'));
       }
     } catch (err: any) {
       if (axios.isAxiosError(err) && err.response) {
@@ -110,10 +103,10 @@ export function NameSection({ user, onUpdate }: NameSectionProps): JSX.Element {
       <AccordionSummary expandIcon={<ExpandMoreIcon />}> 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: { xs: 1, sm: 0 } }}>
           <Typography sx={{ fontSize: { xs: '0.85rem', sm: '1.2rem' } }}>
-            {t('dashboard.name')}
+            {t('dashboard.email')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8rem', sm: '1rem' } }}>
-            {user.firstname} {user.lastname}
+            {currentEmail}
           </Typography>
         </Box>
       </AccordionSummary>
@@ -124,34 +117,21 @@ export function NameSection({ user, onUpdate }: NameSectionProps): JSX.Element {
           <TextField
             required
             fullWidth
-            id="lastname"
-            label={t('dashboard.lastname')}
-            value={lastname}
-            onChange={(e) => setLastname(e.target.value)}
-            onBlur={() => setLastnameTouched(true)}
-            autoComplete="family-name"
-            error={lastnameError}
-            helperText={lastnameError ? t('errors.lastnameRequired') : ''}
-          />
-          <TextField
-            required
-            fullWidth
-            id="firstname"
-            label={t('dashboard.firstname')}
-            value={firstname}
-            onChange={(e) => setFirstname(e.target.value)}
-            onBlur={() => setFirstnameTouched(true)}
-            autoComplete="given-name"
-            error={firstnameError}
-            helperText={firstnameError ? t('errors.firstnameRequired') : ''}
+            id="email"
+            label={t('dashboard.email')}
+            type="email"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+            onBlur={() => setNewEmailTouched(true)}
+            autoComplete="email"
+            error={emailError}
+            helperText={emailError ? t('errors.emailInvalid') : ''}
           />
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button 
               onClick={() => { 
-                setFirstname(user.firstname); 
-                setLastname(user.lastname);
-                setFirstnameTouched(false);
-                setLastnameTouched(false);
+                setNewEmail(currentEmail); 
+                setNewEmailTouched(false);
                 setErrorMsg(null);
                 setSuccessMsg(null); 
               }} 
@@ -162,7 +142,7 @@ export function NameSection({ user, onUpdate }: NameSectionProps): JSX.Element {
             <Button
               type="submit"
               variant="contained"
-              disabled={loading || !isFirstnameValid || !isLastnameValid}
+              disabled={loading || !isEmailValid(newEmail)}
               startIcon={
                 loading
                   ? <CircularProgress color="inherit" size={16} />

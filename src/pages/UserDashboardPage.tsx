@@ -26,6 +26,7 @@ import OlympicLoader from './../components/OlympicLoader';
 import { Navigate } from 'react-router-dom';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 import { NameSection } from '../components/NameSection';
+import { EmailSection } from '../components/EmailSection';
 
 export interface UserProfile {
   firstname: string;
@@ -147,92 +148,7 @@ export default function UserDashboardPage(): JSX.Element {
   );
 }
 
-interface EmailSectionProps {
-  currentEmail: string;
-  onUpdate: (newEmail: string) => void;
-}
 
-function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX.Element {
-  const { t } = useTranslation('account');
-  const [expanded, setExpanded] = useState<boolean>(false);
-  const [newEmail, setNewEmail] = useState<string>(currentEmail);
-  const [password, setPassword] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
-  const handleSave = async () => {
-    setError(null);
-    setSuccess(null);
-    if (newEmail === currentEmail) {
-      setError(t('errors.sameEmail'));
-      return;
-    }
-    const emailPattern = /.+@.+\..+/;
-    if (!emailPattern.test(newEmail)) {
-      setError(t('errors.invalidEmail'));
-      return;
-    }
-    if (!password) {
-      setError(t('errors.currentPasswordRequired'));
-      return;
-    }
-    setLoading(true);
-    try {
-      await axios.put('/api/user/profile/email', { email: newEmail, currentPassword: password });
-      setSuccess(t('success.emailChangeInitiated'));
-      onUpdate(newEmail);
-      setExpanded(false);
-    } catch (err) {
-      console.error(err);
-      setError(t('errors.updateEmail'));
-    } finally {
-      setLoading(false);
-      setPassword('');
-    }
-  };
-
-  return (
-    <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)} >
-      <AccordionSummary expandIcon={<ExpandMoreIcon />}> 
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-          <Typography>{t('sections.email')}</Typography>
-          <Typography variant="body2" color="text.secondary">
-            {currentEmail}
-          </Typography>
-        </Box>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Stack spacing={2}>
-          {error && <Typography color="error">{error}</Typography>}
-          {success && <Typography color="success.main">{success}</Typography>}
-          <TextField
-            label={t('fields.newEmail')}
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            fullWidth
-            type="email"
-          />
-          <TextField
-            label={t('fields.currentPassword')}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            fullWidth
-            type="password"
-          />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-            <Button onClick={() => { setExpanded(false); setNewEmail(currentEmail); setPassword(''); }} disabled={loading}>
-              {t('buttons.cancel')}
-            </Button>
-            <Button variant="contained" onClick={handleSave} disabled={loading} startIcon={loading ? <CircularProgress size={16} /> : null}>
-              {t('buttons.save')}
-            </Button>
-          </Box>
-        </Stack>
-      </AccordionDetails>
-    </Accordion>
-  );
-}
 
 function PasswordSection(): JSX.Element {
   const { t } = useTranslation('account');
