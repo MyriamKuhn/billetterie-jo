@@ -13,6 +13,8 @@ import { formatCurrency, formatDate } from '../../utils/format';
 import Chip from '@mui/material/Chip';
 import { useCartStore } from '../../stores/useCartStore';
 import { useAddToCart } from '../../hooks/useAddToCart';
+import { API_BASE_URL } from '../../config';
+import placeholderImg from '../../assets/products/placeholder.png';
 
 interface Props {
   open: boolean;
@@ -88,7 +90,11 @@ export function ProductDetailsModal({ open, productId, lang, onClose }: Props) {
           <Box component="div">
             <Box
               component="img"
-              src={product.product_details.image}
+              src={
+                product.product_details.image
+                  ? `${API_BASE_URL}/products/images/${product.product_details.image}`
+                  : placeholderImg
+              }
               alt={product.name}
               loading="lazy"
               sx={{ width: '100%', height: 200, objectFit: 'cover', mb: 2 }}
