@@ -10,6 +10,7 @@ import Box from '@mui/material/Box';
 import OlympicLoader from './components/OlympicLoader';
 import ScrollToTop from './components/ScrollToTop';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { RequireAuth } from './components/RequireAuth';
 
 const HomePage    = lazy(() => import('./pages/HomePage'));
 const TicketsPage = lazy(() => import('./pages/TicketsPage'));
@@ -23,6 +24,8 @@ const SignupPage = lazy(() => import('./pages/SignupPage'));
 const VerificationResultPage = lazy(() => import('./pages/VerificationResultPage'));
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
 const PasswordResetPage = lazy(() => import('./pages/PasswordResetPage'));
+const UserDashboardPage = lazy(() => import('./pages/UserDashboardPage'));
+const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
 
 
 interface AppProps {
@@ -69,6 +72,10 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/verification-result/:status" element={<VerificationResultPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/password-reset" element={<PasswordResetPage />} />
+                <Route path="/unauthorized" element={<UnauthorizedPage />} />
+                
+                {/* Protected routes */}
+                <Route path="/user/dashboard" element={<RequireAuth requiredRole="user"><UserDashboardPage /></RequireAuth>}/>
               </Routes>
             </Suspense>
           </ErrorBoundary>

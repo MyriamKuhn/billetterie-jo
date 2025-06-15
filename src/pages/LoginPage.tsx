@@ -28,21 +28,7 @@ import AlertMessage from '../components/AlertMessage/AlertMessage';
 import { onLoginSuccess, logout } from '../utils/authHelper';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useCustomSnackbar } from '../hooks/useCustomSnackbar';
-
-export interface ApiResponse {
-  message: string;
-  code?: string;
-  token?: string;
-  user?: {
-    id: number;
-    firstname: string;
-    lastname: string;
-    email: string;
-    role: 'user' | 'admin' | 'employee';
-    twofa_enabled: boolean;
-  };
-  twofa_enabled?: boolean;
-}
+import type { ApiResponse } from '../types/apiResponse';
 
 export default function LoginPage() {
   const { t } = useTranslation('login');
