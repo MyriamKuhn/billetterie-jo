@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>33/33</span>
+                <span class='fraction'>37/37</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>16/16</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>19/19</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
@@ -146,7 +146,15 @@
 <a name='L81'></a><a href='#L81'>81</a>
 <a name='L82'></a><a href='#L82'>82</a>
 <a name='L83'></a><a href='#L83'>83</a>
-<a name='L84'></a><a href='#L84'>84</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -171,6 +179,8 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -179,18 +189,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -241,6 +255,7 @@ import Box from '@mui/material/Box';
 import OlympicLoader from './components/OlympicLoader';
 import ScrollToTop from './components/ScrollToTop';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { RequireAuth } from './components/RequireAuth';
 &nbsp;
 const HomePage    = lazy(() =&gt; import('./pages/HomePage'));
 const TicketsPage = lazy(() =&gt; import('./pages/TicketsPage'));
@@ -254,6 +269,8 @@ const SignupPage = lazy(() =&gt; import('./pages/SignupPage'));
 const VerificationResultPage = lazy(() =&gt; import('./pages/VerificationResultPage'));
 const ForgotPasswordPage = lazy(() =&gt; import('./pages/ForgotPasswordPage'));
 const PasswordResetPage = lazy(() =&gt; import('./pages/PasswordResetPage'));
+const UserDashboardPage = lazy(() =&gt; import('./pages/UserDashboardPage'));
+const UnauthorizedPage = lazy(() =&gt; import('./pages/UnauthorizedPage'));
 &nbsp;
 &nbsp;
 interface AppProps {
@@ -300,6 +317,10 @@ export default function App({ mode, toggleMode }: AppProps) {
                 &lt;Route path="/verification-result/:status" element={&lt;VerificationResultPage /&gt;} /&gt;
                 &lt;Route path="/forgot-password" element={&lt;ForgotPasswordPage /&gt;} /&gt;
                 &lt;Route path="/password-reset" element={&lt;PasswordResetPage /&gt;} /&gt;
+                &lt;Route path="/unauthorized" element={&lt;UnauthorizedPage /&gt;} /&gt;
+                
+                {/* Protected routes */}
+                &lt;Route path="/user/dashboard" element={&lt;RequireAuth requiredRole="user"&gt;&lt;UserDashboardPage /&gt;&lt;/RequireAuth&gt;}/&gt;
               &lt;/Routes&gt;
             &lt;/Suspense&gt;
           &lt;/ErrorBoundary&gt;
@@ -319,7 +340,7 @@ export default function App({ mode, toggleMode }: AppProps) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-09T11:01:26.867Z
+                at 2025-06-15T17:01:50.836Z
             </div>
         <script src="../prettify.js"></script>
         <script>
