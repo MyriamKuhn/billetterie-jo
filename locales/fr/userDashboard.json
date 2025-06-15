@@ -1,0 +1,75 @@
+{
+  "seo": {
+    "title": "Mon tableau de bord – Billetterie JO Paris 2024",
+    "description": "Gérez vos informations personnelles et paramètres de sécurité sur le tableau de bord de votre compte.",
+    "errorTitle": "Erreur – Billetterie JO Paris 2024",
+    "errorDescription": "Une erreur est survenue lors de la récupération de votre profil. Veuillez réessayer plus tard."
+  },
+  "dashboard": {
+    "title": "Espace client",
+    "subtitle": "Gérez vos informations personnelles et paramètres de sécurité",
+    "name": "Nom et prénom",
+    "email": "Email",
+    "firstname": "Prénom",
+    "lastname": "Nom",
+    "password": "Mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saveLoad": "Enregistrement",
+    "updateNameSuccess": "Nom et prénom mis à jour avec succès.",
+    "successMessageProfileUpdate": "Votre nom et prénom ont été mis à jour avec succès.",
+    "successMessageEmailUpdate": "Votre email a été mis à jour avec succès. Veuillez vérifier votre boîte de réception pour confirmer.",
+    "successMessagePasswordUpdate": "Votre mot de passe a été mis à jour avec succès.",
+    "hidePassword": "Cacher le mot de passe",
+    "showPassword": "Afficher le mot de passe"
+  },
+  "errors": {
+    "fetchProfile": "Impossible de récupérer votre profil. Veuillez réessayer plus tard.",
+    "genericErrorTitle": "Oops… une erreur est survenue",
+    "retry": "Réessayer",
+    "home": "Accueil",
+    "nameRequired": "Le prénom et le nom sont requis.",
+    "emailRequired": "L'email est requis.",
+    "emailInvalid": "Veuillez entrer une adresse email valide.",
+    "nameUpdate": "Erreur lors de la mise à jour du nom et du prénom. Veuillez réessayer.",
+    "emailUpdate": "Erreur lors de la mise à jour de l'email. Veuillez réessayer.",
+    "passwordUpdate": "Erreur lors de la mise à jour du mot de passe. Veuillez réessayer.",
+    "emailUnchanged": "L'email n'a pas changé.",
+    "firstnameRequired": "Le prénom est requis.",
+    "lastnameRequired": "Le nom est requis.",
+    "currentPasswordRequired": "Le mot de passe actuel est requis.",
+    "passwordInvalid": "Veuillez entrer un mot de passe valide.",
+    "passwordMismatch": "Les mots de passe ne correspondent pas.",
+    "passwordNotStrong": "Le mot de passe n'est pas assez fort."
+  },
+  "sections": {
+    "twoFA": "Authentification à deux facteurs"
+  },
+  "fields": {
+    "otpCode": "Code OTP"
+  },
+  "errors1": {
+    "2faSetup": "Erreur lors de la configuration de l'authentification à deux facteurs.",
+    "2faConfirm": "Code invalide ou erreur de confirmation."
+  },
+  "success": {
+    "2faEnabled": "Authentification à deux facteurs activée.",
+    "2faDisabled": "Authentification à deux facteurs désactivée."
+  },
+  "dialog": {
+    "scanQRCode": "Scannez ce code QR avec votre application d’authentification.",
+    "enable2faTitle": "Activer l'authentification à deux facteurs",
+    "disable2faTitle": "Désactiver l'authentification à deux facteurs"
+  },
+  "info": {
+    "2faEnabled": "L'authentification à deux facteurs est activée.",
+    "2faDisabled": "L'authentification à deux facteurs est désactivée."
+  },
+  "enabled": "Activé",
+  "disabled": "Désactivé",
+  "common": {
+    "loginAgain": "Se reconnecter"
+  }
+}
+      
