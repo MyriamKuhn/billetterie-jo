@@ -18,3 +18,12 @@ export interface ApiResponse {
   twofa_enabled?: boolean;
 }
 
+export interface TwoFAResendResponse {
+  status: number;
+  data: TwoFAResponse;
+}
+
+export interface TwoFAResponse {
+  qrCodeUrl: string;
+  secret: string;
+}

@@ -53,7 +53,6 @@ export function NameSection({ user, onUpdate }: NameSectionProps): JSX.Element {
 
   const handleAccordionChange = () => {
     if (expanded) {
-      // On est sur le point de fermer
       setErrorMsg(null);
       setSuccessMsg(null);
       setFirstnameTouched(false);

@@ -48,7 +48,6 @@ export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX
 
   const handleAccordionChange = () => {
     if (expanded) {
-      // On est sur le point de fermer
       setErrorMsg(null);
       setSuccessMsg(null);
       setNewEmailTouched(false);
@@ -64,6 +63,11 @@ export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX
 
     if (!isEmailValid(newEmail)) {
       setErrorMsg(t('errors.emailRequired'));
+      return;
+    }
+
+    if (newEmail === currentEmail) {
+      setErrorMsg(t('errors.emailUnchanged'));
       return;
     }
 

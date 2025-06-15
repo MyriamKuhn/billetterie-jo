@@ -10,12 +10,17 @@
     "email": "Email",
     "firstname": "Prénom",
     "lastname": "Nom",
+    "password": "Mot de passe",
+    "currentPassword": "Mot de passe actuel",
     "cancel": "Annuler",
     "save": "Enregistrer",
     "saveLoad": "Enregistrement",
     "updateNameSuccess": "Nom et prénom mis à jour avec succès.",
     "successMessageProfileUpdate": "Votre nom et prénom ont été mis à jour avec succès.",
-    "successMessageEmailUpdate": "Votre email a été mis à jour avec succès. Veuillez vérifier votre boîte de réception pour confirmer."
+    "successMessageEmailUpdate": "Votre email a été mis à jour avec succès. Veuillez vérifier votre boîte de réception pour confirmer.",
+    "successMessagePasswordUpdate": "Votre mot de passe a été mis à jour avec succès.",
+    "hidePassword": "Cacher le mot de passe",
+    "showPassword": "Afficher le mot de passe"
   },
   "errors": {
     "fetchProfile": "Impossible de récupérer votre profil. Veuillez réessayer plus tard.",
@@ -27,39 +32,26 @@
     "emailInvalid": "Veuillez entrer une adresse email valide.",
     "nameUpdate": "Erreur lors de la mise à jour du nom et du prénom. Veuillez réessayer.",
     "emailUpdate": "Erreur lors de la mise à jour de l'email. Veuillez réessayer.",
+    "passwordUpdate": "Erreur lors de la mise à jour du mot de passe. Veuillez réessayer.",
+    "emailUnchanged": "L'email n'a pas changé.",
     "firstnameRequired": "Le prénom est requis.",
-    "lastnameRequired": "Le nom est requis."
+    "lastnameRequired": "Le nom est requis.",
+    "currentPasswordRequired": "Le mot de passe actuel est requis.",
+    "passwordInvalid": "Veuillez entrer un mot de passe valide.",
+    "passwordMismatch": "Les mots de passe ne correspondent pas.",
+    "passwordNotStrong": "Le mot de passe n'est pas assez fort."
   },
   "sections": {
-    "email": "Email",
-    "password": "Mot de passe",
     "twoFA": "Authentification à deux facteurs"
   },
   "fields": {
-    "newEmail": "Nouvel email",
-    "currentPassword": "Mot de passe actuel",
-    "newPassword": "Nouveau mot de passe",
-    "confirmPassword": "Confirmer le mot de passe",
     "otpCode": "Code OTP"
   },
-  "buttons": {
-    "confirm": "Confirmer"
-  },
   "errors1": {
-    "sameEmail": "Le nouvel email doit être différent de l'email actuel.",
-    "invalidEmail": "Veuillez entrer une adresse email valide.",
-    "currentPasswordRequired": "Le mot de passe actuel est requis.",
-    "updateEmail": "Erreur lors de la mise à jour de l'email.",
-    "passwordFieldsRequired": "Tous les champs de mot de passe sont requis.",
-    "passwordsDontMatch": "Les mots de passe ne correspondent pas.",
-    "passwordNotStrong": "Le mot de passe doit contenir au moins 8 caractères.",
-    "updatePassword": "Erreur lors de la mise à jour du mot de passe.",
     "2faSetup": "Erreur lors de la configuration de l'authentification à deux facteurs.",
     "2faConfirm": "Code invalide ou erreur de confirmation."
   },
   "success": {
-    "emailChangeInitiated": "Changement d'email initié. Vérifiez votre boîte pour confirmer.",
-    "passwordUpdated": "Mot de passe mis à jour avec succès.",
     "2faEnabled": "Authentification à deux facteurs activée.",
     "2faDisabled": "Authentification à deux facteurs désactivée."
   },
