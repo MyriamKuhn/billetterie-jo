@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
-import LoginPage, { type ApiResponse } from './LoginPage'
+import LoginPage from './LoginPage'
 import * as authService from '../services/authService'
 import { logError } from '../utils/logger'
 
@@ -307,6 +307,7 @@ describe('LoginPage – autres branches non couvertes', () => {
 })
 
 import * as authHelper from '../utils/authHelper'
+import type { ApiResponse } from '../types/apiResponse'
 
 describe('LoginPage – 2FA submission et loading', () => {
   const fakeUser: ApiResponse['user'] = {
