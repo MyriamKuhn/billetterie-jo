@@ -16,8 +16,8 @@ import axios from 'axios';
 import { passwordForgottenDemand } from '../services/authService';
 import { getErrorMessage } from '../utils/errorUtils';
 import { logError } from '../utils/logger';
-import type { ApiResponse } from './LoginPage';
 import { isEmailValid } from '../utils/validation';
+import type { ApiResponse } from '../types/apiResponse';
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation('forgotPassword');

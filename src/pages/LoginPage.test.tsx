@@ -76,9 +76,10 @@ vi.mock('react-router-dom', async () => {
 import { describe, it, expect, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
-import LoginPage, { type ApiResponse } from './LoginPage'
+import LoginPage from './LoginPage'
 import * as authService from '../services/authService'
 import * as authHelper from '../utils/authHelper'
+import type { ApiResponse } from '../types/apiResponse';
 
 const fakeUser: ApiResponse['user'] = {
   id: 1,

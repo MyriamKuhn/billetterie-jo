@@ -8,9 +8,8 @@ import {
   resetPassword
 } from './authService'
 import { API_BASE_URL } from '../config'
-import type { ResendResponse } from './authService'
-import type { ApiResponse } from '../pages/LoginPage'
 import { describe, it, expect, vi } from 'vitest'
+import type { ApiResponse, ResendResponse } from '../types/apiResponse'
 
 vi.mock('axios')
 const mockedPost = axios.post as unknown as jest.MockedFunction<typeof axios.post>
