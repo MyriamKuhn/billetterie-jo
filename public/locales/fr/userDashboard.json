@@ -16,13 +16,39 @@
     "currentPassword": "Mot de passe actuel",
     "cancel": "Annuler",
     "save": "Enregistrer",
+    "confirm": "Confirmer",
+    "next": "Suivant",
+    "copy": "Copier",
+    "done": "Terminer",
     "saveLoad": "Enregistrement",
     "updateNameSuccess": "Nom et prénom mis à jour avec succès.",
     "successMessageProfileUpdate": "Votre nom et prénom ont été mis à jour avec succès.",
     "successMessageEmailUpdate": "Votre email a été mis à jour avec succès. Veuillez vérifier votre boîte de réception pour confirmer.",
     "successMessagePasswordUpdate": "Votre mot de passe a été mis à jour avec succès.",
     "hidePassword": "Cacher le mot de passe",
-    "showPassword": "Afficher le mot de passe"
+    "showPassword": "Afficher le mot de passe",
+    "2faEnabled": "Authentification à deux facteurs activée",
+    "2faDisabled": "Authentification à deux facteurs désactivée",
+    "twoFA": "Authentification à deux facteurs",
+    "enabled": "Activée",
+    "disabled": "Désactivée",
+    "enable2faTitle": "Activer l'authentification à deux facteurs",
+    "disable2faTitle": "Désactiver l'authentification à deux facteurs",
+    "confirm2faTitle": "Confirmer l'authentification à deux facteurs",
+    "scanQRCodeWithoutConfirm": "Scannez le code QR ci-dessous avec votre application d'authentification pour activer l'authentification à deux facteurs.",
+    "secret": "Secret à entrer manuellement dans l’application 2FA (conservez-le en lieu sûr)",
+    "enterOtpAfterScan": "Après avoir scanné le code QR, cliquez sur suivant pour entrer le code généré par votre application d'authentification.",
+    "enterCodeToConfirm": "Entrez le code généré par votre application d'authentification pour confirmer l'activation de l'authentification à deux facteurs.",
+    "otpCode": "Code de l'application d'authentification",
+    "otpCodeMobile": "Code de l'appli",
+    "recoveryCode": "Code de récupération",
+    "recoveryCodeMobile": "Code de récup.",
+    "recoveryCodesTitle": "Codes de récupération",
+    "recoveryCodesNote": "Conservez ces codes en lieu sûr. Ils vous permettront d'accéder à votre compte si vous perdez l'accès à votre application d'authentification.",
+    "enterCodeToDisable": "Entrez le code généré par votre application d'authentification pour confirmer la désactivation de l'authentification à deux facteurs.",
+    "enterRecoveryCodeToDisable": "Entrez un code de récupération pour désactiver l'authentification à deux facteurs.",
+    "useOtp": "Utiliser le code de l'application d'authentification",
+    "useRecoveryCode": "Utiliser un code de récupération"
   },
   "errors": {
     "fetchProfile": "Impossible de récupérer votre profil. Veuillez réessayer plus tard.",
@@ -41,35 +67,10 @@
     "currentPasswordRequired": "Le mot de passe actuel est requis.",
     "passwordInvalid": "Veuillez entrer un mot de passe valide.",
     "passwordMismatch": "Les mots de passe ne correspondent pas.",
-    "passwordNotStrong": "Le mot de passe n'est pas assez fort."
-  },
-  "sections": {
-    "twoFA": "Authentification à deux facteurs"
-  },
-  "fields": {
-    "otpCode": "Code OTP"
-  },
-  "errors1": {
-    "2faSetup": "Erreur lors de la configuration de l'authentification à deux facteurs.",
-    "2faConfirm": "Code invalide ou erreur de confirmation."
-  },
-  "success": {
-    "2faEnabled": "Authentification à deux facteurs activée.",
-    "2faDisabled": "Authentification à deux facteurs désactivée."
-  },
-  "dialog": {
-    "scanQRCode": "Scannez ce code QR avec votre application d’authentification.",
-    "enable2faTitle": "Activer l'authentification à deux facteurs",
-    "disable2faTitle": "Désactiver l'authentification à deux facteurs"
-  },
-  "info": {
-    "2faEnabled": "L'authentification à deux facteurs est activée.",
-    "2faDisabled": "L'authentification à deux facteurs est désactivée."
-  },
-  "enabled": "Activé",
-  "disabled": "Désactivé",
-  "common": {
-    "loginAgain": "Se reconnecter"
+    "passwordNotStrong": "Le mot de passe n'est pas assez fort.",
+    "otpRequired": "Le code de l'application d'authentification est requis.",
+    "recoveryCodeRequired": "Le code de récupération est requis.",
+    "invalidOtp": "Le code de l'application d'authentification est invalide.",
+    "invalidRecoveryCode": "Le code de récupération est invalide."
   }
 }
-      

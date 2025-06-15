@@ -26,4 +26,9 @@ export interface TwoFAResendResponse {
 export interface TwoFAResponse {
   qrCodeUrl: string;
   secret: string;
+  expires_at: string;
+}
+
+export interface ConfirmTwoFAResponse {
+  recovery_codes: string[];
 }
