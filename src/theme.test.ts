@@ -276,6 +276,85 @@ describe('getAppTheme – component styleOverrides', () => {
         });
         expect(styles).toEqual({});
       });
+
+            it('MuiAccordion – root overrides', () => {
+        const fn = theme.components!.MuiAccordion!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+        expect(styles).toMatchObject({
+          backgroundColor: theme.palette.background.paper,
+          borderRadius: theme.shape.borderRadius,
+          border: `1px solid ${theme.palette.divider}`,
+          '&:before': { display: 'none' },
+        });
+      });
+
+      it('MuiAccordionSummary – root overrides', () => {
+        const fn = theme.components!.MuiAccordionSummary!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+        expect(styles).toMatchObject({
+          backgroundColor: theme.palette.background.paper,
+          borderRadius: theme.shape.borderRadius,
+          '&.Mui-expanded': {
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+          },
+        });
+      });
+
+      it('MuiAccordionSummary – expandIconWrapper override', () => {
+        const fn = theme.components!.MuiAccordionSummary!.styleOverrides!.expandIconWrapper!;
+        const styles = (fn as any)({ theme });
+        const expectedColor = isLight ? theme.palette.info.main : theme.palette.text.primary;
+        expect(styles).toMatchObject({
+          color: expectedColor,
+          borderRadius: '50%',
+          padding: 4,
+          '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+          },
+        });
+      });
+
+      it('MuiAccordionDetails – root overrides', () => {
+        const fn = theme.components!.MuiAccordionDetails!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+        expect(styles).toMatchObject({
+          backgroundColor: theme.palette.background.paper,
+          borderBottomLeftRadius: theme.shape.borderRadius,
+          borderBottomRightRadius: theme.shape.borderRadius,
+          '&.Mui-expanded': {
+            borderBottomLeftRadius: theme.shape.borderRadius,
+            borderBottomRightRadius: theme.shape.borderRadius,
+          },
+        });
+      });
+
+            it('MuiSwitch – switchBase override', () => {
+        const fn = theme.components!.MuiSwitch!.styleOverrides!.switchBase!;
+        const styles = (fn as any)({ theme });
+        const expectedColor = isLight ? theme.palette.info.main : theme.palette.primary.dark;
+        expect(styles).toMatchObject({ color: expectedColor });
+      });
+
+      it('MuiSwitch – root override', () => {
+        const fn = theme.components!.MuiSwitch!.styleOverrides!.root!;
+        const styles = (fn as any)({ theme });
+
+        const thumbColor = isLight ? theme.palette.info.main : theme.palette.primary.dark;
+        const trackColor = thumbColor + '80';
+
+        expect(styles).toMatchObject({
+          '& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb': {
+            color: thumbColor,
+          },
+          '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+            backgroundColor: thumbColor,
+          },
+          '& .MuiSwitch-track': {
+            backgroundColor: trackColor,
+          },
+        });
+      });
     });
   });
 });

@@ -13,7 +13,7 @@ import Link from '@mui/material/Link';
 import logoImg from '../assets/logos/jo_logo.png';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { registerUser } from '../services/authService';
-import AlertMessage from '../components/AlertMessage/AlertMessage';
+import AlertMessage from '../components/AlertMessage';
 import { getErrorMessage } from '../utils/errorUtils';
 import { RECAPTCHA_SITE_KEY } from '../config'
 import { useTheme } from '@mui/material/styles';

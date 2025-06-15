@@ -1,11 +1,7 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
-import type { ApiResponse } from '../pages/LoginPage';
-
-export type ResendResponse = {
-  status: number;
-  data: ApiResponse;
-};
+import type { ApiResponse } from '../types/apiResponse';
+import type { ResendResponse } from '../types/apiResponse';
 
 export interface RegisterPayload {
   firstname: string;

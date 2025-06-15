@@ -48,6 +48,8 @@ vi.mock('./pages/SignupPage', () => ({ __esModule: true, default: () => <div dat
 vi.mock('./pages/VerificationResultPage', () => ({__esModule: true, default: () => <div data-testid="page-verification-result">Verification Result</div>}));
 vi.mock('./pages/ForgotPasswordPage', () => ({ __esModule: true, default: () => <div data-testid="page-forgot-password">Forgot Password</div> }));
 vi.mock('./pages/PasswordResetPage', () => ({ __esModule: true, default: () => <div data-testid="page-password-reset">Password Reset</div> }));
+vi.mock('./pages/UserDashboardPage', () => ({ __esModule: true, default: () => <div data-testid="page-user-dashboard">User Dashboard</div> }));
+vi.mock('./pages/UnauthorizedPage', () => ({ __esModule: true, default: () => <div data-testid="page-unauthorized">Unauthorized</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -69,6 +71,12 @@ const fakeThemeLight = { palette: { mode: 'light' as const } };
 vi.mock('@mui/material/styles', () => ({
   __esModule: true,
   useTheme: vi.fn(() => fakeThemeLight),
+}));
+
+// Stub RequireAuth pour qu’il rende toujours children sans contrôle
+vi.mock('./components/RequireAuth', () => ({
+  __esModule: true,
+  RequireAuth: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // ── 7️⃣ Import APRÈS TOUS les mocks ──────────────────────────────────────────────
@@ -210,4 +218,24 @@ describe('<App />', () => {
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 });
+
+describe('Routes supplémentaires dans <App />', () => {
+  it('affiche UnauthorizedPage sur la route "/unauthorized"', async () => {
+    window.history.pushState({}, '', '/unauthorized');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    // Attendre le rendu lazy + Suspense
+    await waitFor(() => expect(screen.getByTestId('page-unauthorized')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+
+  it('affiche UserDashboardPage sur "/user/dashboard" quand RequireAuth autorise l’accès (stubbed)', async () => {
+    window.history.pushState({}, '', '/user/dashboard');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-user-dashboard')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+});
+
 

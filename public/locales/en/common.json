@@ -48,7 +48,9 @@
     "title": "Oops… an error occurred",
     "unexpected": "An unexpected error occurred…",
     "retry": "Retry",
-    "home": "Back to home"
+    "home": "Back to home",
+    "seoTitle": "Error – Paris 2024 Olympic Ticketing",
+    "seoDescription": "An error occurred during your request. Please try again later or contact support if the problem persists."
   },
   "scroll": {
     "back_to_top": "Back to top"
