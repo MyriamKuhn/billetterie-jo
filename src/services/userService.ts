@@ -4,6 +4,7 @@ import type { ApiResponse, ResendResponse, TwoFAResponse, TwoFAResendResponse } 
 
 export async function fetchUser(
   token: string,
+  config?: { signal?: AbortSignal }
 ): Promise<ResendResponse> {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -12,7 +13,10 @@ export async function fetchUser(
 
   const response = await axios.get<ApiResponse>(
     `${API_BASE_URL}/api/users/me`,
-    { headers },
+    {
+      headers,
+      signal: config?.signal,
+    }
   );
 
   return {

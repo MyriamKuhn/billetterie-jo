@@ -9,7 +9,7 @@ const PUBLIC_PATHS = [
   '/api/auth/password/reset',
 ];
 
-function getPathnameFromConfig(config: any): string {
+export function getPathnameFromConfig(config: any): string {
   const url = config.url ?? '';
   const base = config.baseURL;
   try {

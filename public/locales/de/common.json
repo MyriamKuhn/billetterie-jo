@@ -48,7 +48,9 @@
     "title": "Hoppla… ein Fehler ist aufgetreten",
     "unexpected": "Ein unerwarteter Fehler ist aufgetreten…",
     "retry": "Erneut versuchen",
-    "home": "Zurück zur Startseite"
+    "home": "Zurück zur Startseite",
+    "seoTitle": "Fehler – Olympischer Ticketverkauf Paris 2024",
+    "seoDescription": "Ein Fehler ist bei Ihrer Anfrage aufgetreten. Bitte versuchen Sie es später erneut oder kontaktieren Sie den Support, wenn das Problem weiterhin besteht."
   },
   "scroll": {
     "back_to_top": "Zurück nach oben"

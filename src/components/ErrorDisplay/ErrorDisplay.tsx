@@ -2,6 +2,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
+import Seo from '../Seo';
+import { useTranslation } from 'react-i18next';
 
 interface ErrorDisplayProps {
   title: string;
@@ -23,6 +25,7 @@ export function ErrorDisplay({
   homeButtonText,
 }: ErrorDisplayProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // Handlers
   const handleRetry = () => {
@@ -35,27 +38,30 @@ export function ErrorDisplay({
   };
 
   return (
-    <Box sx={{ p: 4, textAlign: 'center' }}>
-      <Typography variant="h5" gutterBottom>
-        {title}
-      </Typography>
-      <Typography variant="body1" sx={{ mb: 2 }}>
-        {message}
-      </Typography>
-      {showRetry && (
-        <Button variant="text" onClick={handleRetry}>
-          {retryButtonText}
-        </Button>
-      )}
-      {showHome && (
-        <Button
-          variant="contained"
-          onClick={handleHome}
-          sx={{ ml: 2 }}
-        >
-          {homeButtonText}
-        </Button>
-      )}
-    </Box>
+    <>
+      <Seo title={t('errors.seoTitle')} description={t('errors.seoDescription')} />
+      <Box sx={{ p: 4, textAlign: 'center' }}>
+        <Typography variant="h5" gutterBottom>
+          {title}
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          {message}
+        </Typography>
+        {showRetry && (
+          <Button variant="text" onClick={handleRetry}>
+            {retryButtonText}
+          </Button>
+        )}
+        {showHome && (
+          <Button
+            variant="contained"
+            onClick={handleHome}
+            sx={{ ml: 2 }}
+          >
+            {homeButtonText}
+          </Button>
+        )}
+      </Box>
+    </>
   );
 }

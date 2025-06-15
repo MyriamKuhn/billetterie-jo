@@ -1,7 +1,9 @@
 {
   "seo": {
     "title": "Mon tableau de bord – Billetterie JO Paris 2024",
-    "description": "Gérez vos informations personnelles et paramètres de sécurité sur le tableau de bord de votre compte."
+    "description": "Gérez vos informations personnelles et paramètres de sécurité sur le tableau de bord de votre compte.",
+    "errorTitle": "Erreur – Billetterie JO Paris 2024",
+    "errorDescription": "Une erreur est survenue lors de la récupération de votre profil. Veuillez réessayer plus tard."
   },
   "dashboard": {
     "title": "Espace client",

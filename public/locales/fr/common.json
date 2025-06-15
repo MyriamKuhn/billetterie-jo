@@ -48,7 +48,9 @@
     "title": "Oops… une erreur est survenue",
     "unexpected": "Une erreur inattendue est survenue…",
     "retry": "Réessayer",
-    "home": "Retour à l’accueil"
+    "home": "Retour à l’accueil",
+    "seoTitle": "Erreur – Billetterie JO Paris 2024",
+    "seoDescription": "Une erreur est survenue lors de votre demande. Veuillez réessayer plus tard ou contacter le support si le problème persiste."
   },
   "scroll": {
     "back_to_top": "Retour en haut"

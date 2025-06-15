@@ -34,79 +34,86 @@ export default function UserDashboardPage(): JSX.Element {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
+    // Si pas de token, on réinitialise et on stoppe le chargement
+    if (!token) {
+      setUser(null);
+      setLoadingUser(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const signal = controller.signal;
+
     const loadUser = async () => {
       setLoadingUser(true);
       setErrorMsg(null);
       try {
-        if (!token) {
-          if (isMounted) {
-            setUser(null);
-          }
-          return;
-        }
-        const response = await fetchUser(token);
+        // Passer le signal à fetchUser afin que la requête puisse être annulée
+        const response = await fetchUser(token, { signal });
+        if (signal.aborted) return;
         const { status, data } = response;
         if (status === 200 && data.user) {
-          if (isMounted) {
-            setUser({
-              firstname: data.user.firstname,
-              lastname: data.user.lastname,
-              email: data.user.email,
-              twoFAEnabled: data.user.twofa_enabled,
-            });
-          }
+          setUser({
+            firstname: data.user.firstname,
+            lastname: data.user.lastname,
+            email: data.user.email,
+            twoFAEnabled: data.user.twofa_enabled,
+          });
         } else {
-          if (isMounted) {
-            setErrorMsg(t('errors.fetchProfile'));
-          }
+          setErrorMsg(t('errors.fetchProfile'));
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (signal.aborted) return;
         if (axios.isAxiosError(err) && err.response) {
-        const { data } = err.response;
-        if (data.code) {
-            if (isMounted) setErrorMsg(getErrorMessage(t, data.code));
-          } else {
-            if (isMounted) setErrorMsg(getErrorMessage(t, 'generic_error'));
-          }
+          const respData = err.response.data;
+          const code = respData?.code;
+          setErrorMsg(getErrorMessage(t, code ?? 'generic_error'));
         } else {
-          if (isMounted) setErrorMsg(getErrorMessage(t, 'network_error'));
+          setErrorMsg(getErrorMessage(t, 'network_error'));
         }
       } finally {
-        if (isMounted) setLoadingUser(false);
+        if (!signal.aborted) {
+          setLoadingUser(false);
+        }
       }
-    }
-    loadUser()
+    };
+    loadUser();
     return () => {
-      isMounted = false;
+      controller.abort();
     };
   }, [token, t]);
 
   if (loadingUser) {
     return (
-      <PageWrapper>
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-          <OlympicLoader />
-        </Box>
-      </PageWrapper>
+      <>
+        <Seo title={t('seo.title')} description={t('seo.description')} />
+        <PageWrapper>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <OlympicLoader />
+          </Box>
+        </PageWrapper>
+      </>
     );
   }
 
   if (errorMsg) {
     return (
-      <PageWrapper>
-        <ErrorDisplay
-          title={t('errors.genericErrorTitle')}
-          message={errorMsg}
-          showRetry={true}
-          retryButtonText={t('errors.retry')}
-          onRetry={() => {
-            window.location.reload();
-          }}
-          showHome={true}
-          homeButtonText={t('errors.home')}
-        />
-      </PageWrapper>
+      <>
+        <Seo title={t('seo.errorTitle')} description={t('seo.errorDescription')} />
+        <PageWrapper>
+          <ErrorDisplay
+            title={t('errors.genericErrorTitle')}
+            message={errorMsg}
+            showRetry={true}
+            retryButtonText={t('errors.retry')}
+            onRetry={() => {
+              window.location.reload();
+            }}
+            showHome={true}
+            homeButtonText={t('errors.home')}
+          />
+        </PageWrapper>
+      </>
     );
   }
 
@@ -126,10 +133,10 @@ export default function UserDashboardPage(): JSX.Element {
             {t('dashboard.subtitle')}
           </Typography>
           <Stack spacing={2}>
-            <NameSection user={user} onUpdate={(vals) => setUser((prev) => prev ? ({ ...prev, ...vals }) : prev)} />
-            <EmailSection currentEmail={user.email} onUpdate={(newEmail) => setUser((prev) => prev ? ({ ...prev, email: newEmail }) : prev)} />
+            <NameSection user={user} onUpdate={(vals) => setUser(prev => ({ ...prev!, ...vals }))}/>
+            <EmailSection currentEmail={user.email} onUpdate={(newEmail) => setUser(prev => ({ ...prev!, email: newEmail }))}/>
             <PasswordSection />
-            <TwoFASection enabled={user.twoFAEnabled} onToggle={(enabled) => setUser((prev) => prev ? ({ ...prev, twoFAEnabled: enabled }) : prev)} />
+            <TwoFASection enabled={user.twoFAEnabled} onToggle={(enabled) => setUser(prev => ({ ...prev!, twoFAEnabled: enabled }))} />
           </Stack>
         </Box>
       </PageWrapper>
