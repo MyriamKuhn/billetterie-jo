@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../config';
-import type { ApiResponse, ResendResponse, TwoFAResponse, TwoFAResendResponse } from '../types/apiResponse';
+import type { ApiResponse, ResendResponse, TwoFAResponse, TwoFAResendResponse, ConfirmTwoFAResponse } from '../types/apiResponse';
 
 export async function fetchUser(
   token: string,
@@ -106,6 +106,27 @@ export async function enableTwoFA(
   const response = await axios.post<TwoFAResponse>(
     `${API_BASE_URL}/api/auth/2fa/enable`,
     {},
+    { headers },
+  );
+
+  return {
+    status: response.status,
+    data: response.data,
+  };
+}
+
+export async function confirmTwoFA(
+  token: string,
+  otp: string
+): Promise<{ status: number; data?: ConfirmTwoFAResponse }> {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  };
+
+  const response = await axios.post<ConfirmTwoFAResponse>(
+    `${API_BASE_URL}/api/auth/2fa/confirm`,
+    { otp },
     { headers },
   );
 
