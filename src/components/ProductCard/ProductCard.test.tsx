@@ -12,6 +12,14 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
+// Mock de la config pour API_BASE_URL
+vi.mock('../../config', () => ({
+  API_BASE_URL: 'http://test-api',
+}));
+
+// Import du placeholder pour vérification
+import placeholderImg from '../../assets/products/placeholder.png';
+
 describe('<ProductCard />', () => {
   const baseProduct: Product = {
     id: 1,
@@ -45,7 +53,7 @@ describe('<ProductCard />', () => {
       />
     );
 
-    // Nom et date
+    // Vérifie le nom et la date (avec heure)
     expect(screen.getByRole('heading', { name: 'TestProd' })).toBeInTheDocument();
     expect(screen.getByText('Date:2025-03-03 – 12:34')).toBeInTheDocument();
 
@@ -54,18 +62,22 @@ describe('<ProductCard />', () => {
     expect(screen.getByText('ticket:tickets.places:3')).toBeInTheDocument();
     expect(screen.getByText('$100.00')).toBeInTheDocument();
 
-    // Bouton "more_info"
+    // Vérifie l'image construite via API_BASE_URL + nom de fichier
+    const img = screen.getByRole('img', { name: 'TestProd' }) as HTMLImageElement;
+    expect(img.src).toContain('http://test-api/products/images/img.jpg');
+
+    // Bouton "more_info" déclenche bien onViewDetails avec l'id
     const infoBtn = screen.getByRole('button', { name: 'ticket:tickets.more_info' });
     fireEvent.click(infoBtn);
     expect(onViewDetails).toHaveBeenCalledWith(1);
 
-    // Lien "buy"
+    // Bouton "buy" est activé
     const buyButton = screen.getByRole('button', { name: 'ticket:tickets.buy' });
     expect(buyButton).toBeEnabled();
   });
 
   it('renders sold out and sale correctly', () => {
-    const soldOutProduct = {
+    const soldOutProduct: Product = {
       ...baseProduct,
       price: 200,
       sale: 0.5,
@@ -84,21 +96,73 @@ describe('<ProductCard />', () => {
     );
 
     // Prix barré et prix final
+    // Le prix barré : 200, prix final après 50% de remise : 100
     expect(screen.getByText('$200.00')).toBeInTheDocument();
     expect(screen.getByText('$100.00')).toBeInTheDocument();
     expect(screen.getByText('–50%')).toBeInTheDocument();
 
-    // "out_of_stock" apparaît dans le paragraphe et dans le lien
+    // "out_of_stock" doit apparaître au moins deux fois : dans le texte de disponibilité et dans le label du bouton
     const occurrences = screen.getAllByText('ticket:tickets.out_of_stock');
     expect(occurrences.length).toBeGreaterThanOrEqual(2);
+
+    // Vérifie l'image (toujours baseProduct.image = 'img.jpg')
+    const img = screen.getByRole('img', { name: 'TestProd' }) as HTMLImageElement;
+    expect(img.src).toContain('http://test-api/products/images/img.jpg');
 
     // Bouton "more_info" toujours présent
     const infoBtn = screen.getByRole('button', { name: 'ticket:tickets.more_info' });
     expect(infoBtn).toBeInTheDocument();
 
-    // Lien "buy" désactivé et label out_of_stock
-    // On recherche un bouton désactivé dont le texte est "ticket:tickets.out_of_stock"
+    // Bouton "buy" désactivé et portant le texte out_of_stock
     const buyButton = screen.getByRole('button', { name: 'ticket:tickets.out_of_stock' });
     expect(buyButton).toBeDisabled();
   });
+
+  it('renders placeholder image when product_details.image is empty or undefined', () => {
+    const noImageProduct1: Product = {
+      ...baseProduct,
+      product_details: {
+        ...baseProduct.product_details,
+        image: '', // chaîne vide
+      },
+    };
+    const noImageProduct2: Product = {
+      ...baseProduct,
+      product_details: {
+        ...baseProduct.product_details,
+        // @ts-expect-error: pour simuler undefined
+        image: undefined,
+      },
+    };
+
+    const onViewDetails = vi.fn();
+    const commonProps = {
+      fmtCur,
+      fmtDate,
+      onViewDetails,
+      onBuy: () => {},
+    };
+
+    // Premier rendu avec image vide
+    const { rerender } = render(
+      <ProductCard
+        product={noImageProduct1}
+        {...commonProps}
+      />
+    );
+    let img = screen.getByRole('img', { name: 'TestProd' }) as HTMLImageElement;
+    // Vérifie que le src contient bien la partie placeholder
+    expect(img.src).toContain(placeholderImg);
+
+    // Remplace le rendu avec image undefined
+    rerender(
+      <ProductCard
+        product={noImageProduct2}
+        {...commonProps}
+      />
+    );
+    img = screen.getByRole('img', { name: 'TestProd' }) as HTMLImageElement;
+    expect(img.src).toContain(placeholderImg);
+  });
 });
+
