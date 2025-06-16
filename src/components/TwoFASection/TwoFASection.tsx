@@ -138,42 +138,49 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
 
     setLoading(true);
     try {
-      if (dialogMode === "enable_prepare") {
-        // Après avoir affiché QR+secret, on passe à la saisie OTP
-        setDialogMode("enable_confirm");
-        setOtpCode('');
-        // Le dialog reste ouvert, on attend que l'utilisateur saisisse le code OTP
-      } else if (dialogMode === "enable_confirm") {
-        // Appel confirm
-        const resp = await confirmTwoFA(token, otpCode);
-        if (resp.status === 200 && resp.data?.recovery_codes) {
-          // Activation réussie
-          onToggle(true);
-          setSuccessMsg(t('dashboard.2faEnabled'));
-          setRecoveryCodes(resp.data.recovery_codes);
-          // on peut fermer le dialog ou afficher recovery codes dedans
-          // Ici on garde le dialog ouvert et on affiche la liste
-          setDialogErrorMsg(null);
-          setDialogMode("enable_success");
-        } else {
-          setErrorMsg(getErrorMessage(t, 'generic_error'));
-        }
-      } else if (dialogMode === "disable") {
-        // Désactivation : envoie toujours twofa_code quel que soit codeType
-        const resp = await disableTwoFA(token, otpCode);
-        if (resp.status === 204) {
-          // Désactivation réussie
-          onToggle(false);
-          setSuccessMsg(t('dashboard.2faDisabled'));
-          setDialogOpen(false);
+      switch (dialogMode) {
+        case "enable_prepare":
+          // Après avoir affiché QR+secret, on passe à la saisie OTP
+          setDialogMode("enable_confirm");
           setOtpCode('');
-          setExpanded(false);
-        } else {
-          // Réponse inattendue
-          setErrorMsg(getErrorMessage(t, 'generic_error'));
-        }
+          break;
+
+        case "enable_confirm":
+          {
+            // Appel confirm
+            const resp = await confirmTwoFA(token, otpCode);
+            if (resp.status === 200 && resp.data?.recovery_codes) {
+              // Activation réussie
+              onToggle(true);
+              setSuccessMsg(t('dashboard.2faEnabled'));
+              setRecoveryCodes(resp.data.recovery_codes);
+              // on peut fermer le dialog ou afficher recovery codes dedans
+              // Ici on garde le dialog ouvert et on affiche la liste
+              setDialogErrorMsg(null);
+              setDialogMode("enable_success");
+            } else {
+              setErrorMsg(getErrorMessage(t, 'generic_error'));
+            }
+          }
+          break;
+
+        case "disable":
+          {
+            const resp = await disableTwoFA(token, otpCode);
+            if (resp.status === 204) {
+              // Désactivation réussie
+              onToggle(false);
+              setSuccessMsg(t('dashboard.2faDisabled'));
+              setDialogOpen(false);
+              setOtpCode('');
+              setExpanded(false);
+            } else {
+              // Réponse inattendue
+              setErrorMsg(getErrorMessage(t, 'generic_error'));
+            }
+          }
+          break;
       }
-      // Si dialogMode est "enable_success", on ne devrait pas être ici, car on n'affiche pas de bouton "Confirmer"
     } catch (err: any) {
       // Gestion des erreurs réseau ou backend
       if (axios.isAxiosError(err) && err.response?.data?.code) {

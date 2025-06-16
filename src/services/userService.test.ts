@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { vi, describe, it, beforeEach, expect } from 'vitest';
 
-// On mocke le module config pour fixer API_BASE_URL à une valeur connue
+// Mock du module config pour fixer API_BASE_URL à une valeur connue
 vi.mock('../config', () => ({
   API_BASE_URL: 'http://api.example.com',
 }));
 
-// On mocke axios
+// Mock de axios
 vi.mock('axios');
 
 import {
@@ -15,6 +15,7 @@ import {
   updateUserEmail,
   updateUserPassword,
   enableTwoFA,
+  confirmTwoFA,
   disableTwoFA,
 } from './userService'; // ajustez le chemin si besoin
 
@@ -28,14 +29,12 @@ describe('userService', () => {
 
   describe('fetchUser', () => {
     it('appelle axios.get avec l’URL et headers corrects et retourne status/data', async () => {
-      // Préparer la réponse mockée
       const mockData = { id: 123, name: 'Alice' };
       // @ts-ignore
       axios.get.mockResolvedValue({ status: 200, data: mockData });
 
       const result = await fetchUser(token);
 
-      // Vérifier l’appel axios.get
       expect(axios.get).toHaveBeenCalledTimes(1);
       expect(axios.get).toHaveBeenCalledWith(
         `${baseUrl}/api/users/me`,
@@ -46,7 +45,6 @@ describe('userService', () => {
           },
         }
       );
-      // Vérifier le retour
       expect(result).toEqual({ status: 200, data: mockData });
     });
 
@@ -187,11 +185,54 @@ describe('userService', () => {
     });
   });
 
+  describe('confirmTwoFA', () => {
+    it('appelle axios.post avec URL, payload otp et headers corrects et retourne status/data', async () => {
+      const otp = '123456';
+      const mockData = { confirmed: true };
+      // @ts-ignore
+      axios.post.mockResolvedValue({ status: 200, data: mockData });
+
+      const result = await confirmTwoFA(token, otp);
+
+      expect(axios.post).toHaveBeenCalledTimes(1);
+      expect(axios.post).toHaveBeenCalledWith(
+        `${baseUrl}/api/auth/2fa/confirm`,
+        { otp },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+      expect(result).toEqual({ status: 200, data: mockData });
+    });
+
+    it('propage l’erreur si axios.post rejette', async () => {
+      const otp = '000000';
+      const error = new Error('2FA confirm error');
+      // @ts-ignore
+      axios.post.mockRejectedValue(error);
+      await expect(confirmTwoFA(token, otp)).rejects.toBe(error);
+      // On peut aussi vérifier l’appel même en cas d’erreur :
+      expect(axios.post).toHaveBeenCalledWith(
+        `${baseUrl}/api/auth/2fa/confirm`,
+        { otp },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+        }
+      );
+    });
+  });
+
   describe('disableTwoFA', () => {
     it('appelle axios.post avec URL, payload twofa_code et headers corrects et retourne {status}', async () => {
       const twofa_code = '123456';
       // @ts-ignore
-      axios.post.mockResolvedValue({ status: 204, data: { /* potentiellement ignoré */ } });
+      axios.post.mockResolvedValue({ status: 204, data: { /* ignoré */ } });
 
       const result = await disableTwoFA(token, twofa_code);
 
