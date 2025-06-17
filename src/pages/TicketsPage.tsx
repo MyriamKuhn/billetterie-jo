@@ -55,15 +55,17 @@ export default function ProductsPage() {
 
   if (error) {
     return (
-      <ErrorDisplay
-        title={t('errors.title')}
-        message={t('errors.unexpected')}
-        showRetry
-        retryButtonText={t('errors.retry')}
-        onRetry={() => setFilters(f => ({ ...f }))}
-        showHome
-        homeButtonText={t('errors.home')}
-      />
+      <PageWrapper>
+        <ErrorDisplay
+          title={t('errors.title')}
+          message={t('errors.unexpected')}
+          showRetry
+          retryButtonText={t('errors.retry')}
+          onRetry={() => setFilters(f => ({ ...f }))}
+          showHome
+          homeButtonText={t('errors.home')}
+        />
+      </PageWrapper>
   );
 }
   

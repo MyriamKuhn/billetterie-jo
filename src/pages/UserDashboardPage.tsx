@@ -87,33 +87,28 @@ export default function UserDashboardPage(): JSX.Element {
     return (
       <>
         <Seo title={t('seo.title')} description={t('seo.description')} />
-        <PageWrapper>
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-            <OlympicLoader />
-          </Box>
-        </PageWrapper>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <OlympicLoader />
+        </Box>
       </>
     );
   }
 
   if (errorMsg) {
     return (
-      <>
-        <Seo title={t('seo.errorTitle')} description={t('seo.errorDescription')} />
-        <PageWrapper>
-          <ErrorDisplay
-            title={t('errors.genericErrorTitle')}
-            message={errorMsg}
-            showRetry={true}
-            retryButtonText={t('errors.retry')}
-            onRetry={() => {
-              window.location.reload();
-            }}
-            showHome={true}
-            homeButtonText={t('errors.home')}
-          />
-        </PageWrapper>
-      </>
+      <PageWrapper>
+        <ErrorDisplay
+          title={t('errors.genericErrorTitle')}
+          message={errorMsg}
+          showRetry={true}
+          retryButtonText={t('errors.retry')}
+          onRetry={() => {
+            window.location.reload();
+          }}
+          showHome={true}
+          homeButtonText={t('errors.home')}
+        />
+      </PageWrapper>
     );
   }
 

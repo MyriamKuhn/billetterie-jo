@@ -44,10 +44,12 @@ export interface CartItem {
 interface CartState {
   items: CartItem[];
   guestCartId: string | null;
+  cartId: string | null;
   loadCart: () => Promise<void>;
   addItem: (id: string, quantity: number, availableQuantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
-  setGuestCartId: (id: string | null) => void; // pour vider du store
+  setGuestCartId: (id: string | null) => void;
+  setCartId: (id: string | null) => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -79,7 +81,7 @@ export const useCartStore = create<CartState>()(
         return config;
       });
 
-      // Synchronise le guestCartId reçu par l’API dans le store
+      // Synchronise guestCartId depuis meta.guest_cart_id
       const syncGuestCartId = (meta: any) => {
         const apiId = meta?.guest_cart_id;
         if (apiId && apiId !== get().guestCartId) {
@@ -87,18 +89,38 @@ export const useCartStore = create<CartState>()(
         }
       };
 
+      // Synchronise cartId depuis data.id
+      const syncCartId = (resData: any) => {
+        if (resData?.id != null) {
+          const apiCartId = String(resData.id);
+          if (apiCartId !== get().cartId) {
+            set({ cartId: apiCartId });
+          }
+        }
+      };
+
       return {
         items: [],
         guestCartId: null,
+        cartId: null,
 
         setGuestCartId: (id: string | null) => set({ guestCartId: id }),
+        setCartId: (id: string | null) => set({ cartId: id }),
 
         loadCart: async () => {
           try {
             const res = await axiosInstance.get('/api/cart');
-            // Met à jour le guestCartId si l'API en retourne un (ou remet à jour le TTL)
-            syncGuestCartId(res.data?.meta);
 
+            const payload = res.data;
+            if (payload) {
+              if (payload.meta) {
+                // Met à jour le guestCartId si l'API en retourne un (ou remet à jour le TTL)
+                syncGuestCartId(res.data?.meta);
+              }
+              if (payload.data) {
+                syncCartId(payload.data);
+              }
+            }
             // Mappe les RawCartItem vers CartItem
             const raw: RawCartItem[] = res.data?.data?.cart_items ?? [];
             const items: CartItem[] = raw
@@ -168,7 +190,7 @@ export const useCartStore = create<CartState>()(
     {
       name: 'cart-storage',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ guestCartId: state.guestCartId }),
+      partialize: (state) => ({ guestCartId: state.guestCartId, cartId: state.cartId }),
     }
   )
 );

@@ -1,0 +1,15 @@
+{
+  "title": "Paiement",
+  "initializing": "Initialisation du paiement...",
+  "no_cart": "Panier non disponible.",
+  "init_error": "Erreur lors de l'initialisation du paiement.",
+  "no_client_secret": "Impossible de traiter le paiement.",
+  "no_card_element": "Problème avec le champ carte.",
+  "waiting_confirmation": "Paiement en cours de confirmation...",
+  "payment_success": "Paiement confirmé !",
+  "payment_failed": "Le paiement a échoué. Vous pouvez réessayer.",
+  "confirm_error": "Erreur lors du paiement.",
+  "processing": "Traitement...",
+  "pay_button": "Payer",
+  "back_to_cart": "Retour au panier"
+}

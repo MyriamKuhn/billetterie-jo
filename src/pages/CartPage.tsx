@@ -22,6 +22,7 @@ import { ErrorDisplay } from '../components/ErrorDisplay';
 import { CartItemDisplay } from '../components/CartItemDisplay';
 import { CartSummary } from '../components/CartSummary';
 import { useNavigate } from 'react-router-dom';
+import { PageWrapper } from '../components/PageWrapper';
 
 export default function CartPage() {
   const { t } = useTranslation(['cart', 'common']);
@@ -96,35 +97,42 @@ export default function CartPage() {
   // ── ÉTAT DE CHARGEMENT / ERREUR / PANIER VIDE ────────────────────────────────
   if (loading) {
     return (
-      <Box sx={{ textAlign: 'center', py: 4 }}>
-        <OlympicLoader />
-      </Box>
+      <>
+        <Seo title={t('cart:seo.title')} description={t('cart:seo.description')} />
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <OlympicLoader />
+        </Box>
+      </>
     );
   }
 
   if (hasError) {
     return (
-      <ErrorDisplay
-        title={t('cart:errors.error_loading')}
-        message={t('cart:errors.error_loading_message')} 
-        showRetry={true}
-        retryButtonText={t('common:errors.retry')}
-        onRetry={reload}
-        showHome={true}
-        homeButtonText={t('common:errors.home')}
-      />
+      <PageWrapper>
+        <ErrorDisplay
+          title={t('cart:errors.error_loading')}
+          message={t('cart:errors.error_loading_message')} 
+          showRetry={true}
+          retryButtonText={t('common:errors.retry')}
+          onRetry={reload}
+          showHome={true}
+          homeButtonText={t('common:errors.home')}
+        />
+      </PageWrapper>
     );
   }
 
   if (items.length === 0) {
     return (
-      <ErrorDisplay
-        title={t('cart:cart.empty')}               
-        message={t('cart:errors.empty_message')}     
-        showRetry={false}                     
-        showHome={true}                       
-        homeButtonText={t('common:errors.home')}  
-      />
+      <PageWrapper>
+        <ErrorDisplay
+          title={t('cart:cart.empty')}               
+          message={t('cart:errors.empty_message')}     
+          showRetry={false}                     
+          showHome={true}                       
+          homeButtonText={t('common:errors.home')}  
+        />
+      </PageWrapper>
     );
   }
 
