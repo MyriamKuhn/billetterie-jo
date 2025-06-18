@@ -11,6 +11,8 @@ import OlympicLoader from '../components/OlympicLoader';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 import { PageWrapper } from '../components/PageWrapper';
 import Seo from '../components/Seo';
+import { logError, logWarn } from '../utils/logger';
+import { useCartStore } from '../stores/useCartStore';
 
 interface LocationState {
   paymentUuid?: string;
@@ -22,17 +24,22 @@ interface PaymentDetails {
 }
 
 export default function ConfirmationPage() {
-  const { t } = useTranslation(['confirmation', 'common']);
+  const { t } = useTranslation('checkout');
   const location = useLocation();
   const navigate = useNavigate();
   const token = useAuthStore((s) => s.authToken);
   const lang = useLanguageStore((s) => s.lang);
+
+  const unlockCart = useCartStore((s) => s.unlockCart);
 
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [paymentInfo, setPaymentInfo] = useState<PaymentDetails | null>(null);
 
   useEffect(() => {
+    // Dès l'arrivée sur cette page, on s'assure que le panier est déverrouillé
+    unlockCart();
+
     const state = location.state as LocationState;
     let paymentUuid = state?.paymentUuid;
     // Optionnel: lire depuis query param si besoin
@@ -42,13 +49,13 @@ export default function ConfirmationPage() {
     }
 
     if (!paymentUuid) {
-      setError(t('confirmation:no_uuid', 'Informations de paiement manquantes.'));
+      setError(t('errors.no_uuid'));
       setLoading(false);
       return;
     }
     if (!token) {
       // Si pas de token, rediriger vers login ou afficher message
-      setError(t('confirmation:not_authenticated', 'Vous devez être connecté pour voir la confirmation.'));
+      setError(t('errors.not_authenticated'));
       setLoading(false);
       navigate(`/login?next=${encodeURIComponent(location.pathname + location.search)}`);
       return;
@@ -66,28 +73,23 @@ export default function ConfirmationPage() {
           setPaymentInfo(data as PaymentDetails);
         } else {
           // statut inattendu
-          console.warn('Statut inattendu getPaymentStatus:', status, data);
-          setError(t('confirmation:fetch_error', 'Impossible de récupérer les informations de paiement.'));
+          logWarn('Unexpected status getPaymentStatus:', data);
+          setError(t('errors.fetch_error'));
         }
       } catch (err: any) {
-        console.error('Erreur fetch confirmation via getPaymentStatus:', err);
-        const msg =
-          err.response?.data?.error ||
-          err.message ||
-          t('confirmation:fetch_error', 'Impossible de récupérer les informations de paiement.');
-        setError(msg);
+        logError('Error fetching payment status:', err);
+        setError(t('errors.fetch_error'));
       } finally {
         setLoading(false);
       }
     };
-
     fetchInfo();
-  }, [location, token, lang, navigate, t]);
+  }, [location, token, lang, navigate, t, unlockCart]);
 
   if (loading) {
     return (
       <>
-        <Seo title={t('confirmation:loading_title', 'Chargement...')} description={t('confirmation:loading_description', 'Veuillez patienter pendant le chargement des informations de paiement.')} />
+        <Seo title={t('seo.confirmation_title')} description={t('seo.confirmation_description')} />
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <OlympicLoader />
         </Box>
@@ -98,11 +100,11 @@ export default function ConfirmationPage() {
     return (
       <PageWrapper>
         <ErrorDisplay
-          title={t('confirmation:error_title', 'Erreur de confirmation')}
+          title={t('errors.error_confirmation')}
           message={error}
           showRetry={false}
           showHome={true}
-          homeButtonText={t('common:home', 'Accueil')}
+          homeButtonText={t('confirmation.go_home')}
         />
       </PageWrapper>
     );
@@ -113,29 +115,29 @@ export default function ConfirmationPage() {
 
   return (
     <>
-      <Seo title={t('confirmation:page_title', 'Confirmation de paiement')} description={t('confirmation:page_description', 'Merci pour votre achat ! Vos billets ont été envoyés par mail.')} />
+      <Seo title={t('seo.confirmation_title')} description={t('seo.confirmation_description')} />
       <PageWrapper>
         <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, p: 2 }}>
           <Typography variant="h4" gutterBottom>
-            {t('confirmation:thank_you', 'Merci pour votre achat !')}
+            {t('confirmation.thank_you')}
           </Typography>
           <Typography variant="body1" sx={{ mb: 2 }}>
-            {t('confirmation:see_mail', "Vos billets ont été envoyés par mail. Il est inutile de les imprimer, il suffira de présenter le code QR sur votre téléphone mobile à l'entrée. Si vous n'avez pas réceptionné les billets par mail, veuillez vérifier vos courriers indésirables ou téléchargez-les dans votre espace client.")}
+            {t('confirmation.see_mail')}
           </Typography>
           <Typography variant="body2" sx={{ mb: 2 }}>
-            {t('confirmation:paid_at', 'Date de paiement : {{date}}', {
+            {t('confirmation.paid_at', {
               date: paymentInfo.paid_at ? new Date(paymentInfo.paid_at).toLocaleString() : '-',
             })}
           </Typography>
           <Box sx={{ mt: 3 }}>
             <Button variant="outlined" onClick={() => navigate('/')}>
-              {t('confirmation:continue_shopping', 'Continuer mes achats')}
+              {t('confirmation.continue_shopping')}
             </Button>
             <Button variant="text" sx={{ ml: 2 }} onClick={() => navigate('/user/orders')}>
-              {t('confirmation:view_orders', 'Voir mes commandes')}
+              {t('confirmation.view_orders')}
             </Button>
             <Button variant="text" sx={{ ml: 2 }} onClick={() => navigate('/user/tickets')}>
-              {t('confirmation:view_tickets', 'Voir mes billets')}
+              {t('confirmation.view_tickets')}
             </Button>
           </Box>
         </Box>

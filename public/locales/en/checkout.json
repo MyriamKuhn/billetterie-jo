@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "title": "Payment - Paris 2024 Olympic Ticketing",
+    "description": "Proceed to payment of your tickets for the Paris 2024 Olympic Games. Make sure your cart is ready before continuing.",
+    "confirmation_title": "Payment Confirmation - Paris 2024 Olympic Ticketing",
+    "confirmation_description": "Your payment has been processed successfully. Thank you for purchasing your tickets for the Paris 2024 Olympic Games."
+  },
+  "checkout": {
+    "waiting_confirmation": "Waiting for payment confirmation...",
+    "payment_success": "Payment successful!",
+    "retry": "Retry",
+    "back_to_cart": "Back to cart",
+    "initializing": "Initializing payment...",
+    "title": "Payment",
+    "card_number_label": "Your card details",
+    "processing": "Processing payment...",
+    "pay_button": "Pay",
+    "cancel_payment": "Cancel payment"
+  },
+  "confirmation": {
+    "go_home": "Return to home",
+    "thank_you": "Thank you for your purchase!",
+    "see_mail": "Your tickets have been sent by email. There is no need to print them; simply present the QR code on your mobile phone at the entrance. If you did not receive the tickets by email, please check your spam folder or download them from your customer account.",
+    "paid_at": "Payment date: {{date}}",
+    "continue_shopping": "Continue shopping",
+    "view_orders": "View my orders",
+    "view_tickets": "View my tickets"
+  },
+  "errors": {
+    "not_authenticated": "You must be logged in to proceed with payment.",
+    "no_client_secret": "Unable to process payment. Please try again later.",
+    "no_card_element": "The credit card field is missing or invalid. Please check your information.",
+    "card_error": "An error occurred with your card. Please check the details and try again.",
+    "payment_failed": "Payment failed. Please try again.",
+    "no_uuid": "Missing payment information. Please try again.",
+    "fetch_error": "Error fetching payment information. Please try again.",
+    "error_confirmation": "Payment confirmation error."
+  }
+}

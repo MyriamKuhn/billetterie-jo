@@ -15,9 +15,10 @@ interface CartItemDisplayProps {
   lang: string;
   adjustQty: (item: CartItem, newQty: number) => void;
   isMobile: boolean;
+  disabled?: boolean;
 }
 
-export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDisplayProps) {
+export function CartItemDisplay({ item, lang, adjustQty, isMobile, disabled = false }: CartItemDisplayProps) {
   const { t } = useTranslation('cart');
   const discountPct = Math.round((item.discountRate ?? 0) * 100)
   if (isMobile) {
@@ -182,7 +183,7 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile }: CartItemDis
 
       {/* Colonne “Quantité” (boutons + TextField) */}
       <TableCell align="center" sx={{ minWidth: 160 }}>
-        <QuantityInput item={item} adjustQty={adjustQty} />
+        <QuantityInput item={item} adjustQty={adjustQty} disabled={disabled} />
       </TableCell>
 
       {/* Colonne “Total” */}

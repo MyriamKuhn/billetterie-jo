@@ -19,7 +19,8 @@
     "remove_success": "Item removed from cart",
     "update_success": "Quantity updated",
     "remaining": "{{count}} available",
-    "cgv_not_accepted": "You must accept the General Terms and Conditions of Sale to proceed"
+    "cgv_not_accepted": "You must accept the General Terms and Conditions of Sale to proceed",
+    "payment_in_progress": "Payment in progress, please wait"
   },
   "errors": {
     "error_load": "Unable to load cart, please try again",
@@ -27,7 +28,8 @@
     "error_update": "Unable to update cart",
     "error_loading": "Loading error",
     "error_loading_message": "Unable to load your cart. Please check your connection and try again.",
-    "empty_message": "It seems you haven't added any items yet. Browse our catalog to start shopping!"
+    "empty_message": "It seems you haven't added any items yet. Browse our catalog to start shopping!",
+    "cart_locked": "Your cart is locked to prevent changes during the checkout process. Please finalize your order or try again later."
   },
   "table": {
     "product": "Product",

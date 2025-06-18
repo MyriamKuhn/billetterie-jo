@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
-import Card      from '@mui/material/Card';
+import Card from '@mui/material/Card';
 import AlertMessage from '../components/AlertMessage';
 import { useTranslation } from 'react-i18next';
 import { useCartStore } from '../stores/useCartStore';
@@ -22,11 +22,15 @@ import { useLanguageStore } from '../stores/useLanguageStore';
 import OlympicLoader from '../components/OlympicLoader';
 import { PageWrapper } from '../components/PageWrapper';
 import Seo from '../components/Seo';
+import { logError, logInfo, logWarn } from '../utils/logger';
+import { getErrorMessage } from '../utils/errorUtils';
+import axios from 'axios';
 
 // Wrapper pour charger Stripe
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 export default function CheckoutPage() {
+  const { t } = useTranslation('checkout');
   const lang = useLanguageStore(s => s.lang);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [paymentUuid, setPaymentUuid] = useState<string | null>(null);
@@ -39,7 +43,7 @@ export default function CheckoutPage() {
   // On enveloppe notre formulaire dans Elements
   return (
     <>
-      <Seo title="Paiement" description="Procédez au paiement de votre commande en toute sécurité." />
+      <Seo title={t('seo.title')} description={t('seo.description')} />
       <PageWrapper disableCard>
         <Elements stripe={stripePromise} key={elementsKey} options={elementsOptions}>
           <CheckoutPageMain setClientSecret={setClientSecret} setPaymentUuid={setPaymentUuid} clientSecret={clientSecret} paymentUuid={paymentUuid} />
@@ -59,7 +63,7 @@ interface Props {
 function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, paymentUuid }: Props) {
   const hasInitializedRef = useRef(false);
 
-  const { t } = useTranslation(['checkout']);
+  const { t } = useTranslation('checkout');
   const navigate = useNavigate();
   const stripe = useStripe();
   const elements = useElements();
@@ -72,6 +76,8 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const clearCart = useCartStore((s) => s.clearCart);
+  const lockCart = useCartStore((s) => s.lockCart);
+  const unlockCart = useCartStore((s) => s.unlockCart);
   const cartId = useCartStore((s) => s.cartId);
   const token = useAuthStore((s) => s.authToken);
   const lang = useLanguageStore((s) => s.lang);
@@ -81,14 +87,14 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
   // 1. Charger le panier si token et cartId non présent
   useEffect(() => {
     if (token && !cartId) {
-      loadCart().catch(err => console.warn('loadCart error', err));
+      loadCart().catch(err => logWarn('Checkout:load cart', err));
     }
   }, [token, cartId, loadCart]);
 
   // 2. Initialiser le paiement quand token + cartId disponibles
   useEffect(() => {
     if (!token) {
-      setErrorInit(t('checkout:not_authenticated', 'Vous devez être connecté pour payer.'));
+      setErrorInit(t('errors.not_authenticated'));
       setLoadingInit(false);
       navigate('/login?next=/checkout');
       return;
@@ -112,11 +118,20 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
           setPaymentUuid(data.uuid);
           setClientSecret(data.client_secret);
         } else {
-          throw new Error('Réponse inattendue du serveur');
+          throw new Error('Unexpected response from server');
         }
       } catch (err: any) {
-        console.error('Error init payment:', err);
-        setErrorInit(err.message || t('checkout:init_error', 'Erreur initialisation paiement'));
+        logError('Checkout:create payment', err);
+        if (axios.isAxiosError(err) && err.response) {
+          const { data } = err.response;
+          if (data.code) {
+            setErrorInit(getErrorMessage(t, data.code));
+          } else {
+            setErrorInit(getErrorMessage(t, 'generic_error'));
+          }
+        } else {
+          setErrorInit(getErrorMessage(t, 'network_error'));
+        }
       } finally {
         setLoadingInit(false);
       }
@@ -132,9 +147,12 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
       if (!stripe || !elements) return;
 
       if (!clientSecret || !paymentUuid) {
-        setErrorPayment(t('checkout:no_client_secret', 'Impossible de traiter le paiement.'));
+        setErrorPayment(t('errors.no_client_secret'));
         return;
       }
+
+      // Verrouille le panier dès que l'utilisateur clique sur "Payer"
+      lockCart();
 
       // Démarrage du process : on disable le bouton
       setProcessing(true);
@@ -144,9 +162,11 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
       // Récupérer CardElement
       const cardElement = elements.getElement(CardElement);
       if (!cardElement) {
-        setErrorPayment(t('checkout:no_card_element', 'Problème avec le champ carte.'));
+        setErrorPayment(t('errors.no_card_element'));
         setProcessing(false);
         setPollingStatus(false);
+        // Déverrouille si item manquant
+        unlockCart();
         return;
       }
 
@@ -157,15 +177,16 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
         );
 
         if (error) {
-          console.warn('Stripe confirm error:', error);
-          setErrorPayment(error.message || t('checkout:card_error', 'Erreur carte'));
+          logWarn('Stripe confirm error:', error);
+          setErrorPayment(t('errors.card_error'));
           setProcessing(false);
           setPollingStatus(false);
+          unlockCart();
           return;
         }
 
         // On attend la confirmation via polling
-        setStatusMessage(t('checkout:waiting_confirmation', 'Paiement en cours de confirmation...'));
+        setStatusMessage(t('checkout.waiting_confirmation'));
 
         let finalStatus: string | null = null;
         while (true) {
@@ -174,7 +195,9 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
           await new Promise((r) => setTimeout(r, 2000));
 
           if (!token) {
-            setErrorInit(t('checkout:not_authenticated', 'Vous devez être connecté pour payer.'));
+            setErrorInit(t('errors.not_authenticated'));
+            // Déverrouille avant redirection
+            unlockCart();
             navigate('/login');
             return;
           }
@@ -183,7 +206,7 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
             const { status, data } = await getPaymentStatus(paymentUuid, token);
             if (status === 200 && data) {
               const PaymentStatus = data.status;
-              console.log('Polling payment status:', PaymentStatus);
+              logInfo('Polling payment status:', PaymentStatus);
               if (PaymentStatus.toLowerCase() === 'succeeded' || PaymentStatus.toLowerCase() === 'paid') {
                 finalStatus = 'paid';
                 break;
@@ -193,37 +216,70 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
                 break;
               }
             } else {
-              console.warn('Statut de paiement inattendu:', data);
+              logWarn('Unexpected response from getPaymentStatus:', data);
             }
           } catch (pollErr) {
-            console.error('Erreur polling status:', pollErr);
+            logError('Polling payment status error:', pollErr);
+            if (axios.isAxiosError(pollErr) && pollErr.response?.status === 401) {
+              setErrorPayment(t('errors.not_authenticated'));
+              unlockCart();
+              navigate('/login');
+              return;
+            }
+            if (axios.isAxiosError(pollErr) && pollErr.response?.data?.code) {
+              setErrorPayment(getErrorMessage(t, pollErr.response.data.code));
+            } else {
+              setErrorPayment(getErrorMessage(t, 'network_error'));
+            }
           }
         }
 
         if (finalStatus === 'paid') {
-          setStatusMessage(t('checkout:payment_success', 'Paiement confirmé !'));
-
+          setStatusMessage(t('checkout.payment_success'));
+          // Déverrouille avant de clearCart
+          unlockCart();
           try {
             await clearCart();
           } catch (clearErr) {
-            console.error('Erreur clearCart après paiement:', clearErr);
+            logError('clearCart error after payment:', clearErr);
           }
           navigate('/confirmation', { state: { paymentUuid } });
           return;
         } else {
-          setErrorPayment(t('checkout:payment_failed', 'Le paiement a échoué. Vous pouvez réessayer.'));
+          setErrorPayment(t('errors.payment_failed'));
           setProcessing(false);
           setPollingStatus(false);
+          // Déverrouille pour que l'utilisateur puisse modifier ou retenter
+          unlockCart();
           return;
         }
       } catch (confirmErr: any) {
-        console.error('Erreur lors de confirmCardPayment:', confirmErr);
-        setErrorPayment(confirmErr.message || t('checkout:confirm_error', 'Erreur lors du paiement'));
+        logError('Checkout:confirmCardPayment error', confirmErr);
+        if (axios.isAxiosError(confirmErr) && confirmErr.response) {
+          const { data } = confirmErr.response;
+          if (data.code) {
+            setErrorPayment(getErrorMessage(t, data.code));
+          } else {
+            setErrorPayment(getErrorMessage(t, 'generic_error'));
+          }
+        } else {
+          setErrorPayment(getErrorMessage(t, 'network_error'));
+        }
         setProcessing(false);
         setPollingStatus(false);
+        // Déverrouille après exception
+        unlockCart();
       }
-    }
-  , [stripe, elements, clientSecret, paymentUuid, clearCart, navigate, t, token]);
+    },
+    [stripe, elements, clientSecret, paymentUuid, clearCart, navigate, t, token, lockCart, unlockCart],
+  );
+
+  useEffect(() => {
+    return () => {
+      // Au démontage du composant checkout, s'assurer que le panier est déverrouillé
+      unlockCart();
+    };
+  }, [unlockCart]);
 
   if (errorInit) {
     return (
@@ -231,10 +287,10 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
         <AlertMessage message={errorInit} severity="error" />
         <Box sx={{ mt: 2 }}>
           <Button variant="contained" onClick={() => window.location.reload()}>
-            {t('common:retry', 'Réessayer')}
+            {t('checkout.retry')}
           </Button>
           <Button sx={{ ml: 2 }} variant="outlined" onClick={() => navigate('/cart')}>
-            {t('checkout:back_to_cart', 'Retour au panier')}
+            {t('checkout.back_to_cart')}
           </Button>
         </Box>
       </Box>
@@ -245,7 +301,7 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
         <OlympicLoader />
-        <Typography sx={{ mt: 2 }}>{t('checkout:initializing', 'Initialisation du paiement...')}</Typography>
+        <Typography sx={{ mt: 2 }}>{t('checkout.initializing')}</Typography>
       </Box>
     );
   }
@@ -270,7 +326,7 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
       }}
     >
       <Typography variant="h5" gutterBottom>
-        {t('checkout:title', 'Paiement')}
+        {t('checkout.title')}
       </Typography>
 
       {errorPayment && (
@@ -282,7 +338,7 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
       )}
 
       <Typography variant="body2" sx={{ mb: 1 }}>
-        {t('checkout:card_number_label', 'Numéro de carte')}
+        {t('checkout.card_number_label')}
       </Typography>
 
       <Box
@@ -328,8 +384,17 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
           }
         >
           {processing
-            ? t('checkout:processing', 'Traitement...')
-            : t('checkout:pay_button', 'Payer')}
+            ? t('checkout.processing')
+            : t('checkout.pay_button')}
+        </Button>
+        <Button
+          variant="text"
+          onClick={() => {
+            unlockCart();
+            navigate('/cart');
+          }}
+        >
+          {t('checkout.cancel_payment')}
         </Button>
       </Box>
     </Card>

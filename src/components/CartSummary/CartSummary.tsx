@@ -14,9 +14,10 @@ interface CartSummaryProps {
   onPay: () => void;
   lang: string;
   isMobile: boolean;
+  disabled?: boolean;
 }
 
-export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMobile }: CartSummaryProps ) {
+export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMobile, disabled = false }: CartSummaryProps ) {
   const { t } = useTranslation('cart');
   return (
     <Box sx={{ mb:3 }}>
@@ -33,11 +34,11 @@ export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMo
         gap: 0,
         mb:3
       }}>
-        <Button variant="contained" color="primary" disabled={!acceptedCGV} onClick={onPay}>
+        <Button variant="contained" color="primary" disabled={!acceptedCGV || disabled} onClick={onPay}>
           {t('checkout.checkout')}
         </Button>
         <Box sx={{ display:'flex', alignItems:'center', gap: 0, mt: 0 }}>
-          <Checkbox checked={acceptedCGV} onChange={e => onCgvChange(e.target.checked)} size="small" />
+          <Checkbox checked={acceptedCGV} onChange={e => onCgvChange(e.target.checked)} disabled={disabled} size="small" />
           <Typography variant={isMobile ? 'caption' : 'body2'}>
             {t('checkout.accept_cgv_prefix')}{' '}
             <MuiLink
@@ -51,7 +52,18 @@ export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMo
               </MuiLink>
           </Typography>
         </Box>
+
+        {/* Si disabled, on peut afficher un petit message d'info */}
+        {disabled && (
+          <Box sx={{ mt: 1 }}>
+            <Typography variant="caption" color="warning.main">
+              {t('cart.payment_in_progress')}
+            </Typography>
+          </Box>
+        )}
       </Box>
+
+      {/* Bouton “Continuer shopping” toujours actif */}
       <Box sx={{ textAlign: 'right', mt: isMobile ? 6 : 10 }}>
         <Button component={Link} to="/tickets" variant="outlined" size="small">
           {t('checkout.continue_shopping')}

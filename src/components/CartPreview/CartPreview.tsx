@@ -34,6 +34,7 @@ export default function CartPreview() {
   const items = useCartStore(s => s.items);
   useStockChangeNotifier(items, isReloading);
   const addItem = useCartStore.getState().addItem;
+  const isLocked = useCartStore(s => s.isLocked);
 
   // Popover state
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -52,6 +53,10 @@ export default function CartPreview() {
 
   const adjustQty = useCallback(
     async (item: CartItem, delta: number) => {
+      if (isLocked) {
+        notify(t('cart:errors.cart_locked'), 'warning');
+        return;
+      }
       const newQty = Math.max(0, item.quantity + delta);
       if (newQty > item.availableQuantity) {
         notify(
@@ -73,14 +78,15 @@ export default function CartPreview() {
             'success'
           );
         } 
-      } catch {
-        notify(
-          t('cart:errors.error_update'),
-          'error'
-        );
+      } catch (err: any) {
+        if (err.message === 'CartLocked') {
+          notify(t('cart:errors.cart_locked'), 'warning');
+        } else {
+          notify(t('cart:errors.error_update'), 'error');
+        }
       }
     },
-    [addItem, notify, t]
+    [addItem, notify, t, isLocked]
   );
 
   return (
@@ -109,6 +115,13 @@ export default function CartPreview() {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         sx={{ '& .MuiPopover-paper': { width: 300, p: 1 } }}
       >
+        {isLocked && (
+          <Box sx={{ p: 1 }}>
+            <Typography variant="body2" color="warning.main">
+              {t('cart:cart.payment_in_progress')}
+            </Typography>
+          </Box>
+        )}
         {loading ? (
           <Box sx={{ p: 2, textAlign: 'center' }}>
             <OlympicLoader />
@@ -134,7 +147,7 @@ export default function CartPreview() {
                           <IconButton
                             size="small"
                             onClick={() => adjustQty(item, -1)}
-                            disabled={item.quantity <= 0 || loading}
+                            disabled={loading || isLocked || item.quantity <= 0}
                           >
                             <RemoveIcon fontSize="small" />
                           </IconButton>
@@ -154,7 +167,7 @@ export default function CartPreview() {
                           <IconButton
                             size="small"
                             onClick={() => adjustQty(item, +1)}
-                            disabled={loading || item.quantity >= item.availableQuantity}
+                            disabled={loading || isLocked || item.quantity >= item.availableQuantity}
                           >
                             <AddIcon fontSize="small" />
                           </IconButton>

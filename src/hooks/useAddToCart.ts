@@ -9,6 +9,12 @@ export function useAddToCart() {
 
   return async (id: string, desiredQty: number, availableQty: number): Promise<boolean> => {
     try {
+      const isLocked = useCartStore.getState().isLocked;
+      if (isLocked) {
+        notify(t('errors.cart_locked'), 'warning');
+        return false;
+      }
+      
       await addItem(id, desiredQty, availableQty);
       notify(t('cart.add_success'), 'success');
       return true;

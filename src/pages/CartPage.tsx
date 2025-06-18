@@ -33,6 +33,7 @@ export default function CartPage() {
   const { loading, hasError, reload } = useReloadCart();
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore.getState().addItem;
+  const isLocked = useCartStore(s => s.isLocked);
   const { notify } = useCustomSnackbar();
   const token = useAuthStore(s => s.authToken);
 
@@ -58,6 +59,10 @@ export default function CartPage() {
   // Ajustement de la quantité d’un article
   const adjustQty = useCallback(
     async (item: CartItem, newQty: number) => {
+      if (isLocked) {
+        notify(t('cart:errors.cart_locked'), 'warning');
+        return;
+      }
       if (newQty < 0) newQty = 0;
       if (newQty > item.availableQuantity) {
         notify(t('cart:cart.not_enough_stock', { count: item.availableQuantity }), 'warning');
@@ -72,15 +77,23 @@ export default function CartPage() {
         } else {
           notify(t('cart:cart.update_success'), 'info');
         }
-      } catch {
-        notify(t('cart:errors.error_update'), 'error');
+      } catch (err: any) {
+        if (err.message === 'CartLocked') {
+          notify(t('cart:errors.cart_locked'), 'warning');
+        } else {
+          notify(t('cart:errors.error_update'), 'error');
+        }
       }
     },
-    [addItem, notify, t]
+    [addItem, notify, t, isLocked]
   );
 
   // Clic “Payer”
   const handlePay = () => {
+    if (isLocked) {
+      notify(t('cart:errors.cart_locked'), 'warning');
+      return;
+    }
     if (!acceptedCGV) {
       notify(t('cart:cart.cgv_not_accepted'), 'warning');
       return;
@@ -136,6 +149,16 @@ export default function CartPage() {
     );
   }
 
+  const renderLockBanner = () => (
+    isLocked ? (
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="body2" color="warning.main">
+          {t('cart:cart.payment_in_progress')}
+        </Typography>
+      </Box>
+    ) : null
+  );
+
   // ── RENDER DES ÉLÉMENTS ──────────────────────────────────────────────────────
 
   // 1) Version “Table” (desktop / tablette)
@@ -168,6 +191,7 @@ export default function CartPage() {
               lang={lang}
               adjustQty={adjustQty}
               isMobile={false}
+              disabled={isLocked}
             />
           ))}
         </TableBody>
@@ -186,6 +210,7 @@ export default function CartPage() {
           lang={lang}
           adjustQty={adjustQty}
           isMobile={true}
+          disabled={isLocked}
         />
       ))}
     </Box>
@@ -200,6 +225,8 @@ export default function CartPage() {
           {t('cart:cart.title')}
         </Typography>
 
+        {renderLockBanner()}
+
         {isMobile ? renderCards() : renderTable()}
 
         <CartSummary
@@ -209,6 +236,7 @@ export default function CartPage() {
           onPay={handlePay}
           lang={lang}
           isMobile={isMobile}
+          disabled={isLocked}
         />
 
       </Box>

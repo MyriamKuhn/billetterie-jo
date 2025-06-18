@@ -50,6 +50,9 @@ interface CartState {
   clearCart: () => Promise<void>;
   setGuestCartId: (id: string | null) => void;
   setCartId: (id: string | null) => void;
+  isLocked: boolean;
+  lockCart: () => void;
+  unlockCart: () => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -104,6 +107,14 @@ export const useCartStore = create<CartState>()(
         guestCartId: null,
         cartId: null,
 
+        isLocked: false,
+        lockCart: () => {
+          set({ isLocked: true });
+        },
+        unlockCart: () => {
+          set({ isLocked: false });
+        },
+
         setGuestCartId: (id: string | null) => set({ guestCartId: id }),
         setCartId: (id: string | null) => set({ cartId: id }),
 
@@ -148,6 +159,9 @@ export const useCartStore = create<CartState>()(
         },
 
         addItem: async (id, quantity, availableQuantity) => {
+          if (get().isLocked) {
+            throw new Error('CartLocked');
+          }
           if (quantity > availableQuantity) {
             throw new Error('Quantity exceeds available stock');
           }
@@ -166,6 +180,9 @@ export const useCartStore = create<CartState>()(
         },
 
         clearCart: async () => {
+          if (get().isLocked) {
+            throw new Error('CartLocked');
+          }
           const token = useAuthStore.getState().authToken;
           if (!token) {
             logWarn('clearCart', 'no auth token');
