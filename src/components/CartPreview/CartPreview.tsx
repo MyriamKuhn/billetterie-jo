@@ -142,12 +142,13 @@ export default function CartPreview() {
                   key={item.id}
                   secondaryAction={
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                      <Tooltip title={t('cart:cart.remove_one')}>
+                      <Tooltip title={isLocked ? t('cart:errors.cart_locked') : t('cart:cart.remove_one')}>
                         <span>
                           <IconButton
                             size="small"
                             onClick={() => adjustQty(item, -1)}
-                            disabled={loading || isLocked || item.quantity <= 0}
+                            disabled={loading || item.quantity <= 0}
+                            sx={isLocked ? { opacity: 0.5 } : undefined}
                           >
                             <RemoveIcon fontSize="small" />
                           </IconButton>
@@ -158,16 +159,19 @@ export default function CartPreview() {
 
                       <Tooltip
                         title={
-                          item.quantity >= item.availableQuantity
-                            ? t('cart:cart.max_reached', { count: item.availableQuantity })
-                            : t('cart:cart.add_one')
+                          isLocked
+                            ? t('cart:errors.cart_locked')
+                            : item.quantity >= item.availableQuantity
+                              ? t('cart:cart.max_reached', { count: item.availableQuantity })
+                              : t('cart:cart.add_one')
                         }
                       >
                         <span>
                           <IconButton
                             size="small"
                             onClick={() => adjustQty(item, +1)}
-                            disabled={loading || isLocked || item.quantity >= item.availableQuantity}
+                            disabled={loading || item.quantity >= item.availableQuantity}
+                            sx={isLocked ? { opacity: 0.5 } : undefined}
                           >
                             <AddIcon fontSize="small" />
                           </IconButton>

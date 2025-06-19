@@ -131,10 +131,8 @@ describe('UserDashboardPage', () => {
     render(<UserDashboardPage />);
     // D’abord loader, puis erreur
     await waitFor(() => expect(screen.getByTestId('error-message')).toHaveTextContent('errors.fetchProfile'));
-    // Vérifier que Seo pour l’erreur est rendu et a les clés appropriées
-    const seoEl = screen.getByTestId('seo');
-    expect(seoEl).toHaveAttribute('data-title', 'seo.errorTitle');
-    expect(seoEl).toHaveAttribute('data-description', 'seo.errorDescription');
+    // Vérifier qu'aucun Seo n'est rendu dans la vue d'erreur
+    expect(screen.queryByTestId('seo')).toBeNull();
     // Retry button déclenche reload
     fireEvent.click(screen.getByTestId('retry-button'));
     expect(window.location.reload).toHaveBeenCalled();
@@ -145,10 +143,8 @@ describe('UserDashboardPage', () => {
     (fetchUser as any).mockResolvedValue({ status: 200, data: {} });
     render(<UserDashboardPage />);
     await waitFor(() => expect(screen.getByTestId('error-message')).toHaveTextContent('errors.fetchProfile'));
-    // Vérifier Seo erreur
-    const seoEl = screen.getByTestId('seo');
-    expect(seoEl).toHaveAttribute('data-title', 'seo.errorTitle');
-    expect(seoEl).toHaveAttribute('data-description', 'seo.errorDescription');
+    // Vérifier qu'aucun Seo n'est rendu dans la vue d'erreur
+    expect(screen.queryByTestId('seo')).toBeNull();
   });
 
   it('shows specific error message when axios error with code', async () => {
@@ -157,7 +153,8 @@ describe('UserDashboardPage', () => {
     (fetchUser as any).mockRejectedValue(error);
     render(<UserDashboardPage />);
     await waitFor(() => expect(screen.getByTestId('error-message')).toHaveTextContent('error:SOME_CODE'));
-    expect(screen.getByTestId('seo')).toHaveAttribute('data-title', 'seo.errorTitle');
+    // Vérifier qu'aucun Seo n'est rendu dans la vue d'erreur
+    expect(screen.queryByTestId('seo')).toBeNull();
   });
 
   it('shows generic error when axios error with response but no code', async () => {
@@ -166,7 +163,7 @@ describe('UserDashboardPage', () => {
     (fetchUser as any).mockRejectedValue(error);
     render(<UserDashboardPage />);
     await waitFor(() => expect(screen.getByTestId('error-message')).toHaveTextContent('error:generic_error'));
-    expect(screen.getByTestId('seo')).toHaveAttribute('data-title', 'seo.errorTitle');
+    expect(screen.queryByTestId('seo')).toBeNull();
   });
 
   it('shows generic network error when axios error without response', async () => {
@@ -175,7 +172,7 @@ describe('UserDashboardPage', () => {
     (fetchUser as any).mockRejectedValue(error);
     render(<UserDashboardPage />);
     await waitFor(() => expect(screen.getByTestId('error-message')).toHaveTextContent('error:network_error'));
-    expect(screen.getByTestId('seo')).toHaveAttribute('data-title', 'seo.errorTitle');
+    expect(screen.queryByTestId('seo')).toBeNull();
   });
 
   it('axios error with isAxiosError true but no response property', async () => {
@@ -184,7 +181,7 @@ describe('UserDashboardPage', () => {
     (fetchUser as any).mockRejectedValue(error);
     render(<UserDashboardPage />);
     await waitFor(() => expect(screen.getByTestId('error-message')).toHaveTextContent('error:network_error'));
-    expect(screen.getByTestId('seo')).toHaveAttribute('data-title', 'seo.errorTitle');
+    expect(screen.queryByTestId('seo')).toBeNull();
   });
 
   it('does not update state after unmount', async () => {
@@ -198,6 +195,8 @@ describe('UserDashboardPage', () => {
       resolveFetch({ status: 200, data: { user: { firstname: 'X', lastname: 'Y', email: 'x@y.com', twofa_enabled: false } } });
       await fetchPromise;
     });
+    // On s'assure juste que fetchUser a été appelé, l'absence d'erreur suffit
+    expect(fetchUser).toHaveBeenCalled();
   });
 
   it('briefly shows loader when no token, then redirects', async () => {

@@ -203,12 +203,7 @@
 <a name='L138'></a><a href='#L138'>138</a>
 <a name='L139'></a><a href='#L139'>139</a>
 <a name='L140'></a><a href='#L140'>140</a>
-<a name='L141'></a><a href='#L141'>141</a>
-<a name='L142'></a><a href='#L142'>142</a>
-<a name='L143'></a><a href='#L143'>143</a>
-<a name='L144'></a><a href='#L144'>144</a>
-<a name='L145'></a><a href='#L145'>145</a>
-<a name='L146'></a><a href='#L146'>146</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L141'></a><a href='#L141'>141</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -235,15 +230,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">35x</span>
-<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">36x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">35x</span>
-<span class="cline-any cline-yes">35x</span>
-<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">36x</span>
+<span class="cline-any cline-yes">36x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">36x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-yes">4x</span>
@@ -293,7 +288,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">36x</span>
 <span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -304,12 +299,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -318,7 +309,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -442,33 +432,28 @@ export default function UserDashboardPage(): JSX.Element {
     return (
       &lt;&gt;
         &lt;Seo title={t('seo.title')} description={t('seo.description')} /&gt;
-        &lt;PageWrapper&gt;
-          &lt;Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}&gt;
-            &lt;OlympicLoader /&gt;
-          &lt;/Box&gt;
-        &lt;/PageWrapper&gt;
+        &lt;Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}&gt;
+          &lt;OlympicLoader /&gt;
+        &lt;/Box&gt;
       &lt;/&gt;
     );
   }
 &nbsp;
   if (errorMsg) {
     return (
-      &lt;&gt;
-        &lt;Seo title={t('seo.errorTitle')} description={t('seo.errorDescription')} /&gt;
-        &lt;PageWrapper&gt;
-          &lt;ErrorDisplay
-            title={t('errors.genericErrorTitle')}
-            message={errorMsg}
-            showRetry={true}
-            retryButtonText={t('errors.retry')}
-            onRetry={() =&gt; {
-              window.location.reload();
-            }}
-            showHome={true}
-            homeButtonText={t('errors.home')}
-          /&gt;
-        &lt;/PageWrapper&gt;
-      &lt;/&gt;
+      &lt;PageWrapper&gt;
+        &lt;ErrorDisplay
+          title={t('errors.genericErrorTitle')}
+          message={errorMsg}
+          showRetry={true}
+          retryButtonText={t('errors.retry')}
+          onRetry={() =&gt; {
+            window.location.reload();
+          }}
+          showHome={true}
+          homeButtonText={t('errors.home')}
+        /&gt;
+      &lt;/PageWrapper&gt;
     );
   }
 &nbsp;
@@ -505,7 +490,7 @@ export default function UserDashboardPage(): JSX.Element {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-16T15:29:43.774Z
+                at 2025-06-19T14:53:23.934Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

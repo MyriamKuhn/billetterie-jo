@@ -32,7 +32,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/6</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
@@ -125,7 +125,19 @@
 <a name='L60'></a><a href='#L60'>60</a>
 <a name='L61'></a><a href='#L61'>61</a>
 <a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -144,8 +156,9 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -187,6 +200,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { formatCurrency } from "../../utils/format";
@@ -203,9 +227,10 @@ interface CartSummaryProps {
   onPay: () =&gt; void;
   lang: string;
   isMobile: boolean;
+  disabled?: boolean;
 }
 &nbsp;
-export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMobile }: CartSummaryProps ) {
+export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMobile, disabled = false }: CartSummaryProps ) {
   const { t } = useTranslation('cart');
   return (
     &lt;Box sx={{ mb:3 }}&gt;
@@ -222,11 +247,11 @@ export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMo
         gap: 0,
         mb:3
       }}&gt;
-        &lt;Button variant="contained" color="primary" disabled={!acceptedCGV} onClick={onPay}&gt;
+        &lt;Button variant="contained" color="primary" disabled={!acceptedCGV || disabled} onClick={onPay}&gt;
           {t('checkout.checkout')}
         &lt;/Button&gt;
         &lt;Box sx={{ display:'flex', alignItems:'center', gap: 0, mt: 0 }}&gt;
-          &lt;Checkbox checked={acceptedCGV} onChange={e =&gt; onCgvChange(e.target.checked)} size="small" /&gt;
+          &lt;Checkbox checked={acceptedCGV} onChange={e =&gt; onCgvChange(e.target.checked)} disabled={disabled} size="small" /&gt;
           &lt;Typography variant={isMobile ? 'caption' : 'body2'}&gt;
             {t('checkout.accept_cgv_prefix')}{' '}
             &lt;MuiLink
@@ -240,7 +265,18 @@ export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMo
               &lt;/MuiLink&gt;
           &lt;/Typography&gt;
         &lt;/Box&gt;
+&nbsp;
+        {/* Si disabled, on peut afficher un petit message d'info */}
+        {disabled &amp;&amp; (
+          &lt;Box sx={{ mt: 1 }}&gt;
+            &lt;Typography variant="caption" color="warning.main"&gt;
+              {t('cart.payment_in_progress')}
+            &lt;/Typography&gt;
+          &lt;/Box&gt;
+        )}
       &lt;/Box&gt;
+&nbsp;
+      {/* Bouton “Continuer shopping” toujours actif */}
       &lt;Box sx={{ textAlign: 'right', mt: isMobile ? 6 : 10 }}&gt;
         &lt;Button component={Link} to="/tickets" variant="outlined" size="small"&gt;
           {t('checkout.continue_shopping')}
@@ -256,7 +292,7 @@ export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-16T15:29:43.774Z
+                at 2025-06-19T14:53:23.934Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

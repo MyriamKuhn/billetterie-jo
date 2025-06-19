@@ -34,11 +34,6 @@ export default function QuantityInput({
   useEffect(() => {
     if (disabled) {
       setInputValue(item.quantity.toString());
-      // Nettoyage éventuel du debounce en cours
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-        debounceRef.current = null;
-      }
     }
     // On ne met pas item.quantity en dépendance ici car un autre useEffect gère déjà la synchro.
   }, [disabled, item.quantity]);
@@ -116,11 +111,9 @@ export default function QuantityInput({
 
   // Les boutons +/- qui appellent adjustQty immédiatement
   const increment = () => {
-    if (disabled) return;
     adjustQty(item, Math.min(item.quantity + 1, item.availableQuantity));
   };
   const decrement = () => {
-    if (disabled) return;
     adjustQty(item, Math.max(item.quantity - 1, 0));
   };
 
@@ -137,6 +130,7 @@ export default function QuantityInput({
         size="small" 
         onClick={decrement} 
         disabled={disabled || item.quantity <= 0}
+        aria-label="decrement quantity"
       >
         <RemoveIcon fontSize="small" />
       </IconButton>
@@ -170,6 +164,7 @@ export default function QuantityInput({
       <IconButton
         size="small"
         onClick={increment}
+        aria-label="increment quantity"
         disabled={disabled || item.quantity >= item.availableQuantity}
       >
         <AddIcon fontSize="small" />
