@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "title": "Paiement - Billetterie JO Paris 2024",
+    "description": "Procédez au paiement de vos billets pour les Jeux Olympiques de Paris 2024. Assurez-vous que votre panier est prêt avant de continuer.",
+    "confirmation_title": "Confirmation du paiement - Billetterie JO Paris 2024",
+    "confirmation_description": "Votre paiement a été traité avec succès. Merci d'avoir acheté vos billets pour les Jeux Olympiques de Paris 2024."
+  },
+  "checkout": {
+    "waiting_confirmation": "En attente de confirmation du paiement...",
+    "payment_success": "Paiement réussi !",
+    "retry": "Réessayer",
+    "back_to_cart": "Retour au panier",
+    "initializing": "Initialisation du paiement...",
+    "title": "Paiement",
+    "card_number_label": "Données de votre carte",
+    "processing": "Traitement du paiement...",
+    "pay_button": "Payer",
+    "cancel_payment": "Annuler le paiement"
+  },
+  "confirmation": {
+    "go_home": "Retour à l'accueil",
+    "thank_you": "Merci pour votre achat !",
+    "see_mail": "Vos billets ont été envoyés par mail. Il est inutile de les imprimer, il suffira de présenter le code QR sur votre téléphone mobile à l'entrée. Si vous n'avez pas réceptionné les billets par mail, veuillez vérifier vos courriers indésirables ou téléchargez-les dans votre espace client.",
+    "paid_at": "Date de paiement : {{date}}",
+    "continue_shopping": "Continuer mes achats",
+    "view_orders": "Voir mes commandes",
+    "view_tickets": "Voir mes billets"
+  },
+  "errors": {
+    "not_authenticated": "Vous devez être connecté pour procéder au paiement.",
+    "no_client_secret": "Impossible de traiter le paiement. Veuillez réessayer plus tard.",
+    "no_card_element": "Le champ de carte de crédit est manquant ou invalide. Veuillez vérifier vos informations.",
+    "card_error": "Une erreur est survenue avec votre carte. Veuillez vérifier les détails et réessayer.",
+    "payment_failed": "Le paiement a échoué. Veuillez réessayer.",
+    "no_uuid": "Informations de paiement manquantes. Veuillez réessayer.",
+    "fetch_error": "Erreur lors de la récupération des informations de paiement. Veuillez réessayer.",
+    "error_confirmation": "Erreur de confirmation du paiement."
+  }
+}

@@ -1,1 +1,0 @@
-import{j as r}from"./react-C0aVURRx.js";import{aw as t,a2 as o}from"./mui-Bv5YL-XP.js";function x({children:a,disableCard:s=!1}){return r.jsx(t,{maxWidth:"lg",sx:{py:4},children:s?a:r.jsx(o,{children:a})})}export{x as P};
