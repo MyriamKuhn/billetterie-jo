@@ -315,3 +315,206 @@ describe('useCartStore module initialization', () => {
     expect(cfg.timeout).toBe(1234)
   })
 })
+
+let resetAndImport: () => Promise<{
+  store: typeof import('./useCartStore').useCartStore;
+  axiosMock: typeof __mockAxios;
+}>;
+beforeAll(() => {
+  resetAndImport = async () => {
+    vi.resetModules();
+    const axiosMod = await import('axios');
+    const axiosMock = (axiosMod as any).__mockAxios as typeof __mockAxios;
+    const storeMod = await import('./useCartStore');
+    return { store: storeMod.useCartStore, axiosMock };
+  };
+});
+
+describe('useCartStore – couverture des dernières branches', () => {
+  let store: typeof useCartStore;
+  let axiosMock: typeof __mockAxios;
+
+  beforeEach(async () => {
+    ({ store, axiosMock } = await resetAndImport());
+    // reset axios
+    axiosMock.get.mockClear();
+    axiosMock.patch.mockClear();
+    axiosMock.delete.mockClear();
+    // reset state
+    store.setState({
+      items: [],
+      guestCartId: null,
+      cartId: null,
+      isLocked: false,
+    });
+  });
+
+  it('loadCart synchronise cartId depuis payload.data.id', async () => {
+    axiosMock.get.mockResolvedValue({
+      data: {
+        data: { id: 555, cart_items: [] },
+        meta: {},
+      },
+    });
+    await act(() => store.getState().loadCart());
+    expect(store.getState().cartId).toBe('555');
+  });
+
+  it('ne modifie pas cartId si unchanged', async () => {
+    // fixé à "777" avant l'appel
+    store.setState({ cartId: '777' });
+    axiosMock.get.mockResolvedValue({
+      data: {
+        data: { id: 777, cart_items: [] },
+        meta: {},
+      },
+    });
+    await act(() => store.getState().loadCart());
+    expect(store.getState().cartId).toBe('777');
+  });
+
+  it('lockCart et unlockCart togglent isLocked', () => {
+    store.getState().lockCart();
+    expect(store.getState().isLocked).toBe(true);
+    store.getState().unlockCart();
+    expect(store.getState().isLocked).toBe(false);
+  });
+
+  it('setCartId met à jour cartId dans le store', () => {
+    expect(store.getState().cartId).toBeNull();
+    store.getState().setCartId('ABC');
+    expect(store.getState().cartId).toBe('ABC');
+  });
+});
+
+describe('clearCart → reload fail', () => {
+  let store: typeof useCartStore;
+  let axiosMock: typeof __mockAxios;
+
+  beforeEach(async () => {
+    ({ store, axiosMock } = await resetAndImport());
+    axiosMock.delete.mockClear();
+    // on remet un token valide dans useAuthStore.getState()
+    (useAuthStore.getState as any).mockReturnValue({ authToken: 'TOK' });
+    // on vide d’abord le panier pour l’état initial
+    store.setState({
+      items: [{ 
+        id: '1', name: 'X', image: '', date: '', location: '',
+        quantity: 1, price: 1, inStock: true,
+        availableQuantity: 1, discountRate: null, originalPrice: null 
+      }],
+      guestCartId: null,
+    });
+    axiosMock.delete.mockResolvedValue({});
+  });
+
+  it('logWarn("clearCart → loadCart") quand reload échoue après delete', async () => {
+    // on spy sur loadCart pour qu’il rejette
+    const reloadError = new Error('reload failed');
+    const spy = vi.spyOn(store.getState(), 'loadCart').mockRejectedValue(reloadError);
+
+    await act(() => store.getState().clearCart());
+
+    // items doivent être vidés malgré tout
+    expect(store.getState().items).toEqual([]);
+    // on doit avoir logWarn sur le warn de reload
+    expect(logWarn).toHaveBeenCalledWith('clearCart → loadCart', reloadError);
+
+    spy.mockRestore();
+  });
+});
+
+describe('useCartStore – erreurs CartLocked', () => {
+  beforeEach(() => {
+    // On reset l’état du store avant chaque test
+    useCartStore.setState({ isLocked: false, items: [], guestCartId: null, cartId: null });
+  });
+
+  it('addItem lève "CartLocked" si le panier est verrouillé', async () => {
+    // Verrouille le panier
+    useCartStore.getState().lockCart();
+    await expect(
+      useCartStore.getState().addItem('1', 1, 5)
+    ).rejects.toThrow('CartLocked');
+  });
+
+  it('clearCart lève "CartLocked" si le panier est verrouillé', async () => {
+    // Verrouille le panier
+    useCartStore.getState().lockCart();
+    await expect(
+      useCartStore.getState().clearCart()
+    ).rejects.toThrow('CartLocked');
+  });
+});
+
+describe('useCartStore – couverture de syncCartId', () => {
+  it('loadCart synchronise cartId depuis payload.data.id', async () => {
+    const { store, axiosMock } = await resetModulesAndImport();
+    // Simule une réponse API avec data.id = 555
+    axiosMock.get.mockResolvedValue({
+      data: {
+        meta: {},
+        data: { id: 555, cart_items: [] },
+      },
+    });
+    await act(() => store.getState().loadCart());
+    expect(store.getState().cartId).toBe('555');
+  });
+
+  it('loadCart ne modifie pas cartId si payload.data.id inchangé', async () => {
+    const { store, axiosMock } = await resetModulesAndImport();
+    // On pré-remplit cartId à '999'
+    store.setState({ cartId: '999' });
+    axiosMock.get.mockResolvedValue({
+      data: {
+        meta: {},
+        data: { id: 999, cart_items: [] },
+      },
+    });
+    await act(() => store.getState().loadCart());
+    expect(store.getState().cartId).toBe('999');
+  });
+});
+
+describe('useCartStore – edge-cases loadCart sans payload / sans meta / sans data', () => {
+  it('skip sync si payload est falsy', async () => {
+    const { store, axiosMock } = await resetModulesAndImport();
+    // on pré-remplit guestCartId et cartId pour vérifier qu’ils ne changent pas
+    store.setState({
+      guestCartId: 'OLD_G',
+      cartId: 'OLD_C',
+      items: [{ id: 'x', name:'X', image:'', date:'', location:'', quantity:1, price:1, inStock:true, availableQuantity:1, discountRate:null, originalPrice:null }]
+    });
+    // API renvoie un data null => payload falsy
+    axiosMock.get.mockResolvedValue({ data: null });
+    await act(() => store.getState().loadCart());
+    // ni guestCartId ni cartId ne doivent avoir bougé :
+    expect(store.getState().guestCartId).toBe('OLD_G');
+    expect(store.getState().cartId).toBe('OLD_C');
+    // par contre items est toujours réinitialisé à []
+    expect(store.getState().items).toEqual([]);
+  });
+
+  it('skip syncGuestCartId si meta manquant', async () => {
+    const { store, axiosMock } = await resetModulesAndImport();
+    // on pré-remplit guestCartId pour vérifier qu’il ne change pas
+    store.setState({ guestCartId: 'OLD_G', cartId: null, items: [] });
+    // API renvoie un payload sans meta
+    axiosMock.get.mockResolvedValue({ data: { data: { cart_items: [] } } });
+    await act(() => store.getState().loadCart());
+    // guestCartId doit rester inchangé
+    expect(store.getState().guestCartId).toBe('OLD_G');
+  });
+
+  it('skip syncCartId si data manquant', async () => {
+    const { store, axiosMock } = await resetModulesAndImport();
+    // on pré-remplit cartId pour vérifier qu’il ne change pas
+    store.setState({ guestCartId: null, cartId: 'OLD_C', items: [] });
+    // API renvoie un payload sans data
+    axiosMock.get.mockResolvedValue({ data: { meta: {} } });
+    await act(() => store.getState().loadCart());
+    // cartId doit rester inchangé
+    expect(store.getState().cartId).toBe('OLD_C');
+  });
+});
+

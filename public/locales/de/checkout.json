@@ -1,0 +1,39 @@
+{
+  "seo": {
+    "title": "Zahlung – Olympischer Ticketverkauf Paris 2024",
+    "description": "Führen Sie die Zahlung für Ihre Tickets für die Olympischen Spiele Paris 2024 durch. Stellen Sie sicher, dass Ihr Warenkorb bereit ist, bevor Sie fortfahren.",
+    "confirmation_title": "Zahlungsbestätigung – Olympischer Ticketverkauf Paris 2024",
+    "confirmation_description": "Ihre Zahlung wurde erfolgreich bearbeitet. Vielen Dank für den Kauf Ihrer Tickets für die Olympischen Spiele Paris 2024."
+  },
+  "checkout": {
+    "waiting_confirmation": "Warten auf Zahlungsbestätigung...",
+    "payment_success": "Zahlung erfolgreich!",
+    "retry": "Erneut versuchen",
+    "back_to_cart": "Zurück zum Warenkorb",
+    "initializing": "Zahlung wird initialisiert...",
+    "title": "Zahlung",
+    "card_number_label": "Kartendaten",
+    "processing": "Zahlung wird verarbeitet...",
+    "pay_button": "Bezahlen",
+    "cancel_payment": "Zahlung abbrechen"
+  },
+  "confirmation": {
+    "go_home": "Zur Startseite",
+    "thank_you": "Vielen Dank für Ihren Kauf!",
+    "see_mail": "Ihre Tickets wurden per E-Mail versendet. Es ist nicht nötig, sie auszudrucken; zeigen Sie einfach den QR-Code auf Ihrem Mobiltelefon am Eingang vor. Wenn Sie die Tickets nicht per E-Mail erhalten haben, überprüfen Sie bitte Ihren Spam-Ordner oder laden Sie sie in Ihrem Kundenbereich herunter.",
+    "paid_at": "Zahlungsdatum: {{date}}",
+    "continue_shopping": "Weiter einkaufen",
+    "view_orders": "Meine Bestellungen ansehen",
+    "view_tickets": "Meine Tickets ansehen"
+  },
+  "errors": {
+    "not_authenticated": "Sie müssen eingeloggt sein, um mit der Zahlung fortzufahren.",
+    "no_client_secret": "Zahlung kann nicht verarbeitet werden. Bitte versuchen Sie es später erneut.",
+    "no_card_element": "Das Kreditkartenfeld fehlt oder ist ungültig. Bitte überprüfen Sie Ihre Angaben.",
+    "card_error": "Es ist ein Fehler mit Ihrer Karte aufgetreten. Bitte überprüfen Sie die Angaben und versuchen Sie es erneut.",
+    "payment_failed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "no_uuid": "Zahlungsinformationen fehlen. Bitte versuchen Sie es erneut.",
+    "fetch_error": "Fehler beim Abrufen der Zahlungsinformationen. Bitte versuchen Sie es erneut.",
+    "error_confirmation": "Fehler bei der Zahlungsbestätigung."
+  }
+}

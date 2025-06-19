@@ -50,6 +50,8 @@ vi.mock('./pages/ForgotPasswordPage', () => ({ __esModule: true, default: () => 
 vi.mock('./pages/PasswordResetPage', () => ({ __esModule: true, default: () => <div data-testid="page-password-reset">Password Reset</div> }));
 vi.mock('./pages/UserDashboardPage', () => ({ __esModule: true, default: () => <div data-testid="page-user-dashboard">User Dashboard</div> }));
 vi.mock('./pages/UnauthorizedPage', () => ({ __esModule: true, default: () => <div data-testid="page-unauthorized">Unauthorized</div> }));
+vi.mock('./pages/CheckoutPage', () => ({ __esModule: true, default: () => <div data-testid="page-checkout">Checkout</div> }));
+vi.mock('./pages/ConfirmationPage', () => ({ __esModule: true, default: () => <div data-testid="page-confirmation">Confirmation</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -233,6 +235,22 @@ describe('Routes supplémentaires dans <App />', () => {
     window.history.pushState({}, '', '/user/dashboard');
     render(<App mode="light" toggleMode={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('page-user-dashboard')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+
+  it('affiche CheckoutPage sur "/checkout" quand RequireAuth autorise l’accès (stubbed)', async () => {
+    window.history.pushState({}, '', '/checkout');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-checkout')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+
+  it('affiche ConfirmationPage sur "/confirmation" quand RequireAuth autorise l’accès (stubbed)', async () => {
+    window.history.pushState({}, '', '/confirmation');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-confirmation')).toBeInTheDocument());
     // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
     expect(screen.queryByTestId('page-home')).toBeNull();
   });

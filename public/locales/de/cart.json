@@ -19,7 +19,8 @@
     "remove_success": "Artikel aus dem Einkaufskorb entfernt",
     "update_success": "Menge aktualisiert",
     "remaining": "{{count}} verfügbar",
-    "cgv_not_accepted": "Sie müssen die Allgemeinen Verkaufsbedingungen akzeptieren, um fortzufahren"
+    "cgv_not_accepted": "Sie müssen die Allgemeinen Verkaufsbedingungen akzeptieren, um fortzufahren",
+    "payment_in_progress": "Zahlung wird verarbeitet, bitte warten"
   },
   "errors": {
     "error_load": "Der Einkaufskorb konnte nicht geladen werden, bitte versuchen Sie es erneut",
@@ -27,7 +28,8 @@
     "error_update": "Der Einkaufskorb konnte nicht aktualisiert werden",
     "error_loading": "Ladefehler",
     "error_loading_message": "Ihr Einkaufskorb konnte nicht geladen werden. Bitte überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
-    "empty_message": "Es scheint, dass Sie noch keine Artikel hinzugefügt haben. Durchsuchen Sie unseren Katalog, um mit dem Einkaufen zu beginnen!"
+    "empty_message": "Es scheint, dass Sie noch keine Artikel hinzugefügt haben. Durchsuchen Sie unseren Katalog, um mit dem Einkaufen zu beginnen!",
+    "cart_locked": "Ihr Einkaufskorb ist gesperrt, um Änderungen während des Bezahlvorgangs zu verhindern. Bitte schließen Sie Ihre Bestellung ab oder versuchen Sie es später erneut."
   },
   "table": {
     "product": "Produkt",

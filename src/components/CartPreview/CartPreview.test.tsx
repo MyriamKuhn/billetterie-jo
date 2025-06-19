@@ -4,7 +4,7 @@ import CartPreview from './CartPreview';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
 // ─── ❶ Préparation des variables modifiables ──────────────────────────────────
-let storeState: { items: any[] } = { items: [] };
+let storeState: { items: any[]; isLocked?: boolean } = { items: [], isLocked: false };
 const mockAddItem = vi.fn();
 let mockLoading = false;
 let mockHasError = false;
@@ -315,6 +315,94 @@ describe('<CartPreview />', () => {
     // 4) S’assurer que le popover (la liste) n’est plus dans le DOM
     await waitFor(() => {
       expect(screen.queryByRole('list')).toBeNull();
+    });
+  });
+
+  it('when cart is locked, buttons are clickable and clicking notifies cart_locked and does not call addItem', async () => {
+    // Préparer un item pour que le popover affiche une liste
+    storeState.items = [
+      { id: 'lock1', name: 'LockedItem', quantity: 1, price: 5, availableQuantity: 5 }
+    ];
+    // Simuler isLocked = true
+    storeState.isLocked = true;
+
+    renderWithTheme();
+    // Ouvrir le popover
+    const list = await openPopover();
+    const listItem = within(list).getByText('LockedItem').closest('li')!;
+
+    // Vérifier que les boutons NE SONT PAS désactivés par isLocked
+    const [removeBtn, addBtn] = within(listItem).getAllByRole('button');
+    expect(removeBtn).not.toBeDisabled();
+    expect(addBtn).not.toBeDisabled();
+
+    // Cliquer sur + : doit appeler notify cart_locked et ne pas appeler addItem
+    fireEvent.click(addBtn);
+    await waitFor(() => {
+      expect(mockNotify).toHaveBeenCalledWith('cart:errors.cart_locked', 'warning');
+      expect(mockAddItem).not.toHaveBeenCalled();
+    });
+    mockNotify.mockClear();
+
+    // Cliquer sur - : idem
+    fireEvent.click(removeBtn);
+    await waitFor(() => {
+      expect(mockNotify).toHaveBeenCalledWith('cart:errors.cart_locked', 'warning');
+      expect(mockAddItem).not.toHaveBeenCalled();
+    });
+  });
+
+  it('adjustQty: if addItem throws error with message "CartLocked", notify cart_locked', async () => {
+    // Préparer un item
+    storeState.items = [
+      { id: 'err1', name: 'ErrItem', quantity: 1, price: 5, availableQuantity: 5 }
+    ];
+    // isLocked = false pour que la branche try/catch soit atteinte
+    (storeState as any).isLocked = false;
+
+    // Simuler addItem rejetant avec message 'CartLocked'
+    mockAddItem.mockRejectedValue(Object.assign(new Error('Some'), { message: 'CartLocked' }));
+
+    renderWithTheme();
+    const list = await openPopover();
+    const listItem = within(list).getByText('ErrItem').closest('li')!;
+
+    // Cliquer sur + pour déclencher addItem
+    const addBtn = within(listItem).getAllByRole('button')[1];
+    fireEvent.click(addBtn);
+
+    await waitFor(() => {
+      expect(mockAddItem).toHaveBeenCalledWith('err1', 2, 5);
+      expect(mockNotify).toHaveBeenCalledWith('cart:errors.cart_locked', 'warning');
+    });
+  });
+
+  it('adjustQty: when cart is locked, clicking + or - notifies cart_locked and does not call addItem', async () => {
+    storeState.items = [
+      { id: 'lock1', name: 'LockedItem', quantity: 1, price: 5, availableQuantity: 5 }
+    ];
+    storeState.isLocked = true;
+
+    renderWithTheme();
+    const list = await openPopover();
+    const listItem = within(list).getByText('LockedItem').closest('li')!;
+
+    // Vérifier que buttons ne sont plus désactivés par isLocked
+    const [removeBtn, addBtn] = within(listItem).getAllByRole('button');
+    expect(removeBtn).not.toBeDisabled();
+    expect(addBtn).not.toBeDisabled();
+
+    fireEvent.click(addBtn);
+    await waitFor(() => {
+      expect(mockNotify).toHaveBeenCalledWith('cart:errors.cart_locked', 'warning');
+      expect(mockAddItem).not.toHaveBeenCalled();
+    });
+    mockNotify.mockClear();
+
+    fireEvent.click(removeBtn);
+    await waitFor(() => {
+      expect(mockNotify).toHaveBeenCalledWith('cart:errors.cart_locked', 'warning');
+      expect(mockAddItem).not.toHaveBeenCalled();
     });
   });
 });

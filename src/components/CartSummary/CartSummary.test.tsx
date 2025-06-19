@@ -151,4 +151,70 @@ describe('<CartSummary />', () => {
     fireEvent.click(checkoutBtn);
     expect(onPay).toHaveBeenCalledTimes(1);
   });
+
+  it('affiche le message payment_in_progress quand disabled=true', () => {
+    render(
+      <MemoryRouter>
+        <CartSummary
+          total={100}
+          acceptedCGV={true}
+          onCgvChange={onCgvChange}
+          onPay={onPay}
+          lang="en-US"
+          isMobile={false}
+          disabled={true}
+        />
+      </MemoryRouter>
+    );
+
+    // 1) Le bouton Checkout doit être désactivé car disabled=true
+    const checkoutBtn = screen.getByRole('button', { name: 'checkout.checkout' });
+    expect(checkoutBtn).toBeDisabled();
+
+    // 2) La checkbox doit être désactivée
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).toBeDisabled();
+
+    // 3) Le texte “payment_in_progress” apparaît
+    expect(screen.getByText('cart.payment_in_progress')).toBeInTheDocument();
+
+    // 4) Le lien Continue Shopping reste actif
+    const continueLink = screen.getByRole('link', { name: 'checkout.continue_shopping' });
+    expect(continueLink).toHaveAttribute('href', '/tickets');
+  });
+
+  it('mobile – affiche payment_in_progress quand disabled=true', () => {
+    render(
+      <MemoryRouter>
+        <CartSummary
+          total={50}
+          acceptedCGV={false}
+          onCgvChange={onCgvChange}
+          onPay={onPay}
+          lang="fr-FR"
+          isMobile={true}
+          disabled={true}
+        />
+      </MemoryRouter>
+    );
+
+    // Checkout désactivé (acceptedCGV=false ou disabled=true)
+    const checkoutBtn = screen.getByRole('button', { name: 'checkout.checkout' });
+    expect(checkoutBtn).toBeDisabled();
+
+    // Checkbox désactivée
+    const checkbox = screen.getByRole('checkbox');
+    expect(checkbox).toBeDisabled();
+
+    // Message payment_in_progress visible
+    expect(screen.getByText('cart.payment_in_progress')).toBeInTheDocument();
+
+    // Lien CGV existe (même désactivé, mais link non désactivé): vérifiez href
+    const termsLink = screen.getByRole('link', { name: 'checkout.accept_cgv_link_text_mobile' });
+    expect(termsLink).toHaveAttribute('href', '/terms');
+
+    // Continue Shopping
+    const continueLink = screen.getByRole('link', { name: 'checkout.continue_shopping' });
+    expect(continueLink).toHaveAttribute('href', '/tickets');
+  });
 });

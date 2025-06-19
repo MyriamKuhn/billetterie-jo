@@ -2,9 +2,10 @@ import { render } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useEffect } from 'react';
 import { useAddToCart } from './useAddToCart';
+import { useCartStore } from '../stores/useCartStore'; // importer pour pouvoir surcharger getState
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────────
-// 1) Mock useCartStore.getState().addItem
+// 1) Mock useCartStore.getState().addItem est défini initialement, on le réaffectera dans les tests
 const mockAddItem = vi.fn();
 vi.mock('../stores/useCartStore', () => ({
   __esModule: true,
@@ -38,10 +39,14 @@ function HookRunner({ onReady }: { onReady: (fn: (id: string, d: number, a: numb
   return null;
 }
 
-// ─── Tests ────────────────────────────────────────────────────────────────────────
 describe('useAddToCart', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Remettre mockAddItem par défaut
+    mockAddItem.mockReset();
+    mockNotify.mockReset();
+    // Par défaut getState renvoie seulement addItem, isLocked sera undefined/falsy
+    (useCartStore.getState as any) = () => ({ addItem: mockAddItem });
   });
 
   it('renvoie true et notifie succès quand addItem réussit', async () => {
@@ -78,5 +83,23 @@ describe('useAddToCart', () => {
     expect(result).toBe(false);
     expect(mockAddItem).toHaveBeenCalledWith('prod3', 1, 2);
     expect(mockNotify).toHaveBeenCalledWith('errors.error_update', 'error');
+  });
+
+  it('renvoie false et notifie cart_locked quand isLocked=true', async () => {
+    // Surcharger getState pour inclure isLocked=true
+    (useCartStore.getState as any) = () => ({ addItem: mockAddItem, isLocked: true });
+
+    // Même si addItem résoudrait, on ne doit pas l’appeler
+    mockAddItem.mockResolvedValueOnce(undefined);
+
+    let hookFn: (id: string, desiredQty: number, availableQty: number) => Promise<boolean> = async () => true;
+    render(<HookRunner onReady={(fn) => (hookFn = fn)} />);
+
+    const result = await hookFn('prodLocked', 2, 5);
+    expect(result).toBe(false);
+    // addItem NE DOIT PAS ÊTRE APPELÉ
+    expect(mockAddItem).not.toHaveBeenCalled();
+    // Notification de verrouillage du panier
+    expect(mockNotify).toHaveBeenCalledWith('errors.cart_locked', 'warning');
   });
 });
