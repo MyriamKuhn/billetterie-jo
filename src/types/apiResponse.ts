@@ -32,3 +32,15 @@ export interface TwoFAResponse {
 export interface ConfirmTwoFAResponse {
   recovery_codes: string[];
 }
+
+export interface PaymentInitData {
+  uuid: string;
+  status: string; 
+  transaction_id: string | null;
+  client_secret: string;
+}
+
+export interface PaymentStatusResponse {
+  status: string;
+  paid_at: string;
+}

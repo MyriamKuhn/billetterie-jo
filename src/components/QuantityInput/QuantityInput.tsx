@@ -10,12 +10,14 @@ interface QuantityInputProps {
   item: CartItem;
   adjustQty: (item: CartItem, newQty: number) => void;
   debounceMs?: number;
+  disabled?: boolean;
 }
 
 export default function QuantityInput({
   item,
   adjustQty,
   debounceMs = 500, // Délai par défaut (ms) avant d'envoyer la mise à jour
+  disabled = false,
 }: QuantityInputProps) {
   // Valeur locale du champ, sous forme de chaîne
   const [inputValue, setInputValue] = useState<string>(item.quantity.toString());
@@ -28,8 +30,22 @@ export default function QuantityInput({
     setInputValue(item.quantity.toString());
   }, [item.quantity]);
 
+  // Si disabled passe à true, on peut remettre inputValue à item.quantity immédiatement pour cohérence.
+  useEffect(() => {
+    if (disabled) {
+      setInputValue(item.quantity.toString());
+    }
+    // On ne met pas item.quantity en dépendance ici car un autre useEffect gère déjà la synchro.
+  }, [disabled, item.quantity]);
+  
+
   // Effet : à chaque modification de inputValue, on démarre (ou on reset) le debounce
   useEffect(() => {
+    if (disabled) {
+      // Ne rien faire quand disabled
+      return;
+    }
+
     // Si l'utilisateur a complètement vidé le champ, on ne déclenche rien
     if (inputValue === '') {
       return;
@@ -78,10 +94,15 @@ export default function QuantityInput({
         debounceRef.current = null;
       }
     };
-  }, [inputValue, item, adjustQty, debounceMs]);
+  }, [inputValue, item, adjustQty, debounceMs, disabled]);
 
   // Gère la saisie utilisateur (on accepte uniquement chiffres ou chaîne vide)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) {
+      // On remet la valeur précédente pour éviter saisie visuelle erronée
+      setInputValue(item.quantity.toString());
+      return;
+    }
     const raw = e.target.value;
     if (raw === '' || /^[0-9]+$/.test(raw)) {
       setInputValue(raw);
@@ -105,7 +126,12 @@ export default function QuantityInput({
         gap: 1,
       }}
     >
-      <IconButton size="small" onClick={decrement} disabled={item.quantity <= 0}>
+      <IconButton 
+        size="small" 
+        onClick={decrement} 
+        disabled={disabled || item.quantity <= 0}
+        aria-label="decrement quantity"
+      >
         <RemoveIcon fontSize="small" />
       </IconButton>
 
@@ -114,6 +140,15 @@ export default function QuantityInput({
         size="small"
         value={inputValue}
         onChange={handleChange}
+        onBlur={() => {
+          // Au blur, si champ vide, on remet la vraie quantité
+          if (!disabled && inputValue === '') {
+            setInputValue(item.quantity.toString());
+          }
+          if (disabled) {
+            setInputValue(item.quantity.toString());
+          }
+        }}
         slotProps={{
           input: {
             inputProps: {
@@ -123,12 +158,14 @@ export default function QuantityInput({
             },
           },
         }}
+        disabled={disabled}
       />
 
       <IconButton
         size="small"
         onClick={increment}
-        disabled={item.quantity >= item.availableQuantity}
+        aria-label="increment quantity"
+        disabled={disabled || item.quantity >= item.availableQuantity}
       >
         <AddIcon fontSize="small" />
       </IconButton>

@@ -20,7 +20,8 @@
     "update_success": "Quantité mise à jour",
     "remaining_one": "{{count}} disponible",
     "remaining_other": "{{count}} disponibles",
-    "cgv_not_accepted": "Vous devez accepter les Conditions Générales de Vente pour continuer"
+    "cgv_not_accepted": "Vous devez accepter les Conditions Générales de Vente pour continuer",
+    "payment_in_progress": "Paiement en cours, veuillez patienter"
   },
   "errors": {
     "error_load": "Impossible de charger le panier, veuillez réessayer",
@@ -28,7 +29,8 @@
     "error_update": "Impossible de mettre à jour le panier",
     "error_loading": "Erreur de chargement",
     "error_loading_message": "Impossible de charger votre panier. Vérifiez votre connexion et réessayez.",
-    "empty_message": "Il semblerait que vous n’ayez encore ajouté aucun article. Parcourez notre catalogue pour commencer vos achats !"
+    "empty_message": "Il semblerait que vous n’ayez encore ajouté aucun article. Parcourez notre catalogue pour commencer vos achats !",
+    "cart_locked": "Votre panier est verrouillé pour éviter les modifications pendant le processus de paiement. Veuillez finaliser votre commande ou réessayer plus tard."
   },
   "table": {
     "product": "Produit",

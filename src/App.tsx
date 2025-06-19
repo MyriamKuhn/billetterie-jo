@@ -26,6 +26,9 @@ const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
 const PasswordResetPage = lazy(() => import('./pages/PasswordResetPage'));
 const UserDashboardPage = lazy(() => import('./pages/UserDashboardPage'));
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const ConfirmationPage = lazy(() => import('./pages/ConfirmationPage'));
+
 
 
 interface AppProps {
@@ -72,10 +75,14 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/verification-result/:status" element={<VerificationResultPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/password-reset" element={<PasswordResetPage />} />
+
+                {/* Unauthorized route */}
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 
                 {/* Protected routes */}
                 <Route path="/user/dashboard" element={<RequireAuth requiredRole="user"><UserDashboardPage /></RequireAuth>}/>
+                <Route path="/checkout" element={<RequireAuth requiredRole="user"><CheckoutPage /></RequireAuth>} />
+                <Route path="/confirmation" element={<RequireAuth requiredRole="user"><ConfirmationPage /></RequireAuth>} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

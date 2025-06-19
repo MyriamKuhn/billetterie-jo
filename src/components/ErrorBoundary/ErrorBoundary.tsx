@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import { withTranslation, type WithTranslation } from 'react-i18next';
 import { logError } from '../../utils/logger';
 import Seo from '../Seo';
+import { PageWrapper } from '../PageWrapper';
 
 interface Props extends WithTranslation {
   children: ReactNode;
@@ -42,24 +43,26 @@ class ErrorBoundaryInner extends React.Component<Props, State> {
       return (
         <>
           <Seo title={t('errors.seoTitle')} description={t('errors.seoDescription')} />
-          <Box sx={{ p: 4, textAlign: 'center' }}>
-            <Typography variant="h4" gutterBottom>
-              {t('errors.title')}
-            </Typography>
-            <Typography variant="h5" sx={{ mb: 2 }}>
-              {t('errors.unexpected')}
-            </Typography>
-            <Button variant="contained" onClick={this.handleReload}>
-              {t('errors.retry')}
-            </Button>
-            <Button
-              variant="text"
-              onClick={() => (window.location.href = '/')}
-              sx={{ ml: 2 }}
-            >
-              {t('errors.home')}
-            </Button>
-          </Box>
+          <PageWrapper>
+            <Box sx={{ p: 4, textAlign: 'center' }}>
+              <Typography variant="h4" gutterBottom>
+                {t('errors.title')}
+              </Typography>
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                {t('errors.unexpected')}
+              </Typography>
+              <Button variant="contained" onClick={this.handleReload}>
+                {t('errors.retry')}
+              </Button>
+              <Button
+                variant="text"
+                onClick={() => (window.location.href = '/')}
+                sx={{ ml: 2 }}
+              >
+                {t('errors.home')}
+              </Button>
+            </Box>
+          </PageWrapper>
         </>
       );
     }
