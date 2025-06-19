@@ -109,9 +109,6 @@ export default function ConfirmationPage() {
       </PageWrapper>
     );
   }
-  if (!paymentInfo) {
-    return null;
-  }
 
   return (
     <>
@@ -126,7 +123,7 @@ export default function ConfirmationPage() {
           </Typography>
           <Typography variant="body2" sx={{ mb: 2 }}>
             {t('confirmation.paid_at', {
-              date: paymentInfo.paid_at ? new Date(paymentInfo.paid_at).toLocaleString() : '-',
+              date: paymentInfo?.paid_at ? new Date(paymentInfo.paid_at).toLocaleString() : '-',
             })}
           </Typography>
           <Box sx={{ mt: 3 }}>

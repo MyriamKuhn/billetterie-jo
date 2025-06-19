@@ -2,7 +2,7 @@
 
 This is the React/Vite frontend client for the Olympic Games Paris 2024 ticketing platform. It consumes our REST API via Axios and React Query, and offers a rich UI built with Material UI, typed forms, internationalization, lightweight state management, and more.
 
-![Tests](https://img.shields.io/badge/tests-700_passed-4caf50.svg) ![Test Coverage](https://img.shields.io/badge/coverage-100%25-darkgreen)
+![Tests](https://img.shields.io/badge/tests-778_passed-4caf50.svg) ![Test Coverage](https://img.shields.io/badge/coverage-100%25-darkgreen)
 ![Vite](https://img.shields.io/badge/vite-6.3.5-blue) ![React](https://img.shields.io/badge/react-19.1.0-61DAFB) ![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)
 
 ---
@@ -135,7 +135,7 @@ The application has a **full feature test coverage**.
 
 Full HTML report available under [Coverage HTML](https://myriamkuhn.github.io/billetterie-jo/).  
 
-✅ **700 tests passed**.  
+✅ **778 tests passed**.  
 📊 **Coverage: 100%**
 
 To run all automated tests:
