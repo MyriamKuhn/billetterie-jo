@@ -14,7 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress'
 import { useCustomSnackbar } from '../../hooks/useCustomSnackbar'
 
 // Définir le mapping statut → couleur du Chip MUI
-function getStatusChipColor(status: Invoice['status']): 'success' | 'warning' | 'error' | 'default' | 'info' {
+export function getStatusChipColor(status: Invoice['status']): 'success' | 'warning' | 'error' | 'default' | 'info' {
   switch (status) {
     case 'paid':
       return 'success'

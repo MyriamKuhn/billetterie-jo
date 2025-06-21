@@ -87,11 +87,11 @@ export function TicketCard({ ticket }: TicketCardProps) {
     nameToShow = t('tickets.no_product');
   } else {
     // product disponible
-    nameToShow = product!.name;
+    nameToShow = ticket.product_snapshot?.product_name;
     dateStr = formatDate(product!.product_details?.date, lang);
     timeStr = product!.product_details?.time || '';
     locationToShow = product!.product_details?.location || t('tickets.no_location');
-    placesToShow = product!.product_details?.places ?? null;
+    placesToShow = ticket.product_snapshot?.ticket_places ?? null;
   };
 
   // Statut du ticket
@@ -112,9 +112,9 @@ export function TicketCard({ ticket }: TicketCardProps) {
 
   // Handler téléchargement facture
   const handleDownloadInvoice = () => {
-    const invoiceLink = `invoice_${ticket.payment_uuid}.pdf`;
-    if (invoiceLink) {
-      downloadInvoice(invoiceLink)
+    if (ticket.payment_uuid) {
+      const link = `invoice_${ticket.payment_uuid}.pdf`;
+      downloadInvoice(link)
         .catch(_err => {
           notify(t('errors.invoice_download_error'), 'error');
         });

@@ -92,7 +92,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
 
         {/* Date “Au” */}
         <DatePicker
-          label={t('filters.date_to_label') || 'Au'}
+          label={t('filters.date_to_label')}
           value={filters.date_to ? dayjs(filters.date_to) : null}
           onChange={(d: Dayjs | null) =>
             onChange({ date_to: d?.format('YYYY-MM-DD') || '', page: 1 })
