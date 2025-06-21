@@ -28,6 +28,8 @@ const UserDashboardPage = lazy(() => import('./pages/UserDashboardPage'));
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const ConfirmationPage = lazy(() => import('./pages/ConfirmationPage'));
+const InvoicesPage = lazy(() => import('./pages/InvoicesPage'));
+const TicketsShowPage = lazy(() => import('./pages/TicketsShowPage'));
 
 
 
@@ -83,6 +85,8 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/user/dashboard" element={<RequireAuth requiredRole="user"><UserDashboardPage /></RequireAuth>}/>
                 <Route path="/checkout" element={<RequireAuth requiredRole="user"><CheckoutPage /></RequireAuth>} />
                 <Route path="/confirmation" element={<RequireAuth requiredRole="user"><ConfirmationPage /></RequireAuth>} />
+                <Route path="/user/orders" element={<RequireAuth requiredRole="user"><InvoicesPage /></RequireAuth>} />
+                <Route path="/user/tickets" element={<RequireAuth requiredRole="user"><TicketsShowPage /></RequireAuth>} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

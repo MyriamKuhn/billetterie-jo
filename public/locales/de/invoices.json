@@ -1,0 +1,60 @@
+{
+  "filters": {
+    "status_all": "Alle",
+    "status_pending": "Ausstehend",
+    "status_paid": "Bezahlt",
+    "status_failed": "Fehlgeschlagen",
+    "status_refunded": "Erstattet",
+    "sort_by_date": "Datum",
+    "sort_by_amount": "Preis",
+    "sort_by_uuid": "Ref",
+    "title": "Filter",
+    "status_label": "Status",
+    "date_from_label": "Von",
+    "date_to_label": "Bis",
+    "sort_by_label": "Sortieren nach",
+    "per_page_label": "Bestellungen pro Seite",
+    "reset": "Zurücksetzen",
+    "close": "Schließen"
+  },
+  "errors": {
+    "not_authenticated": "Benutzer nicht authentifiziert",
+    "download_failed": "Download der Rechnung fehlgeschlagen",
+    "not_found": "Rechnung nicht gefunden",
+    "unauthorized": "Sie sind nicht berechtigt, auf diese Rechnung zuzugreifen",
+    "title": "Hoppla! Ein Fehler ist aufgetreten",
+    "message": "Beim Abrufen der Rechnungen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
+  },
+  "card": {
+    "download_success": "Rechnung heruntergeladen",
+    "status": {
+      "paid": "Bezahlt",
+      "pending": "Ausstehend",
+      "failed": "Fehlgeschlagen",
+      "refunded": "Erstattet"
+    },
+    "download_invoice": "Rechnung herunterladen",
+    "download_not_ready": "Zahlung ausstehend, Rechnung nicht verfügbar",
+    "download_not_available": "Zahlung fehlgeschlagen, keine Rechnung verfügbar",
+    "download_not_available_generic": "Rechnung nicht verfügbar",
+    "reference": "Referenz",
+    "date": "Datum",
+    "amount": "Betrag",
+    "see_tickets": "Tickets ansehen"
+  },
+  "snackbar": {
+    "pending_message": "Die Zahlung ist ausstehend. Die Rechnung steht zur Verfügung, sobald die Zahlung bestätigt wurde.",
+    "failed_message": "Die Zahlung ist fehlgeschlagen. Keine Rechnung verfügbar.",
+    "unavailable_message": "Die Rechnung ist nicht verfügbar."
+  },
+  "invoices": {
+    "no_found": "Keine Bestellungen gefunden",
+    "retry": "Erneut versuchen",
+    "go_home": "Zur Startseite",
+    "title": "Meine Bestellungen"
+  },
+  "seo": {
+    "title": "Meine Bestellungen – Olympischer Ticketverkauf Paris 2024",
+    "description": "Überprüfen Sie Ihre Bestellungen und laden Sie Ihre Rechnungen für Tickets der Olympischen und Paralympischen Spiele Paris 2024 herunter."
+  }
+}

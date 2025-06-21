@@ -1,0 +1,61 @@
+{
+  "filters": {
+    "title": "Filtres",
+    "search": "Nom",
+    "event_date_from": "Du",
+    "event_date_to": "Au",
+    "per_page": "Tickets par page",
+    "reset": "Réinitialiser",
+    "close": "Fermer",
+    "status_all": "Tous",
+    "status_issued": "Émis",
+    "status_used": "Utilisé",
+    "status_expired": "Expiré",
+    "status_refunded": "Remboursé",
+    "status_cancelled": "Annulé",
+    "status_label": "Statut"
+  },
+  "tickets": {
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places",
+    "status": {
+      "issued": "Émis",
+      "used": "Utilisé",
+      "expired": "Expiré",
+      "refunded": "Remboursé",
+      "cancelled": "Annulé"
+    },
+    "no_product": "Aucun billet trouvé",
+    "no_location": "Aucun lieu spécifique",
+    "no_pdf": "Aucun billet PDF disponible",
+    "no_invoice": "Aucune facture disponible",
+    "qr_alt": "QR Code du billet",
+    "token": "Référence du billet",
+    "download_pdf": "Télécharger le billet PDF",
+    "download_ticket": "Télécharger billet",
+    "download_invoice_pdf": "Télécharger la facture PDF",
+    "download_invoice": "Télécharger facture",
+    "download_success": "Billet téléchargé avec succès",
+    "no_tickets": "Aucun billet trouvé",
+    "title": "Mes billets"
+  },
+  "errors": {
+    "product_fetch_failed": "Échec de la récupération des données des billets",
+    "download_error": "Échec du téléchargement du billet",
+    "invoice_download_error": "Échec du téléchargement de la facture",
+    "not_authenticated": "Utilisateur non authentifié",
+    "download_failed": "Échec du téléchargement du billet",
+    "not_found": "Billet non trouvé",
+    "unauthorized": "Vous n'êtes pas autorisé à accéder à ce billet",
+    "qr_fetch_failed": "Échec de la récupération du QR Code du billet",
+    "qr_not_found": "QR Code du billet non trouvé",
+    "title": "Oups ! Une erreur s'est produite",
+    "message": "Une erreur s'est produite lors de la récupération des billets. Veuillez réessayer plus tard.",
+    "retry": "Réessayer",
+    "go_home": "Retour à l'accueil"
+  },
+  "seo": {
+    "title": "Mes billets – Billetterie JO Paris 2024",
+    "description": "Consultez vos billets et téléchargez vos factures pour les Jeux Olympiques et Paralympiques de Paris 2024."
+  }
+}
