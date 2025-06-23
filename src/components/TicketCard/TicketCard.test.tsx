@@ -7,7 +7,14 @@ vi.mock('@mui/material/Card', () => ({ default: ({ children, ...props }: any) =>
 vi.mock('@mui/material/CardMedia', () => ({ default: ({ component: Comp = 'img', image, alt, ...props }: any) => <img data-testid="CardMedia" src={image} alt={alt} {...props}/> }))
 vi.mock('@mui/material/CardContent', () => ({ default: ({ children, ...props }: any) => <div data-testid="CardContent" {...props}>{children}</div> }))
 vi.mock('@mui/material/Typography', () => ({ default: ({ children, ...props }: any) => <p data-testid="Typography" {...props}>{children}</p> }))
-vi.mock('@mui/material/Button', () => ({ default: ({ children, onClick, disabled, ...props }: any) => <button data-testid="Button" onClick={onClick} disabled={disabled} {...props}>{children}</button> }))
+vi.mock('@mui/material/Button', () => ({
+  default: ({ children, onClick, disabled, startIcon, ...props }: any) =>
+    <button data-testid="Button" onClick={onClick} disabled={disabled} {...props}>
+      {/* on rend explicitement l’icône ou spinner */}
+      {startIcon}
+      {children}
+    </button>
+}))
 vi.mock('@mui/material/Tooltip', () => ({ default: ({ children, title }: any) => <div data-testid="Tooltip" title={title}>{children}</div> }))
 vi.mock('@mui/material/CircularProgress', () => ({ default: ({  }: any) => <span data-testid="CircularProgress">Loading</span> }))
 // Mock Chip to capture color prop
@@ -31,7 +38,12 @@ let fetchQrReturn: any = { qrUrl: null, loading: false }
 vi.mock('../../hooks/useFetchTicketQr', () => ({ useFetchTicketQr: (_inView: boolean) => fetchQrReturn }))
 
 // useLanguageStore: mock selector invocation
-vi.mock('../../stores/useLanguageStore', () => ({ useLanguageStore: () => (selector: any) => selector({ lang: 'en' }) }))
+vi.mock('../../stores/useLanguageStore', () => ({
+  useLanguageStore: (selector: (state: { lang: string }) => any) => {
+    // on appelle vraiment le selector avec un objet de test
+    return selector({ lang: 'en' })
+  }
+}))
 
 // useCustomSnackbar
 const mockNotify = vi.fn()
@@ -49,6 +61,11 @@ vi.mock('../../utils/format', () => ({ formatDate: (date: string, lang: string) 
 
 // Mock logError inline
 vi.mock('../../utils/logger', () => ({ logError: vi.fn() }))
+
+import * as IntersectionObserver from 'react-intersection-observer'
+import * as fetchQrHook from '../../hooks/useFetchTicketQr'
+import * as downloadTicketHook from "../../hooks/useDownloadTicket";
+import * as downloadInvoiceHook from "../../hooks/useDownloadInvoice";
 import { logError } from '../../utils/logger'
 
 import { TicketCard } from './TicketCard'
@@ -182,6 +199,133 @@ describe('TicketCard', () => {
     fetchQrReturn = { qrUrl: null, loading: false }
     render(<TicketCard ticket={baseTicket} invoiceLink="inv" />)
     expect(screen.getByTestId('QrCodeIcon')).toBeInTheDocument()
+  })
+
+  it('n’utilise pas le QR tant que la carte n’est pas inView', () => {
+    // 1) mock useInView pour renvoyer inView = false
+    const mockInView: any = [() => {}, false, undefined]
+    mockInView.ref = mockInView[0]
+    mockInView.inView = mockInView[1]
+    vi.spyOn(IntersectionObserver, 'useInView').mockReturnValue(mockInView)
+
+    // 2) mock useFetchTicketQr pour renvoyer null si filename === null
+    vi.spyOn(fetchQrHook, 'useFetchTicketQr')
+      .mockImplementation((filename: string | null) => {
+        if (filename) {
+          return { qrUrl: 'http://example.com/qr.png', loading: false }
+        }
+        return { qrUrl: null, loading: false }
+      })
+
+    // 3) même si fetchQrReturn était précédemment défini, on part de zéro
+    render(<TicketCard ticket={baseTicket} invoiceLink="inv" />)
+
+    // 4) on doit voir le placeholder, pas l'image
+    expect(screen.queryByTestId('CardMedia')).toBeNull()
+    expect(screen.getByTestId('QrCodeIcon')).toBeInTheDocument()
+  })
+
+  it('affiche le QR quand la carte devient inView', () => {
+    const mockInView: any = [() => {}, true, undefined]
+    mockInView.ref = mockInView[0]
+    mockInView.inView = mockInView[1]
+    vi.spyOn(IntersectionObserver, 'useInView').mockReturnValue(mockInView)
+
+    vi.spyOn(fetchQrHook, 'useFetchTicketQr')
+      .mockImplementation((filename: string | null) => {
+        return { qrUrl: filename ? 'http://example.com/qr.png' : null, loading: false }
+      })
+
+    render(<TicketCard ticket={baseTicket} invoiceLink="inv" />)
+    expect(screen.getByTestId('CardMedia')).toHaveAttribute('src', 'http://example.com/qr.png')
+  })
+
+  it('affiche le fallback minimal si product_snapshot est manquant', () => {
+    const ticketSansSnapshot = { ...baseTicket, product_snapshot: undefined as any }
+    render(<TicketCard ticket={ticketSansSnapshot} invoiceLink="inv" />)
+    // on est hors loadingProduct et product est null → fallback
+    expect(screen.getByText('tickets.no_product')).toBeInTheDocument()
+    // token toujours affiché
+    expect(screen.getByText(/tok123/)).toBeInTheDocument()
+  })
+
+  it("ne montre pas les places si ticket_places est undefined", () => {
+    // produit OK
+    productDetailsReturn = {
+      product: { name: "Evt", product_details: { date: "2025-07-01", time: "10:00", location: "Labo", places: 1 } },
+      loading: false,
+      error: null
+    };
+    // override de ticket_places
+    const ticketNoPlaces = {
+      ...baseTicket,
+      product_snapshot: {
+        ...baseTicket.product_snapshot!,
+        ticket_places: undefined as any
+      }
+    };
+    render(<TicketCard ticket={ticketNoPlaces} invoiceLink="inv" />);
+    // on ne doit pas trouver « tickets.places-X »
+    expect(screen.queryByText(/^tickets\.places/)).toBeNull();
+  });
+
+  it("montre le spinner pour le bouton Télécharger billet quand downloadingTicket=true", () => {
+    vi.spyOn(downloadTicketHook, "useDownloadTicket")
+      .mockReturnValue({ download: mockDownloadTicket, downloading: true });
+    render(<TicketCard ticket={baseTicket} invoiceLink="inv" />);
+    expect(screen.getByTestId("CircularProgress")).toBeInTheDocument();
+  });
+
+  it("montre le spinner pour le bouton Télécharger facture quand downloadingInvoice=true", () => {
+    // need aussi un payment_uuid pour que le bouton soit affiché
+    vi.spyOn(downloadInvoiceHook, "useDownloadInvoice")
+      .mockReturnValue({ download: mockDownloadInvoice, downloading: true });
+    render(<TicketCard ticket={baseTicket} invoiceLink="inv" />);
+    // on récupère le deuxième CircularProgress (celui de la facture)
+    const spinners = screen.getAllByTestId("CircularProgress");
+    expect(spinners.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("ne montre pas le titre mais affiche date et lieu quand product_snapshot est absent", () => {
+    // On a un produit valide
+    productDetailsReturn = {
+      product: {
+        name: 'EvtSansSnapshot',
+        product_details: {
+          date: '2025-07-10',
+          time: '14:00',
+          location: 'Salle A',
+          places: 3
+        }
+      },
+      loading: false,
+      error: null
+    }
+
+    // On enlève product_snapshot
+    const ticketSansSnapshot = {
+      ...baseTicket,
+      product_snapshot: undefined as any
+    }
+
+    render(<TicketCard ticket={ticketSansSnapshot} invoiceLink="inv" />)
+
+    // 1) Le premier <Typography> (variant="h6") est vide car nameToShow === undefined
+    const typos = screen.getAllByTestId('Typography')
+    expect(typos[0].textContent).toBe('')
+
+    // 2) Le token est toujours affiché
+    expect(typos[1].textContent).toContain('tok123')
+
+    // 3) La date et l’heure
+    expect(typos[2].textContent).toContain('formatted-2025-07-10')
+    expect(typos[2].textContent).toContain('14:00')
+
+    // 4) Le lieu
+    expect(typos[3].textContent).toBe('Salle A')
+
+    // 5) Il n’y a pas de <Typography> pour les places (placesToShow = null)
+    expect(typos.length).toBe(4)
   })
 })
 

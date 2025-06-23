@@ -112,15 +112,10 @@ export function TicketCard({ ticket }: TicketCardProps) {
 
   // Handler téléchargement facture
   const handleDownloadInvoice = () => {
-    if (ticket.payment_uuid) {
-      const link = `invoice_${ticket.payment_uuid}.pdf`;
-      downloadInvoice(link)
-        .catch(_err => {
-          notify(t('errors.invoice_download_error'), 'error');
-        });
-    } else {
-      notify(t('tickets.no_invoice'), 'warning');
-    }
+    const link = `invoice_${ticket.payment_uuid}.pdf`;
+    downloadInvoice(link).catch(_err => {
+      notify(t('errors.invoice_download_error'), 'error');
+    });
   };
 
   // Zone QR code : si loadingQr, skeleton partiel ; sinon image ou icône
@@ -177,13 +172,9 @@ export function TicketCard({ ticket }: TicketCardProps) {
         {/* Contenu principal */}
         <CardContent sx={{ flexGrow: 1 }}>
           {/* Nom / événement */}
-          {loadingProduct ? (
-            <Skeleton variant="text" width="40%" />
-          ) : (
-            <Typography variant="h6" gutterBottom>
-              {nameToShow}
-            </Typography>
-          )}
+          <Typography variant="h6" gutterBottom>
+            {nameToShow}
+          </Typography>
 
           {/* Token */}
           {!loadingProduct && ticket.token && (

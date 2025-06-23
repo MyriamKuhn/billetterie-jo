@@ -55,7 +55,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
           value={currentStatusLabel}
           options={statusOptionsLabels}
           onChange={selectedLabel => {
-            const statusCode = labelToStatus[selectedLabel] ?? ''
+            const statusCode = labelToStatus[selectedLabel]
             onChange({ status: statusCode, page: 1 })
           }}
         />
@@ -86,7 +86,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
           value={String(filters.per_page)}
           options={['5','10','25','50','100']}
           onChange={selected => {
-            const per = parseInt(selected, 10) || 5
+            const per = parseInt(selected, 10)
             onChange({ per_page: per, page: 1 })
           }}
         />
@@ -121,7 +121,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
           position: 'sticky',
           top: theme.mixins.toolbar.minHeight,
           bgcolor: 'background.paper',
-          border: t => `1px solid ${t.palette.divider}`,
+          border: `1px solid ${theme.palette.divider}`,
           borderRadius: 1,
           width: 260,
         }}

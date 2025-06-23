@@ -169,4 +169,63 @@ describe('InvoicesPage (RTL)', () => {
     filters = JSON.parse(screen.getByTestId('invoices-filters').getAttribute('data-filters')!)
     expect(filters.page).toBe(2)
   })
+
+  it('resets all filters when validationErrors for every field', () => {
+    mockedUseInvoices.mockReturnValue({
+      invoices: [],
+      total: 0,
+      loading: false,
+      error: null,
+      validationErrors: {
+        status:    'err',
+        date_from: 'err',
+        date_to:   'err',
+        sort_by:   'err',
+        sort_order:'err',
+        per_page:  'err',
+        page:      'err',
+      },
+    });
+    renderPage();
+    const filters = JSON.parse(
+      screen.getByTestId('invoices-filters').getAttribute('data-filters')!
+    );
+    expect(filters).toEqual({
+      status:     '',
+      date_from:  '',
+      date_to:    '',
+      sort_by:    'created_at',
+      sort_order: 'desc',
+      per_page:   15,
+      page:       1,
+    });
+  });
+
+  it('falls back to a single page when total/per_page calculates to 0', () => {
+    // at least one invoice so the grid shows, but total = 0 → count = Math.ceil(0/15)||1 === 1
+    mockedUseInvoices.mockReturnValue({
+      invoices: [{}],
+      total:    0,
+      loading:  false,
+      error:    null,
+      validationErrors: null,
+    });
+    renderPage();
+
+    // Should render exactly one page button, labelled "page 1"
+    const pages = screen.getAllByRole('button', { name: /page \d+/ });
+    expect(pages).toHaveLength(1);
+    expect(screen.getByRole('button', { name: 'page 1' })).toBeInTheDocument();
+
+    // And there should be no "Go to page 2"
+    expect(screen.queryByRole('button', { name: /Go to page 2/ })).toBeNull();
+  });
+
+  it('reads lang from store and passes it into useInvoices', () => {
+    // make our mock actually call the selector fn with a fake store
+    mockedLangStore.mockImplementation(selector => selector({ lang: 'fr' }))
+    renderPage()
+    // first arg is filters, second arg should be 'fr'
+    expect(useInvoices).toHaveBeenCalledWith(expect.any(Object), 'fr')
+  })
 })

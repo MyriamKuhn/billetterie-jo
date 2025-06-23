@@ -23,23 +23,23 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">95% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>19/20</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">76% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>19/25</span>
+                <span class='fraction'>25/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>9/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -174,27 +174,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -203,12 +186,29 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -224,7 +224,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -269,7 +269,7 @@ import OlympicLoader from '../components/OlympicLoader'
 import { useTranslation } from 'react-i18next'
 &nbsp;
 export default function InvoicesPage() {
-  const lang = useLanguageStore(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.lang)</span>
+  const lang = useLanguageStore(s =&gt; s.lang)
   const { t } = useTranslation('invoices')
 &nbsp;
   const [filters, setFilters] = useState&lt;InvoiceFilters&gt;({
@@ -291,12 +291,12 @@ export default function InvoicesPage() {
     // on ajoute { field: valeurParDéfaut } dans newFilters.
     const newFilters: Partial&lt;InvoiceFilters&gt; = {
       ...(validationErrors.status     &amp;&amp; { status:     ''             }),
-      ...(validationErrors.date_from  &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >{ date_from:  ''             }),</span>
+      ...(validationErrors.date_from  &amp;&amp; { date_from:  ''             }),
       ...(validationErrors.date_to    &amp;&amp; { date_to:    ''             }),
-      ...(validationErrors.sort_by    &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >{ sort_by:    'created_at'   }),</span>
-      ...(validationErrors.sort_order &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >{ sort_order: 'desc'         }),</span>
-      ...(validationErrors.per_page   &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >{ per_page:   15             }),</span>
-      ...(validationErrors.page       &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >{ page:       1              }),</span>
+      ...(validationErrors.sort_by    &amp;&amp; { sort_by:    'created_at'   }),
+      ...(validationErrors.sort_order &amp;&amp; { sort_order: 'desc'         }),
+      ...(validationErrors.per_page   &amp;&amp; { per_page:   15             }),
+      ...(validationErrors.page       &amp;&amp; { page:       1              }),
     }
 &nbsp;
     // On merge ensuite
@@ -336,7 +336,7 @@ export default function InvoicesPage() {
             {!loading &amp;&amp; invoices.length &gt; 0 &amp;&amp; (
               &lt;Box textAlign="center" mt={4}&gt;
                 &lt;Pagination
-                  count={Math.ceil(total / filters.per_page) || <span class="branch-1 cbranch-no" title="branch not covered" >1}</span>
+                  count={Math.ceil(total / filters.per_page) || 1}
                   page={filters.page}
                   onChange={(_, p) =&gt; setFilters(f =&gt; ({ ...f, page: p }))}
                 /&gt;
@@ -355,7 +355,7 @@ export default function InvoicesPage() {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-21T13:52:27.887Z
+                at 2025-06-23T17:04:53.328Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
