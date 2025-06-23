@@ -1,0 +1,60 @@
+{
+  "filters": {
+    "status_all": "All",
+    "status_pending": "Pending",
+    "status_paid": "Paid",
+    "status_failed": "Failed",
+    "status_refunded": "Refunded",
+    "sort_by_date": "Date",
+    "sort_by_amount": "Price",
+    "sort_by_uuid": "Ref",
+    "title": "Filters",
+    "status_label": "Status",
+    "date_from_label": "From",
+    "date_to_label": "To",
+    "sort_by_label": "Sort by",
+    "per_page_label": "Orders per page",
+    "reset": "Reset",
+    "close": "Close"
+  },
+  "errors": {
+    "not_authenticated": "User not authenticated",
+    "download_failed": "Invoice download failed",
+    "not_found": "Invoice not found",
+    "unauthorized": "You are not authorized to access this invoice",
+    "title": "Oops! An error occurred",
+    "message": "An error occurred while retrieving invoices. Please try again later."
+  },
+  "card": {
+    "download_success": "Invoice downloaded",
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "failed": "Failed",
+      "refunded": "Refunded"
+    },
+    "download_invoice": "Download invoice",
+    "download_not_ready": "Payment pending, invoice not available",
+    "download_not_available": "Payment failed, no invoice available",
+    "download_not_available_generic": "Invoice not available",
+    "reference": "Reference",
+    "date": "Date",
+    "amount": "Amount",
+    "see_tickets": "View tickets"
+  },
+  "snackbar": {
+    "pending_message": "Payment is pending. The invoice will be available once payment is confirmed.",
+    "failed_message": "Payment failed. No invoice is available.",
+    "unavailable_message": "Invoice is not available."
+  },
+  "invoices": {
+    "no_found": "No orders found",
+    "retry": "Retry",
+    "go_home": "Go home",
+    "title": "My orders"
+  },
+  "seo": {
+    "title": "My Orders - Paris 2024 Olympic Ticketing",
+    "description": "Check your orders and download your invoices for Paris 2024 Olympic and Paralympic Games tickets."
+  }
+}

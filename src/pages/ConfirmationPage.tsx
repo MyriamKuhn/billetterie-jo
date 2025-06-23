@@ -86,6 +86,16 @@ export default function ConfirmationPage() {
     fetchInfo();
   }, [location, token, lang, navigate, t, unlockCart]);
 
+  const formattedDate = paymentInfo?.paid_at
+    ? new Date(paymentInfo.paid_at).toLocaleString(lang, {
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '-';
+
   if (loading) {
     return (
       <>
@@ -122,9 +132,7 @@ export default function ConfirmationPage() {
             {t('confirmation.see_mail')}
           </Typography>
           <Typography variant="body2" sx={{ mb: 2 }}>
-            {t('confirmation.paid_at', {
-              date: paymentInfo?.paid_at ? new Date(paymentInfo.paid_at).toLocaleString() : '-',
-            })}
+            {t('confirmation.paid_at', { date: formattedDate })}
           </Typography>
           <Box sx={{ mt: 3 }}>
             <Button variant="outlined" onClick={() => navigate('/')}>

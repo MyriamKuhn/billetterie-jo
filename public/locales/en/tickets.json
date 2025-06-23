@@ -1,0 +1,61 @@
+{
+  "filters": {
+    "title": "Filters",
+    "search": "Name",
+    "event_date_from": "From",
+    "event_date_to": "To",
+    "per_page": "Tickets per page",
+    "reset": "Reset",
+    "close": "Close",
+    "status_all": "All",
+    "status_issued": "Issued",
+    "status_used": "Used",
+    "status_expired": "Expired",
+    "status_refunded": "Refunded",
+    "status_cancelled": "Cancelled",
+    "status_label": "Status"
+  },
+  "tickets": {
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places",
+    "status": {
+      "issued": "Issued",
+      "used": "Used",
+      "expired": "Expired",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    },
+    "no_product": "No tickets found",
+    "no_location": "No specific location",
+    "no_pdf": "No ticket PDF available",
+    "no_invoice": "No invoice available",
+    "qr_alt": "Ticket QR code",
+    "token": "Ticket reference",
+    "download_pdf": "Download ticket PDF",
+    "download_ticket": "Download ticket",
+    "download_invoice_pdf": "Download invoice PDF",
+    "download_invoice": "Download invoice",
+    "download_success": "Ticket downloaded successfully",
+    "no_tickets": "No tickets found",
+    "title": "My tickets"
+  },
+  "errors": {
+    "product_fetch_failed": "Failed to retrieve ticket data",
+    "download_error": "Ticket download failed",
+    "invoice_download_error": "Invoice download failed",
+    "not_authenticated": "User not authenticated",
+    "download_failed": "Ticket download failed",
+    "not_found": "Ticket not found",
+    "unauthorized": "You are not authorized to access this ticket",
+    "qr_fetch_failed": "Failed to retrieve ticket QR code",
+    "qr_not_found": "Ticket QR code not found",
+    "title": "Oops! An error occurred",
+    "message": "An error occurred while retrieving tickets. Please try again later.",
+    "retry": "Retry",
+    "go_home": "Go back home"
+  },
+  "seo": {
+    "title": "My tickets - Paris 2024 Olympic Ticketing",
+    "description": "View your tickets and download your invoices for the Paris 2024 Olympic and Paralympic Games."
+  }
+}

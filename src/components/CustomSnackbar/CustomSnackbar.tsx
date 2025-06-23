@@ -1,4 +1,3 @@
-// src/components/CustomSnackbar.tsx
 import React from 'react';
 import SnackbarContent from '@mui/material/SnackbarContent';
 import { useTheme } from '@mui/material/styles';

@@ -14,7 +14,7 @@ export function useProductDetails(
   lang: string
 ): UseProductDetailsReturn {
   const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(productId != null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
