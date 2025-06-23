@@ -1,0 +1,61 @@
+{
+  "filters": {
+    "title": "Filter",
+    "search": "Name",
+    "event_date_from": "Von",
+    "event_date_to": "Bis",
+    "per_page": "Tickets pro Seite",
+    "reset": "Zurücksetzen",
+    "close": "Schließen",
+    "status_all": "Alle",
+    "status_issued": "Ausgestellt",
+    "status_used": "Genutzt",
+    "status_expired": "Abgelaufen",
+    "status_refunded": "Erstattet",
+    "status_cancelled": "Storniert",
+    "status_label": "Status"
+  },
+  "tickets": {
+    "places_one": "{{count}} Platz",
+    "places_other": "{{count}} Plätze",
+    "status": {
+      "issued": "Ausgestellt",
+      "used": "Genutzt",
+      "expired": "Abgelaufen",
+      "refunded": "Erstattet",
+      "cancelled": "Storniert"
+    },
+    "no_product": "Keine Tickets gefunden",
+    "no_location": "Kein spezifischer Ort",
+    "no_pdf": "Kein Ticket-PDF verfügbar",
+    "no_invoice": "Keine Rechnung verfügbar",
+    "qr_alt": "Ticket QR-Code",
+    "token": "Ticket-Referenz",
+    "download_pdf": "Ticket-PDF herunterladen",
+    "download_ticket": "Ticket herunterladen",
+    "download_invoice_pdf": "Rechnung-PDF herunterladen",
+    "download_invoice": "Rechnung herunterladen",
+    "download_success": "Ticket erfolgreich heruntergeladen",
+    "no_tickets": "Keine Tickets gefunden",
+    "title": "Meine Tickets"
+  },
+  "errors": {
+    "product_fetch_failed": "Fehler beim Abrufen der Ticketdaten",
+    "download_error": "Ticket-Download fehlgeschlagen",
+    "invoice_download_error": "Rechnungs-Download fehlgeschlagen",
+    "not_authenticated": "Benutzer nicht authentifiziert",
+    "download_failed": "Ticket-Download fehlgeschlagen",
+    "not_found": "Ticket nicht gefunden",
+    "unauthorized": "Sie sind nicht berechtigt, auf dieses Ticket zuzugreifen",
+    "qr_fetch_failed": "Fehler beim Abrufen des Ticket-QR-Codes",
+    "qr_not_found": "Ticket-QR-Code nicht gefunden",
+    "title": "Hoppla! Ein Fehler ist aufgetreten",
+    "message": "Beim Abrufen der Tickets ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "retry": "Erneut versuchen",
+    "go_home": "Zurück zur Startseite"
+  },
+  "seo": {
+    "title": "Meine Tickets – Olympischer Ticketverkauf Paris 2024",
+    "description": "Sehen Sie Ihre Tickets ein und laden Sie Ihre Rechnungen für die Olympischen und Paralympischen Spiele Paris 2024 herunter."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "filters": {
+    "status_all": "Tous",
+    "status_pending": "En attente",
+    "status_paid": "Payé",
+    "status_failed": "Échoué",
+    "status_refunded": "Remboursé",
+    "sort_by_date": "Date",
+    "sort_by_amount": "Prix",
+    "sort_by_uuid": "Ref",
+    "title": "Filtres",
+    "status_label": "Statut",
+    "date_from_label": "Du",
+    "date_to_label": "Au",
+    "sort_by_label": "Trier par",
+    "per_page_label": "Commandes par page",
+    "reset": "Réinitialiser",
+    "close": "Fermer"
+  },
+  "errors": {
+    "not_authenticated": "Utilisateur non authentifié",
+    "download_failed": "Échec du téléchargement de la facture",
+    "not_found": "Facture non trouvée",
+    "unauthorized": "Vous n'êtes pas autorisé à accéder à cette facture",
+    "title": "Oups ! Une erreur s'est produite",
+    "message": "Une erreur s'est produite lors de la récupération des factures. Veuillez réessayer plus tard."
+  },
+  "card":
+  {
+    "download_success": "Facture téléchargée",
+    "status": {
+      "paid": "Payé",
+      "pending": "En attente",
+      "failed": "Échoué",
+      "refunded": "Remboursé"
+    },
+    "download_invoice": "Télécharger la facture",
+    "download_not_ready": "Paiement en attente, facture non disponible",
+    "download_not_available": "Paiement échoué, pas de facture disponible",
+    "download_not_available_generic": "Facture non disponible",
+    "reference": "Référence",
+    "date": "Date",
+    "amount": "Montant",
+    "see_tickets": "Voir les tickets"
+  },
+  "snackbar": {
+    "pending_message": "Le paiement est en attente. La facture sera disponible une fois le paiement confirmé.",
+    "failed_message": "Le paiement a échoué. Aucune facture n’est disponible.",
+    "unavailable_message": "La facture n’est pas disponible."
+  },
+  "invoices": {
+    "no_found": "Aucune commande trouvée",
+    "retry": "Réessayer",
+    "go_home": "Retour à l'accueil",
+    "title": "Mes commandes"
+  },
+  "seo": {
+    "title": "Mes commandes - Billetterie JO Paris 2024",
+    "description": "Consultez vos commandes et téléchargez vos factures pour les billets des Jeux Olympiques et Paralympiques de Paris 2024."
+  }
+}
