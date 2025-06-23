@@ -52,6 +52,8 @@ vi.mock('./pages/UserDashboardPage', () => ({ __esModule: true, default: () => <
 vi.mock('./pages/UnauthorizedPage', () => ({ __esModule: true, default: () => <div data-testid="page-unauthorized">Unauthorized</div> }));
 vi.mock('./pages/CheckoutPage', () => ({ __esModule: true, default: () => <div data-testid="page-checkout">Checkout</div> }));
 vi.mock('./pages/ConfirmationPage', () => ({ __esModule: true, default: () => <div data-testid="page-confirmation">Confirmation</div> }));
+vi.mock('./pages/TicketsShowPage', () => ({ __esModule: true, default: () => <div data-testid="page-tickets-show">Tickets Show</div> }));
+vi.mock('./pages/InvoicesPage', () => ({ __esModule: true, default: () => <div data-testid="page-invoices">Invoices</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -251,6 +253,22 @@ describe('Routes supplémentaires dans <App />', () => {
     window.history.pushState({}, '', '/confirmation');
     render(<App mode="light" toggleMode={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('page-confirmation')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+
+  it('affiche TicketsShowPage sur "/tickets/:id" quand RequireAuth autorise l’accès (stubbed)', async () => {
+    window.history.pushState({}, '', '/user/tickets');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-tickets-show')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+
+  it('affiche InvoicesPage sur "/invoices" quand RequireAuth autorise l’accès (stubbed)', async () => {
+    window.history.pushState({}, '', '/user/orders');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-invoices')).toBeInTheDocument());
     // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
     expect(screen.queryByTestId('page-home')).toBeNull();
   });

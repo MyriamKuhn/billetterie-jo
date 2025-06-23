@@ -33,7 +33,6 @@ export const navItems: NavItem[] = [
   { key: 'userDashboard',     href: '/user/dashboard',     icon: DashboardIcon, auth: true, role: 'user', group: 'dashboard' },
   { key: 'userOrders',        href: '/user/orders',        icon: ShoppingBagIcon, auth: true, role: 'user', group: 'auth' },
   { key: 'userTickets',       href: '/user/tickets',       icon: TicketIcon,      auth: true, role: 'user', group: 'auth' },
-  { key: 'userInvoices',      href: '/user/invoices',      icon: ReceiptIcon,     auth: true, role: 'user', group: 'auth' },
 
   // Employé
   { key: 'employeeDashboard', href: '/employee/dashboard', icon: DashboardIcon, auth: true, role: 'employee', group: 'dashboard' },
