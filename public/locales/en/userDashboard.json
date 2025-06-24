@@ -1,13 +1,17 @@
 {
   "seo": {
     "title": "My Dashboard – Paris 2024 Olympic Ticketing",
+    "title_admin": "My Admin Dashboard – Paris 2024 Olympic Ticketing",
     "description": "Manage your personal information and security settings on your account dashboard.",
+    "description_admin": "Manage your admin account information. Secure area for administrators of the Paris 2024 Olympic Ticketing.",
     "errorTitle": "Error – Paris 2024 Olympic Ticketing",
     "errorDescription": "An error occurred while retrieving your profile. Please try again later."
   },
   "dashboard": {
     "title": "Account Dashboard",
+    "title_admin": "Admin Dashboard",
     "subtitle": "Manage your personal information and security settings",
+    "subtitle_admin": "Manage your admin account information. We recommend not sharing this information with others and enabling two-factor authentication for added security.",
     "name": "Name and Surname",
     "email": "Email",
     "firstname": "First Name",
