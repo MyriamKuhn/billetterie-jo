@@ -25,11 +25,13 @@ const VerificationResultPage = lazy(() => import('./pages/VerificationResultPage
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
 const PasswordResetPage = lazy(() => import('./pages/PasswordResetPage'));
 const UserDashboardPage = lazy(() => import('./pages/UserDashboardPage'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage'));
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const ConfirmationPage = lazy(() => import('./pages/ConfirmationPage'));
 const InvoicesPage = lazy(() => import('./pages/InvoicesPage'));
 const TicketsShowPage = lazy(() => import('./pages/TicketsShowPage'));
+
 
 
 
@@ -87,6 +89,9 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/confirmation" element={<RequireAuth requiredRole="user"><ConfirmationPage /></RequireAuth>} />
                 <Route path="/user/orders" element={<RequireAuth requiredRole="user"><InvoicesPage /></RequireAuth>} />
                 <Route path="/user/tickets" element={<RequireAuth requiredRole="user"><TicketsShowPage /></RequireAuth>} />
+
+                {/* Admin routes */}
+                <Route path="/admin/dashboard" element={<RequireAuth requiredRole="admin"><AdminDashboardPage /></RequireAuth>} />
               </Routes>
             </Suspense>
           </ErrorBoundary>

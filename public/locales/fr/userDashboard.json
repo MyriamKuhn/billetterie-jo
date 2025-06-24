@@ -1,13 +1,17 @@
 {
   "seo": {
     "title": "Mon tableau de bord – Billetterie JO Paris 2024",
+    "title_admin": "Mon tableau de bord administrateur – Billetterie JO Paris 2024",
     "description": "Gérez vos informations personnelles et paramètres de sécurité sur le tableau de bord de votre compte.",
+    "description_admin": "Gérez les informations de votre compte administrateur. Espace sécurisé pour les administrateurs de la billetterie JO Paris 2024.",
     "errorTitle": "Erreur – Billetterie JO Paris 2024",
     "errorDescription": "Une erreur est survenue lors de la récupération de votre profil. Veuillez réessayer plus tard."
   },
   "dashboard": {
     "title": "Espace client",
+    "title_admin": "Espace administrateur",
     "subtitle": "Gérez vos informations personnelles et paramètres de sécurité",
+    "subtitle_admin": "Gérez les informations de votre compte administrateur. Nous vous recommandons de ne pas partager ces informations avec d'autres personnes et d'activer l'authentification à deux facteurs pour plus de sécurité.",
     "name": "Nom et prénom",
     "email": "Email",
     "firstname": "Prénom",

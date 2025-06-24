@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>45/45</span>
+                <span class='fraction'>47/47</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>22/22</span>
+                <span class='fraction'>23/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>25/25</span>
+                <span class='fraction'>26/26</span>
             </div>
         
             
@@ -164,7 +164,12 @@
 <a name='L99'></a><a href='#L99'>99</a>
 <a name='L100'></a><a href='#L100'>100</a>
 <a name='L101'></a><a href='#L101'>101</a>
-<a name='L102'></a><a href='#L102'>102</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -196,6 +201,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -205,18 +211,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-yes">21x</span>
-<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">22x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -292,11 +302,13 @@ const VerificationResultPage = lazy(() =&gt; import('./pages/VerificationResultP
 const ForgotPasswordPage = lazy(() =&gt; import('./pages/ForgotPasswordPage'));
 const PasswordResetPage = lazy(() =&gt; import('./pages/PasswordResetPage'));
 const UserDashboardPage = lazy(() =&gt; import('./pages/UserDashboardPage'));
+const AdminDashboardPage = lazy(() =&gt; import('./pages/AdminDashboardPage'));
 const UnauthorizedPage = lazy(() =&gt; import('./pages/UnauthorizedPage'));
 const CheckoutPage = lazy(() =&gt; import('./pages/CheckoutPage'));
 const ConfirmationPage = lazy(() =&gt; import('./pages/ConfirmationPage'));
 const InvoicesPage = lazy(() =&gt; import('./pages/InvoicesPage'));
 const TicketsShowPage = lazy(() =&gt; import('./pages/TicketsShowPage'));
+&nbsp;
 &nbsp;
 &nbsp;
 &nbsp;
@@ -354,6 +366,9 @@ export default function App({ mode, toggleMode }: AppProps) {
                 &lt;Route path="/confirmation" element={&lt;RequireAuth requiredRole="user"&gt;&lt;ConfirmationPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/user/orders" element={&lt;RequireAuth requiredRole="user"&gt;&lt;InvoicesPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/user/tickets" element={&lt;RequireAuth requiredRole="user"&gt;&lt;TicketsShowPage /&gt;&lt;/RequireAuth&gt;} /&gt;
+&nbsp;
+                {/* Admin routes */}
+                &lt;Route path="/admin/dashboard" element={&lt;RequireAuth requiredRole="admin"&gt;&lt;AdminDashboardPage /&gt;&lt;/RequireAuth&gt;} /&gt;
               &lt;/Routes&gt;
             &lt;/Suspense&gt;
           &lt;/ErrorBoundary&gt;
@@ -373,7 +388,7 @@ export default function App({ mode, toggleMode }: AppProps) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-23T17:04:53.328Z
+                at 2025-06-24T20:01:46.593Z
             </div>
         <script src="../prettify.js"></script>
         <script>
