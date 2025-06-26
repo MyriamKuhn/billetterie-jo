@@ -12,7 +12,7 @@ import { useTickets } from '../hooks/useTickets'
 import { useTranslation } from 'react-i18next'
 import OlympicLoader from '../components/OlympicLoader'
 
-export default function TicketsPage() {
+export default function UserTicketsPage() {
   const { t } = useTranslation('tickets')
   // État des filtres initiaux
   const [filters, setFilters] = useState<TicketFilters>({

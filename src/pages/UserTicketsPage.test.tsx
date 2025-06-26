@@ -54,12 +54,12 @@ vi.mock('../components/ErrorDisplay', () => ({
 }))
 
 import '@testing-library/jest-dom'
-import TicketsPage from './TicketsShowPage'
+import UserTicketsPage from './UserTicketsPage'
 import { useTickets } from '../hooks/useTickets'
 
 const mockedUseTickets = useTickets as unknown as Mock
 
-describe('TicketsPage  (RTL)', () => {
+describe('UserTicketsPage  (RTL)', () => {
   beforeEach(() => {
     mockedUseTickets.mockReturnValue({
       tickets: [],
@@ -78,7 +78,7 @@ describe('TicketsPage  (RTL)', () => {
       error: new Error('fail'),
       validationErrors: null,
     })
-    renderWithProviders(<TicketsPage  />)
+    renderWithProviders(<UserTicketsPage  />)
     expect(screen.getByText('errors.title')).toBeInTheDocument()
   })
 
@@ -90,13 +90,13 @@ describe('TicketsPage  (RTL)', () => {
       error: null,
       validationErrors: null,
     })
-    renderWithProviders(<TicketsPage  />)
+    renderWithProviders(<UserTicketsPage  />)
     expect(screen.getByTestId('loader')).toBeInTheDocument()
     expect(screen.queryByTestId('ticket-grid')).toBeNull()
   })
 
   it('shows TicketGrid and no pagination when no tickets', () => {
-    renderWithProviders(<TicketsPage  />)
+    renderWithProviders(<UserTicketsPage  />)
     expect(screen.getByTestId('ticket-grid')).toBeInTheDocument()
     // pas de <nav> de pagination si tickets.length === 0
     expect(screen.queryByLabelText('pagination navigation')).toBeNull()
@@ -112,7 +112,7 @@ describe('TicketsPage  (RTL)', () => {
       validationErrors: null,
     })
 
-    renderWithProviders(<TicketsPage />)
+    renderWithProviders(<UserTicketsPage />)
 
     // click the "next" arrow
     const next = screen.getByRole('button', { name: 'Go to next page' })
@@ -132,7 +132,7 @@ describe('TicketsPage  (RTL)', () => {
       error: null,
       validationErrors: { q: 'err', event_date_to: 'err' },
     })
-    renderWithProviders(<TicketsPage  />)
+    renderWithProviders(<UserTicketsPage  />)
     const filters = JSON.parse(
       screen.getByTestId('tickets-filters').getAttribute('data-filters')!
     )
@@ -160,7 +160,7 @@ describe('TicketsPage  (RTL)', () => {
         page: 'err',
       },
     })
-    renderWithProviders(<TicketsPage  />)
+    renderWithProviders(<UserTicketsPage  />)
     const filters = JSON.parse(
       screen.getByTestId('tickets-filters').getAttribute('data-filters')!
     )
@@ -180,7 +180,7 @@ describe('TicketsPage  (RTL)', () => {
       // 2e rendu : succès
       .mockReturnValue({ tickets: [], total: 0, loading: false, error: null, validationErrors: null })
 
-    renderWithProviders(<TicketsPage  />)
+    renderWithProviders(<UserTicketsPage  />)
     expect(screen.getByText('errors.title')).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'errors.retry' }))
@@ -196,7 +196,7 @@ describe('TicketsPage  (RTL)', () => {
       error: null,
       validationErrors: null,
     })
-    renderWithProviders(<TicketsPage  />)
+    renderWithProviders(<UserTicketsPage  />)
 
     // on ne doit voir qu'un seul bouton "page 1"
     const pages = screen.getAllByRole('button', { name: /page \d+/ })
@@ -214,7 +214,7 @@ describe('TicketsPage  (RTL)', () => {
       validationErrors: null,
     })
 
-    renderWithProviders(<TicketsPage />)
+    renderWithProviders(<UserTicketsPage />)
 
     // 2. Grab the stubbed filters component and verify initial page = 1
     const filtersDiv = screen.getByTestId('tickets-filters')
@@ -239,7 +239,7 @@ describe('TicketsPage  (RTL)', () => {
       validationErrors: { someOtherField: 'oops' },
     })
 
-    renderWithProviders(<TicketsPage />)
+    renderWithProviders(<UserTicketsPage />)
 
     const filters = JSON.parse(
       screen.getByTestId('tickets-filters').getAttribute('data-filters')!

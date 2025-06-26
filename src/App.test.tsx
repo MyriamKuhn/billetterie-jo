@@ -37,7 +37,7 @@ vi.mock('./components/OlympicLoader', () => ({ __esModule: true, default: () => 
 
 // ── 3️⃣ Stub des pages lazy ────────────────────────────────────────────────────
 vi.mock('./pages/HomePage', () => ({ __esModule: true, default: () => <div data-testid="page-home">Home</div> }));
-vi.mock('./pages/TicketsPage', () => ({ __esModule: true, default: () => <div data-testid="page-tickets">Tickets</div> }));
+vi.mock('./pages/ProductsPage', () => ({ __esModule: true, default: () => <div data-testid="page-products">Tickets</div> }));
 vi.mock('./pages/LegalMentionsPage', () => ({ __esModule: true, default: () => <div data-testid="page-legal">Legal</div> }));
 vi.mock('./pages/TermsPage',   () => ({ __esModule: true, default: () => <div data-testid="page-terms">Terms</div> }));
 vi.mock('./pages/PolicyPage',  () => ({ __esModule: true, default: () => <div data-testid="page-policy">Policy</div> }));
@@ -52,7 +52,7 @@ vi.mock('./pages/UserDashboardPage', () => ({ __esModule: true, default: () => <
 vi.mock('./pages/UnauthorizedPage', () => ({ __esModule: true, default: () => <div data-testid="page-unauthorized">Unauthorized</div> }));
 vi.mock('./pages/CheckoutPage', () => ({ __esModule: true, default: () => <div data-testid="page-checkout">Checkout</div> }));
 vi.mock('./pages/ConfirmationPage', () => ({ __esModule: true, default: () => <div data-testid="page-confirmation">Confirmation</div> }));
-vi.mock('./pages/TicketsShowPage', () => ({ __esModule: true, default: () => <div data-testid="page-tickets-show">Tickets Show</div> }));
+vi.mock('./pages/UserTicketsPage', () => ({ __esModule: true, default: () => <div data-testid="page-user-tickets">User Tickets</div> }));
 vi.mock('./pages/InvoicesPage', () => ({ __esModule: true, default: () => <div data-testid="page-invoices">Invoices</div> }));
 vi.mock('./pages/AdminDashboardPage', () => ({ __esModule: true, default: () => <div data-testid="page-admin-dashboard">Admin Dashboard</div> }));
 
@@ -119,14 +119,14 @@ describe('<App />', () => {
     render(<App mode="dark" toggleMode={vi.fn()} />);
 
     await waitFor(() => expect(screen.getByTestId('page-home')).toBeInTheDocument());
-    expect(screen.queryByTestId('page-tickets')).toBeNull();
+    expect(screen.queryByTestId('page-products')).toBeNull();
     expect(screen.queryByTestId('page-legal')).toBeNull();
   });
 
-  it('affiche TicketsPage sur "/tickets"', async () => {
+  it('affiche ProductsPage sur "/tickets"', async () => {
     window.history.pushState({}, '', '/tickets');
     render(<App mode="dark" toggleMode={vi.fn()} />);
-    await waitFor(() => expect(screen.getByTestId('page-tickets')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId('page-products')).toBeInTheDocument());
   });
 
   it('affiche LegalMentionsPage sur "/legal-mentions"', async () => {
@@ -258,10 +258,10 @@ describe('Routes supplémentaires dans <App />', () => {
     expect(screen.queryByTestId('page-home')).toBeNull();
   });
 
-  it('affiche TicketsShowPage sur "/tickets/:id" quand RequireAuth autorise l’accès (stubbed)', async () => {
+  it('affiche UserTicketsPage sur "/user/tickets" quand RequireAuth autorise l’accès (stubbed)', async () => {
     window.history.pushState({}, '', '/user/tickets');
     render(<App mode="light" toggleMode={vi.fn()} />);
-    await waitFor(() => expect(screen.getByTestId('page-tickets-show')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId('page-user-tickets')).toBeInTheDocument());
     // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
     expect(screen.queryByTestId('page-home')).toBeNull();
   });

@@ -85,7 +85,7 @@ describe('<ProductsPage /> onBuy', () => {
 
   it('ne ferme pas le modal si addToCart renvoie true et cart vide', async () => {
     mockUseAddToCart.mockResolvedValue(true);
-    const { default: ProductsPage } = await import('./TicketsPage');
+    const { default: ProductsPage } = await import('./ProductsPage');
     render(<ProductsPage />);
 
     // Modal initialement fermé
@@ -105,7 +105,7 @@ describe('<ProductsPage /> onBuy', () => {
 
   it('le modal reste fermé si addToCart renvoie false et cart vide', async () => {
     mockUseAddToCart.mockResolvedValue(false);
-    const { default: ProductsPage } = await import('./TicketsPage');
+    const { default: ProductsPage } = await import('./ProductsPage');
     render(<ProductsPage />);
 
     let modal = screen.getByTestId('modal');
@@ -126,7 +126,7 @@ describe('<ProductsPage /> onBuy', () => {
     mockUseCartStoreState.items = [{ id: '5', quantity: 2 }];
     mockUseAddToCart.mockResolvedValue(true);
 
-    const { default: ProductsPage } = await import('./TicketsPage');
+    const { default: ProductsPage } = await import('./ProductsPage');
     render(<ProductsPage />);
 
     // Cliquer sur buy-5

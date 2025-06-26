@@ -82,9 +82,9 @@ vi.mock('@mui/material/Pagination', () => ({
 }));
 vi.mock('@mui/material/Typography', () => ({ __esModule: true, default: (p: any) => <div data-testid="typography-mock">{p.children}</div> }));
 
-import TicketsPage from './TicketsPage';
+import ProductsPage from './ProductsPage';
 
-describe('<TicketsPage />', () => {
+describe('<ProductsPage />', () => {
   beforeEach(() => {
     cleanup();
     vi.clearAllMocks();
@@ -92,13 +92,13 @@ describe('<TicketsPage />', () => {
 
   it('affiche le loader quand loading=true', () => {
     mockUseProducts.mockReturnValue({ products: [], total:0, loading:true, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     expect(screen.getByTestId('loader')).toBeInTheDocument();
   });
 
   it('affiche ErrorDisplay si error non-null et permet de retry', () => {
     mockUseProducts.mockReturnValue({ products: [], total:0, loading:false, error:'err', validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     expect(screen.getByTestId('error')).toBeInTheDocument();
     fireEvent.click(screen.getByTestId('retry'));
     expect(mockUseProducts).toHaveBeenCalled();
@@ -106,7 +106,7 @@ describe('<TicketsPage />', () => {
 
   it('rend <Seo>, <Typography> et <PageWrapper> quand pas d’erreur ni loading', () => {
     mockUseProducts.mockReturnValue({ products: [], total:0, loading:false, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     expect(screen.getByTestId('seo')).toHaveAttribute('title','tickets.seo_title');
     expect(screen.getByTestId('seo')).toHaveAttribute('description','tickets.seo_description');
     expect(screen.getByTestId('typography-mock').textContent).toBe('tickets.title');
@@ -115,7 +115,7 @@ describe('<TicketsPage />', () => {
 
   it('affiche la grille mais pas la pagination si products vide', () => {
     mockUseProducts.mockReturnValue({ products: [], total:0, loading:false, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     // ProductGrid doit être rendu, même sans produits
     expect(screen.getByTestId('grid')).toBeInTheDocument();
     // Mais pas de pagination quand products.length === 0
@@ -124,7 +124,7 @@ describe('<TicketsPage />', () => {
 
   it('affiche la grille et la pagination quand produits dispo', () => {
     mockUseProducts.mockReturnValue({ products:[{id:1},{id:2}], total:45, loading:false, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     expect(screen.getByTestId('grid')).toBeInTheDocument();
     const pag = screen.getByTestId('pagination-mock');
     expect(pag).toHaveAttribute('data-count','3');
@@ -133,7 +133,7 @@ describe('<TicketsPage />', () => {
 
   it('affiche pagination même si total=0 et products non vide', () => {
     mockUseProducts.mockReturnValue({ products:[{id:1}], total:0, loading:false, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     const pag = screen.getByTestId('pagination-mock');
     expect(pag).toHaveAttribute('data-count','1');
     expect(pag).toHaveAttribute('data-page','1');
@@ -141,7 +141,7 @@ describe('<TicketsPage />', () => {
 
   it('change page quand on clique sur pagination', async () => {
     mockUseProducts.mockReturnValue({ products:[{id:1}], total:90, loading:false, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     fireEvent.click(screen.getByTestId('pagination-mock'));
     await waitFor(() => {
       expect(mockUseProducts).toHaveBeenLastCalledWith(expect.objectContaining({ page:3 }), 'fr');
@@ -150,7 +150,7 @@ describe('<TicketsPage />', () => {
 
   it('applique les filtres via ProductsFilters onChange', async () => {
     mockUseProducts.mockReturnValue({ products:[], total:0, loading:false, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     fireEvent.click(screen.getByTestId('apply-filter'));
     await waitFor(() => {
       expect(mockUseProducts).toHaveBeenLastCalledWith(expect.objectContaining({ page:2 }), 'fr');
@@ -159,7 +159,7 @@ describe('<TicketsPage />', () => {
 
   it('expose fmtCur et fmtDate correctement dans ProductGrid', () => {
     mockUseProducts.mockReturnValue({ products:[], total:0, loading:false, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     expect(screen.getByTestId('price').textContent).toBe(
       new Intl.NumberFormat('fr',{style:'currency',currency:'EUR'}).format(123.45)
     );
@@ -180,7 +180,7 @@ describe('<TicketsPage />', () => {
 
     for ( const [errs, expected] of cases ) {
       mockUseProducts.mockReturnValue({ products:[], total:0, loading:false, error:null, validationErrors:errs });
-      render(<TicketsPage />);
+      render(<ProductsPage />);
       await waitFor(() => {
         const f = JSON.parse(screen.getByTestId('filters').querySelector('div')!.getAttribute('data-props')!);
         for ( const [k,v] of Object.entries(expected) ) {
@@ -193,7 +193,7 @@ describe('<TicketsPage />', () => {
 
   it('ré-exécute useProducts quand validationErrors={} (effet sans cleanup)', async () => {
     mockUseProducts.mockReturnValue({ products:[], total:0, loading:false, error:null, validationErrors:{} });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     await waitFor(() => {
       expect(mockUseProducts).toHaveBeenCalledTimes(2);
     });
@@ -201,7 +201,7 @@ describe('<TicketsPage />', () => {
 
   it('ouvre et ferme le modal en passant productId et lang', () => {
     mockUseProducts.mockReturnValue({ products:[{id:99}], total:1, loading:false, error:null, validationErrors:null });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     // ouverture
     fireEvent.click(screen.getByTestId('view-99'));
     let modal = JSON.parse(screen.getByTestId('modal').getAttribute('data-props')!);
@@ -219,7 +219,7 @@ describe('<TicketsPage />', () => {
     mockUseProducts.mockReturnValue({
       products: [], total: 0, loading: false, error: null, validationErrors: null
     });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     const filtersDiv = screen.getByTestId('filters').querySelector('div')!;
     const f = JSON.parse(filtersDiv.getAttribute('data-props')!);
     expect(f).toEqual({
@@ -243,7 +243,7 @@ describe('<TicketsPage />', () => {
         category: ['x'], location: ['x'], places: ['x']
       }
     });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     await waitFor(() => {
       const f = JSON.parse(
         screen.getByTestId('filters').querySelector('div')!.getAttribute('data-props')!
@@ -275,7 +275,7 @@ describe('<TicketsPage />', () => {
       return { products: [], total:0, loading:false, error:null, validationErrors:null };
     });
 
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     // on est en mode error
     expect(screen.getByTestId('error')).toBeInTheDocument();
 
@@ -300,7 +300,7 @@ describe('<TicketsPage />', () => {
       }
     });
 
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     await waitFor(() => {
       const f = JSON.parse(
         screen.getByTestId('filters').querySelector('div')!.getAttribute('data-props')!
@@ -322,7 +322,7 @@ describe('<TicketsPage />', () => {
     mockUseProducts.mockReturnValue({
       products: [], total: 0, loading: false, error: null, validationErrors: null
     });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     // un seul appel (celui du render initial)
     expect(mockUseProducts).toHaveBeenCalledTimes(1);
   });
@@ -333,7 +333,7 @@ describe('<TicketsPage />', () => {
       products: [], total: 0, loading: false, error: null,
       validationErrors: { foo: ['err'] }
     });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     // l’effet doit quand même appeler setFilters (cleanup = {}) → deuxième appel
     await waitFor(() => {
       expect(mockUseProducts).toHaveBeenCalledTimes(2);
@@ -359,7 +359,7 @@ describe('<TicketsPage />', () => {
     mockUseProducts.mockReturnValue({
       products: [], total: 0, loading: false, error: 'oops', validationErrors: null
     });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     // on affiche ErrorDisplay
     const errorProps = JSON.parse(screen.getByTestId('error-props').textContent!);
     expect(errorProps.title).toBe('errors.title');
@@ -374,7 +374,7 @@ describe('<TicketsPage />', () => {
     mockUseProducts.mockReturnValue({
       products: [], total: 0, loading: false, error: null, validationErrors: null
     });
-    render(<TicketsPage />);
+    render(<ProductsPage />);
     const modalProps = JSON.parse(screen.getByTestId('modal').getAttribute('data-props')!);
     expect(modalProps.open).toBe(false);
     expect(modalProps.productId).toBeNull();

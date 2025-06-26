@@ -15,14 +15,14 @@ vi.mock('@mui/material/Box', () => ({ __esModule: true, default: ({  }: any) => 
 vi.mock('@mui/material/Pagination', () => ({ __esModule: true, default: () => null }));
 vi.mock('@mui/material/Typography', () => ({ __esModule: true, default: () => null }));
 
-import TicketsPage from './TicketsPage';
+import ProductsPage from './ProductsPage';
 
-describe('TicketsPage useLanguageStore selector', () => {
+describe('ProductsPage useLanguageStore selector', () => {
   it('should call useLanguageStore with selector that returns lang property', () => {
     // Spy on the hook
     const spy = vi.spyOn(languageStore, 'useLanguageStore').mockReturnValue('en');
 
-    render(<TicketsPage />);
+    render(<ProductsPage />);
 
     expect(spy).toHaveBeenCalled(); // at least once
     const selector = spy.mock.calls[0][0];
