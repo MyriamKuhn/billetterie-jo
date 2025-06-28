@@ -14,6 +14,7 @@ import { RequireAuth } from './components/RequireAuth';
 
 const HomePage    = lazy(() => import('./pages/HomePage'));
 const ProductsPage = lazy(() => import('./pages/ProductsPage'));
+const AdminProductsPage = lazy(() => import('./pages/AdminProductsPage'));
 const LegalMentionsPage = lazy(() => import('./pages/LegalMentionsPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PolicyPage = lazy(() => import('./pages/PolicyPage'));
@@ -92,6 +93,8 @@ export default function App({ mode, toggleMode }: AppProps) {
 
                 {/* Admin routes */}
                 <Route path="/admin/dashboard" element={<RequireAuth requiredRole="admin"><AdminDashboardPage /></RequireAuth>} />
+                <Route path="/admin/tickets" element={<RequireAuth requiredRole="admin"><AdminProductsPage /></RequireAuth>} />
+                
               </Routes>
             </Suspense>
           </ErrorBoundary>

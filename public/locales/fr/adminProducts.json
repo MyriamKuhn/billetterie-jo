@@ -1,0 +1,26 @@
+{
+  "seo": {
+    "title": "Gestion des billets – Billetterie JO Paris 2024",
+    "description": "Gérez les billets pour les événements des Jeux Olympiques et Paralympiques de Paris 2024. Ajoutez, modifiez et supprimez des billets pour les compétitions et cérémonies."
+  },
+  "products": {
+    "title": "Gestion des billets",
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places",
+    "price": "Prix hors promotion",
+    "sale": "Promotion",
+    "stock": "Quantité en stock",
+    "save": "Enregistrer les modifications",
+    "saving": "Enregistrement...",
+    "updateDetails": "Mettre à jour les détails",
+    "success": "Modifications enregistrées avec succès"
+  },
+  "errors": {
+    "title": "Oops… une erreur est survenue",
+    "unexpected": "Une erreur inattendue est survenue lors de la récupération des billets.",
+    "not_found": "Aucun billet correspondant trouvé",
+    "retry": "Réessayer",
+    "home": "Retour à l’accueil",
+    "save_failed": "Échec de l'enregistrement des modifications. Veuillez réessayer."
+  }
+}
