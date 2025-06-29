@@ -1,0 +1,1 @@
+export { AdminProductCreateModal } from './AdminProductCreateModal';

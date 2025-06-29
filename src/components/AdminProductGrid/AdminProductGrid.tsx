@@ -3,6 +3,7 @@ import { AdminProductCard } from '../AdminProductCard';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
+import { CreateProductCard } from '../CreateProductCard';
 
 interface Props {
   products: Product[];
@@ -14,9 +15,11 @@ interface Props {
     stock_quantity: number;
   }) => Promise<boolean>;
   onRefresh: () => void;
+  onDuplicate: (id: number) => void;
+  onCreate: () => void;
 }
 
-export function AdminProductGrid({ products, lang, onViewDetails, onSave, onRefresh }: Props) {
+export function AdminProductGrid({ products, lang, onViewDetails, onSave, onRefresh, onDuplicate, onCreate }: Props) {
   const { t } = useTranslation('adminProducts');
 
   if (products.length === 0) {
@@ -29,6 +32,7 @@ export function AdminProductGrid({ products, lang, onViewDetails, onSave, onRefr
 
   return (
     <Box sx={{ display: 'flex', gap: 4, justifyContent: { xs: 'center', md: 'flex-start' }, flexWrap: { xs: 'wrap', md: 'nowrap' }, flexDirection: { xs: 'row', md: 'column' }}}>
+      <CreateProductCard onCreate={onCreate} />
       {products.map(p => (
         <AdminProductCard
           key={p.id}
@@ -37,6 +41,7 @@ export function AdminProductGrid({ products, lang, onViewDetails, onSave, onRefr
           onViewDetails={onViewDetails}
           onSave={onSave}
           onRefresh={onRefresh}
+          onDuplicate={onDuplicate}
         />
       ))}
     </Box>

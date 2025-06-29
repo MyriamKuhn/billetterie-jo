@@ -13,7 +13,25 @@
     "save": "Enregistrer les modifications",
     "saving": "Enregistrement...",
     "updateDetails": "Mettre à jour les détails",
-    "success": "Modifications enregistrées avec succès"
+    "success": "Modifications enregistrées avec succès",
+    "close": "Fermer",
+    "modification": "Modification du billet {{id}}",
+    "name": "Nom du billet",
+    "description": "Description",
+    "date": "Date",
+    "time": "Heure",
+    "location": "Lieu",
+    "category": "Catégorie",
+    "place": "Nombre de places",
+    "currentPrice": "Prix actuel",
+    "newPrice": "Nouveau prix",
+    "no_image": "Aucune image disponible",
+    "image_here": "Déposez votre image ici ou cliquez pour sélectionner",
+    "duplication": "Duplication du billet {{id}}",
+    "duplicate": "Dupliquer le billet",
+    "create_new": "Créer un nouveau billet",
+    "create_intro": "Pour créer, modifier ou dupliquer un billet, tous les champs sont obligatoires et vous devez ajouter une image. Celle-ci doit être au format JPG, JPEG, PNG, GIF ou SVG et ne pas dépasser 2 Mo. Lorsqu'une image est ajoutée vous pourrez la voir en aperçu dans le haut du formulaire. Certaines modifications peuvent prendre un certain temps pour être appliquées.",
+    "create_button": "Créer un billet"
   },
   "errors": {
     "title": "Oops… une erreur est survenue",
@@ -21,6 +39,7 @@
     "not_found": "Aucun billet correspondant trouvé",
     "retry": "Réessayer",
     "home": "Retour à l’accueil",
-    "save_failed": "Échec de l'enregistrement des modifications. Veuillez réessayer."
+    "save_failed": "Échec de l'enregistrement des modifications. Veuillez réessayer.",
+    "loading": "Chargement en cours..."
   }
 }

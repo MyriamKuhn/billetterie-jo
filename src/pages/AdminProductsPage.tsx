@@ -10,11 +10,13 @@ import { useLanguageStore } from '../stores/useLanguageStore';
 import type { Filters } from '../hooks/useProducts';
 import { useAdminProducts } from '../hooks/useAdminProducts';
 import { PageWrapper } from '../components/PageWrapper';
-import { ProductDetailsModal } from '../components/ProductDetailsModal';
+import { AdminProductDetailsModal } from '../components/AdminProductDetailsModal';
 import { useTranslation } from 'react-i18next';
 import { ErrorDisplay } from '../components/ErrorDisplay';
 import { useAuthStore } from '../stores/useAuthStore';
 import { useUpdateProductPricing } from '../hooks/useUpdateProductPricing';
+import { AdminProductDuplicationModal } from '../components/AdminProductDuplicationModal';
+import { AdminProductCreateModal } from '../components/AdminProductCreateModal';
 
 export default function AdminProductsPage() {
   const { t } = useTranslation('adminProducts');
@@ -31,6 +33,8 @@ export default function AdminProductsPage() {
   const { products, total, loading, error, validationErrors } = useAdminProducts(filters, lang, token!);
 
   const [detailsId, setDetailsId] = useState<number | null>(null);
+  const [duplicateId, setDuplicateId] = useState<number | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   useEffect(() => {
   if (validationErrors) {
@@ -92,6 +96,8 @@ export default function AdminProductsPage() {
                     return ok;
                   }}
                   onRefresh={() => setFilters(f => ({ ...f }))}
+                  onDuplicate={setDuplicateId}
+                  onCreate={() => setCreateOpen(true)}
                 />
               }
             {!loading && products.length>0 && (
@@ -107,11 +113,25 @@ export default function AdminProductsPage() {
         </Box>
       </PageWrapper>
 
-      <ProductDetailsModal
+      <AdminProductDetailsModal
         open={detailsId !== null}
         productId={detailsId}
         lang={lang}
         onClose={() => setDetailsId(null)}
+        onRefresh={() => setFilters(f=>({...f}))}
+      />
+      <AdminProductDuplicationModal
+        open={duplicateId !== null}
+        productId={duplicateId}
+        lang={lang}
+        onClose={() => setDuplicateId(null)}
+        onRefresh={() => setFilters(f=>({...f}))}
+      />
+      <AdminProductCreateModal
+        open={createOpen}
+        lang={lang}
+        onClose={() => setCreateOpen(false)}
+        onRefresh={() => setFilters(f=>({...f}))}
       />
     </>
   );

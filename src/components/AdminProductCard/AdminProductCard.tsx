@@ -22,9 +22,10 @@ interface Props {
     stock_quantity: number;
   }) => Promise<boolean>;
   onRefresh: () => void;
+  onDuplicate: (id: number) => void;
 }
 
-export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRefresh }: Props) {
+export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRefresh, onDuplicate }: Props) {
   const { t } = useTranslation('adminProducts');
   const { notify } = useCustomSnackbar();
   // états locaux pour les champs modifiables
@@ -105,7 +106,7 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
       <Box sx={{ px:2, display:'flex', alignItems:'baseline', justifyContent: { xs: 'flex-start', md: 'space-between' }, flexDirection: { xs: 'column', md: 'row'}, gap:1 }}>
         <Box sx={{ display: 'flex', alignItems: 'start', flexDirection: 'column' }}>
           <Typography variant="body2">
-            Prix actuel : 
+            {t('products.currentPrice')} :
           </Typography>
           <Typography variant="body2" sx={{ textDecoration: p.sale>0 ? 'line-through' : 'none' }}>
             {formatCurrency(p.price, lang, 'EUR')}
@@ -121,7 +122,7 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'start', flexDirection: 'column' }}>
           <Typography variant="subtitle1" fontWeight="bold">
-            Nouveau prix :
+            {t('products.newPrice')} :
           </Typography>
           <Typography variant="body2" sx={{ textDecoration: sale>0 ? 'line-through' : 'none' }}>
             {formatCurrency(price, lang, 'EUR')}
@@ -140,6 +141,9 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
       <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: { xs: 'column', md: 'row'}, gap: 1, mt: 2 }}>
         <Button size="small" variant="outlined" onClick={() => onViewDetails(p.id)}>
           {t('products.updateDetails')}
+        </Button>
+        <Button size="small" variant="outlined" onClick={() => onDuplicate(p.id)}>
+          {t('products.duplicate')}
         </Button>
         <Button
           size="small"
