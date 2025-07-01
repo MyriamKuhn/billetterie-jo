@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>47/47</span>
+                <span class='fraction'>49/49</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>23/23</span>
+                <span class='fraction'>24/24</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>26/26</span>
+                <span class='fraction'>27/27</span>
             </div>
         
             
@@ -169,7 +169,10 @@
 <a name='L104'></a><a href='#L104'>104</a>
 <a name='L105'></a><a href='#L105'>105</a>
 <a name='L106'></a><a href='#L106'>106</a>
-<a name='L107'></a><a href='#L107'>107</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -202,6 +205,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -212,18 +216,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">23x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">23x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -290,7 +296,8 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { RequireAuth } from './components/RequireAuth';
 &nbsp;
 const HomePage    = lazy(() =&gt; import('./pages/HomePage'));
-const TicketsPage = lazy(() =&gt; import('./pages/TicketsPage'));
+const ProductsPage = lazy(() =&gt; import('./pages/ProductsPage'));
+const AdminProductsPage = lazy(() =&gt; import('./pages/AdminProductsPage'));
 const LegalMentionsPage = lazy(() =&gt; import('./pages/LegalMentionsPage'));
 const TermsPage = lazy(() =&gt; import('./pages/TermsPage'));
 const PolicyPage = lazy(() =&gt; import('./pages/PolicyPage'));
@@ -307,7 +314,7 @@ const UnauthorizedPage = lazy(() =&gt; import('./pages/UnauthorizedPage'));
 const CheckoutPage = lazy(() =&gt; import('./pages/CheckoutPage'));
 const ConfirmationPage = lazy(() =&gt; import('./pages/ConfirmationPage'));
 const InvoicesPage = lazy(() =&gt; import('./pages/InvoicesPage'));
-const TicketsShowPage = lazy(() =&gt; import('./pages/TicketsShowPage'));
+const UserTicketsPage = lazy(() =&gt; import('./pages/UserTicketsPage'));
 &nbsp;
 &nbsp;
 &nbsp;
@@ -345,7 +352,7 @@ export default function App({ mode, toggleMode }: AppProps) {
             }&gt;
               &lt;Routes&gt;
                 &lt;Route path="/" element={&lt;HomePage /&gt;} /&gt;
-                &lt;Route path="/tickets" element={&lt;TicketsPage /&gt;} /&gt;
+                &lt;Route path="/tickets" element={&lt;ProductsPage /&gt;} /&gt;
                 &lt;Route path="/cart" element={&lt;CartPage /&gt;} /&gt;
                 &lt;Route path="/contact" element={&lt;ContactPage /&gt;} /&gt;
                 &lt;Route path="/legal-mentions" element={&lt;LegalMentionsPage /&gt;} /&gt;
@@ -365,10 +372,12 @@ export default function App({ mode, toggleMode }: AppProps) {
                 &lt;Route path="/checkout" element={&lt;RequireAuth requiredRole="user"&gt;&lt;CheckoutPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/confirmation" element={&lt;RequireAuth requiredRole="user"&gt;&lt;ConfirmationPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/user/orders" element={&lt;RequireAuth requiredRole="user"&gt;&lt;InvoicesPage /&gt;&lt;/RequireAuth&gt;} /&gt;
-                &lt;Route path="/user/tickets" element={&lt;RequireAuth requiredRole="user"&gt;&lt;TicketsShowPage /&gt;&lt;/RequireAuth&gt;} /&gt;
+                &lt;Route path="/user/tickets" element={&lt;RequireAuth requiredRole="user"&gt;&lt;UserTicketsPage /&gt;&lt;/RequireAuth&gt;} /&gt;
 &nbsp;
                 {/* Admin routes */}
                 &lt;Route path="/admin/dashboard" element={&lt;RequireAuth requiredRole="admin"&gt;&lt;AdminDashboardPage /&gt;&lt;/RequireAuth&gt;} /&gt;
+                &lt;Route path="/admin/tickets" element={&lt;RequireAuth requiredRole="admin"&gt;&lt;AdminProductsPage /&gt;&lt;/RequireAuth&gt;} /&gt;
+                
               &lt;/Routes&gt;
             &lt;/Suspense&gt;
           &lt;/ErrorBoundary&gt;
@@ -388,7 +397,7 @@ export default function App({ mode, toggleMode }: AppProps) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-24T20:01:46.593Z
+                at 2025-07-01T21:52:30.969Z
             </div>
         <script src="../prettify.js"></script>
         <script>
