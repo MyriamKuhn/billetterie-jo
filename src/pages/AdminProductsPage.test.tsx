@@ -128,7 +128,7 @@ vi.mock('../components/AdminProductCreateModal', () => ({
 describe('AdminProductsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockLangStore.mockReturnValue('en')
+    mockLangStore.mockImplementation((selector: (state: { lang: string }) => any) => selector({ lang: 'en' }))
     mockAuthStore.mockImplementation(selector => selector({ authToken: 'token' }))
   })
 
@@ -415,3 +415,24 @@ describe('AdminProductsPage', () => {
     expect(filt.page).toBe(1)  // pagination remise à 1
   })
 })
+
+describe('branche validationErrors individuelle', () => {
+  const errorKeys = ['sort_by','date','name','category','location','places'] as const;
+
+  it.each(errorKeys)(
+    'ne plante pas quand validationErrors contient uniquement %s',
+    (key) => {
+      // on ne renvoie QUE la clef courante
+      (useAdminProducts as Mock).mockReturnValue({
+        products: [],
+        total: 0,
+        loading: false,
+        error: null,
+        validationErrors: { [key]: ['erreur'] },
+      });
+
+      // le simple fait de render doit déclencher ton useEffect et exécuter le cleanup[key]
+      expect(() => render(<AdminProductsPage />)).not.toThrow();
+    }
+  );
+});

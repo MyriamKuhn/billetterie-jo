@@ -10,7 +10,7 @@ import { useAdminProducts } from './useAdminProducts'
 // On mocke axios.get et on stub axios.isAxiosError pour qu'il renvoie toujours true
 vi.mock('axios')
 const mockedGet = axios.get as unknown as MockedFunction<typeof axios.get>
-;(axios as any).isAxiosError = (err: any): err is AxiosError => true
+;(axios as any).isAxiosError = (_err: any): _err is AxiosError => true
 
 // ──────── 2) Composant de test qui expose l'état du hook ──────────────────────
 function TestComponent({
