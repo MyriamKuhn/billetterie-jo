@@ -41,6 +41,10 @@ export function ProductForm({
   onCancel,
 }: ProductFormProps) {
   const { t } = useTranslation('adminProducts');
+  // Etat interne du formulaire
+  const [formData, setFormData] = useState<ProductFormData>(initialValues);
+  const [tabIndex, setTabIndex] = useState(0);
+  const activeLang = useMemo(() => LANGUAGES[tabIndex].code as LangCode, [tabIndex]);
 
   // Réinitialise le formulaire quand les valeurs initiales changent
   useEffect(() => {
@@ -48,10 +52,29 @@ export function ProductForm({
     setTabIndex(0);
   }, [initialValues]);
 
-  // Etat interne du formulaire
-  const [formData, setFormData] = useState<ProductFormData>(initialValues);
-  const [tabIndex, setTabIndex] = useState(0);
-  const activeLang = useMemo(() => LANGUAGES[tabIndex].code as LangCode, [tabIndex]);
+  const [isDirty, setIsDirty] = useState(false);
+  useEffect(() => {
+    setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialValues));
+  }, [formData, initialValues]);
+
+  const allFilled = useMemo(() => {
+    const hasImage = Boolean(formData.imageFile) || Boolean(formData.translations.en.product_details.image);
+    if (!hasImage) return false;
+    // Check every translation and every primitive field:
+    if (formData.price <= 0) return false;
+    if (formData.stock_quantity < 0) return false;
+    for (const code of ['fr','en','de'] as const) {
+      const tr = formData.translations[code];
+      if (!tr.name) return false;
+      if (!tr.product_details.date) return false;
+      if (!tr.product_details.time) return false;
+      if (!tr.product_details.location) return false;
+      if (!tr.product_details.category) return false;
+      if (tr.product_details.places <= 0) return false;
+      if (!tr.product_details.description) return false;
+    }
+    return true;
+  }, [formData]);
 
   // Changement d'onglet
   const handleTabChange = (_: React.SyntheticEvent, idx: number) => {
@@ -290,7 +313,7 @@ export function ProductForm({
         <Button
           variant="contained"
           onClick={handleSave}
-          disabled={saving}
+          disabled={!allFilled || !isDirty || saving}
           startIcon={saving ? <CircularProgress size={16} /> : undefined}
         >
           {saving ? t('products.saving') : t('products.save')}

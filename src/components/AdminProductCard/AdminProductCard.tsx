@@ -8,7 +8,7 @@ import Chip from '@mui/material/Chip';
 import type { Product } from '../../types/products';
 import { useTranslation } from 'react-i18next';
 import { formatCurrency, formatDate } from '../../utils/format';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useCustomSnackbar } from '../../hooks/useCustomSnackbar';
 
@@ -36,6 +36,15 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
   const [saving, setSaving] = useState(false);
 
   const finalPrice = price * (1 - sale);
+
+  // flag dirty si au moins un champ modifié
+  const isDirty = useMemo(() => {
+    return (
+      price !== p.price ||
+      sale !== p.sale ||
+      stock !== p.stock_quantity
+    );
+  }, [price, sale, stock, p]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -148,7 +157,7 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
         <Button
           size="small"
           variant="contained"
-          disabled={saving}
+          disabled={saving || !isDirty}
           onClick={handleSave}
           startIcon={
             saving

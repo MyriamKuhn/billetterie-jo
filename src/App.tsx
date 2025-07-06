@@ -32,6 +32,10 @@ const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const ConfirmationPage = lazy(() => import('./pages/ConfirmationPage'));
 const InvoicesPage = lazy(() => import('./pages/InvoicesPage'));
 const UserTicketsPage = lazy(() => import('./pages/UserTicketsPage'));
+const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
+const AdminEmployeesPage = lazy(() => import('./pages/AdminEmployeesPage'));
+
+
 
 
 
@@ -94,6 +98,8 @@ export default function App({ mode, toggleMode }: AppProps) {
                 {/* Admin routes */}
                 <Route path="/admin/dashboard" element={<RequireAuth requiredRole="admin"><AdminDashboardPage /></RequireAuth>} />
                 <Route path="/admin/tickets" element={<RequireAuth requiredRole="admin"><AdminProductsPage /></RequireAuth>} />
+                <Route path="/admin/users" element={<RequireAuth requiredRole="admin"><AdminUsersPage /></RequireAuth>} />
+                <Route path="/admin/employees" element={<RequireAuth requiredRole="admin"><AdminEmployeesPage /></RequireAuth>} />
                 
               </Routes>
             </Suspense>
