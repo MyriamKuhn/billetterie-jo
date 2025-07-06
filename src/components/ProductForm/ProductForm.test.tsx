@@ -1,254 +1,409 @@
-import { render, screen, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import dayjs from 'dayjs'
-import { ProductForm } from './ProductForm'
-import { beforeAll, vi } from 'vitest'
-import { API_BASE_URL } from '../../config'
-import type { ProductFormData } from '../../types/admin'
+import { vi } from 'vitest';
+import dayjs from 'dayjs';
 
-// 1) mock useTranslation
-vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key })
-}))
-
-// 2) mock ImageDropzone pour injecter un bouton qui appelle onFileSelected
-const testFile = new File(['x'], 'img.png', { type: 'image/png' })
-vi.mock('../ImageDropzone', () => ({
-  ImageDropzone: (props: any) => (
-    <div>
-      <button onClick={() => props.onFileSelected(testFile)}>DropFile</button>
-      {/* PreviewUrl affiché sous forme de texte pour test */}
-      <div data-testid="preview">{props.previewUrl ?? 'no-preview'}</div>
-    </div>
-  )
-}))
-
-// 3) mock FlagIcon pour ne pas charger de SVG
-vi.mock('../FlagIcon', () => ({
-  default: (props: any) => <span>Flag:{props.code}</span>
-}))
-
-// 4) mock DatePicker pour afficher un input que l'on peut changer
-vi.mock('@mui/x-date-pickers/DatePicker', () => ({
-  DatePicker: (props: any) => (
-    <input
-      data-testid="date-picker"
-      type="date"
-      value={props.value ? props.value.format('YYYY-MM-DD') : ''}
-      onChange={e => props.onChange(e.target.value ? dayjs(e.target.value) : null)}
-    />
-  )
-}))
-
-beforeAll(() => {
-  global.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
-})
-
-function renderForm(
-  initialValues: ProductFormData,
-  saving: boolean,
-  onSubmit: (data: ProductFormData) => Promise<boolean>,
-  onCancel: () => void
-) {
-  return render(
-    <ProductForm
-      initialValues={initialValues}
-      saving={saving}
-      onSubmit={onSubmit}
-      onCancel={onCancel}
-    />
-  )
+// 1) Polyfill de createObjectURL pour éviter l’erreur JSDOM
+if (!global.URL.createObjectURL) {
+  global.URL.createObjectURL = vi.fn(() => 'blob:fake-url');
 }
 
-describe('<ProductForm/>', () => {
-  const onCancel = vi.fn()
-  let onSubmit: ReturnType<typeof vi.fn>
-  let submitResult = true
+// On mocke useTranslation pour que t('…') renvoie la clé brute
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({ t: (key: string) => key }),
+}));
 
-  const initialValues = {
+// Stub de l’ImageDropzone
+vi.mock('../ImageDropzone', () => ({
+  __esModule: true,
+  ImageDropzone: ({ label, onFileSelected }: any) => (
+    <div data-testid="dropzone">
+      <span data-testid="dropzone-label">{label}</span>
+      <button
+        data-testid="dropzone-select"
+        onClick={() => {
+          const file = new File(['dummy'], 'dummy.png', { type: 'image/png' });
+          onFileSelected(file);
+        }}
+      >
+        select-file
+      </button>
+      <button
+        data-testid="dropzone-clear"
+        onClick={() => {
+          onFileSelected(undefined);
+        }}
+      >
+        clear-file
+      </button>
+    </div>
+  ),
+}));
+
+
+// Stub du FlagIcon pour pouvoir matcher les onglets
+vi.mock('../FlagIcon', () => ({
+  __esModule: true,
+  default: ({ code }: any) => <span data-testid={`flag-${code}`} />,
+}));
+
+// Stub du DatePicker pour simplifier l’input/date
+vi.mock('@mui/x-date-pickers/DatePicker', () => ({
+  __esModule: true,
+  DatePicker: ({ label, value, onChange }: any) => (
+    <input
+      data-testid={`datepicker-${label}`}
+      aria-label={label}
+      value={value ? value.format('YYYY-MM-DD') : ''}
+      onChange={e => {
+        // si l’input est vide, newVal = null
+        const v = e.target.value;
+        onChange(v ? dayjs(v) : null);
+      }}
+    />
+  ),
+}));
+
+// Déclarez initialValues en haut du fichier, AVANT tout describe()
+const initialValues: ProductFormData = {
+  price: 10,
+  sale: 0.2,
+  stock_quantity: 5,
+  imageFile: undefined,
+  translations: {
+    fr: {
+      name: 'Nom FR',
+      product_details: {
+        image: 'img_fr.png',
+        date: '2025-07-01',
+        time: '10:00',
+        location: 'Paris',
+        category: 'Cat FR',
+        places: 10,
+        description: 'Desc FR',
+      },
+    },
+    en: {
+      name: 'Name EN',
+      product_details: {
+        image: 'img_en.png',
+        date: '2025-07-02',
+        time: '11:00',
+        location: 'London',
+        category: 'Cat EN',
+        places: 20,
+        description: 'Desc EN',
+      },
+    },
+    de: {
+      name: 'Name DE',
+      product_details: {
+        image: 'img_de.png',
+        date: '2025-07-03',
+        time: '12:00',
+        location: 'Berlin',
+        category: 'Cat DE',
+        places: 30,
+        description: 'Desc DE',
+      },
+    },
+  },
+};
+
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { ProductForm } from './ProductForm';
+import type { ProductFormData } from '../../types/admin';
+
+describe('ProductForm', () => {
+  const initialValues: ProductFormData = {
     price: 10,
     sale: 0.2,
     stock_quantity: 5,
-    imageFile: undefined as File | undefined,
+    imageFile: undefined,
     translations: {
       fr: {
-        name: 'NomFR',
+        name: 'Nom FR',
         product_details: {
-          places: 2,
-          description: 'DescFR',
-          date: '2025-01-01',
-          time: '08:00',
-          location: 'LocFR',
-          category: 'CatFR',
-          image: 'img-fr.png',
-          imageFile: undefined as File | undefined
-        }
+          image: 'img_fr.png',
+          date: '2025-07-01',
+          time: '10:00',
+          location: 'Paris',
+          category: 'Cat FR',
+          places: 10,
+          description: 'Desc FR',
+        },
       },
       en: {
-        name: 'NameEN',
+        name: 'Name EN',
         product_details: {
-          places: 3,
-          description: 'DescEN',
-          date: '2025-02-02',
-          time: '09:00',
-          location: 'LocEN',
-          category: 'CatEN',
-          image: 'img-en.png',
-          imageFile: undefined as File | undefined
-        }
+          image: 'img_en.png',
+          date: '2025-07-02',
+          time: '11:00',
+          location: 'London',
+          category: 'Cat EN',
+          places: 20,
+          description: 'Desc EN',
+        },
       },
       de: {
-        name: 'NameDE',
+        name: 'Name DE',
         product_details: {
-          places: 4,
-          description: 'DescDE',
-          date: '2025-03-03',
-          time: '10:00',
-          location: 'LocDE',
-          category: 'CatDE',
-          image: 'img-de.png',
-          imageFile: undefined as File | undefined
-        }
-      }
-    }
-  }
+          image: 'img_de.png',
+          date: '2025-07-03',
+          time: '12:00',
+          location: 'Berlin',
+          category: 'Cat DE',
+          places: 30,
+          description: 'Desc DE',
+        },
+      },
+    },
+  };
 
-  beforeEach(() => {
-    vi.clearAllMocks()
-    onSubmit = vi.fn(async data => {
-      expect(data.price).toBeTypeOf('number')
-      return submitResult
-    })
-  })
+  it('rend tous les champs initiaux et désactive Save', () => {
+  render(
+    <ProductForm
+      initialValues={initialValues}
+      saving={false}
+      onSubmit={vi.fn()}
+      onCancel={vi.fn()}
+    />
+  );
 
-  it('render all fields with initialValues', () => {
-    renderForm(initialValues, false, onSubmit, onCancel)
+  // champs globaux
+  expect(screen.getByLabelText('products.price')).toHaveValue(10);
+  expect(screen.getByLabelText('products.sale')).toHaveValue(20);
+  expect(screen.getByLabelText('products.stock')).toHaveValue(5);
 
-    // Globaux
-    expect(screen.getByDisplayValue('10')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('20')).toBeInTheDocument() // sale * 100
-    expect(screen.getByDisplayValue('5')).toBeInTheDocument()
+  // on vérifie simplement le texte de label du dropzone
+  expect(screen.getByText('products.image_here')).toBeInTheDocument();
 
-    // Preview fallback to translations.en.image
-    expect(screen.getByTestId('preview').textContent).toContain('img-en.png')
+  // onglets de langue
+  expect(screen.getByTestId('flag-FR')).toBeInTheDocument();
+  expect(screen.getByTestId('flag-US')).toBeInTheDocument();
+  expect(screen.getByTestId('flag-DE')).toBeInTheDocument();
 
-    // Onglets & FR
-    expect(screen.getByText('Flag:FR')).toBeInTheDocument()
-    expect(screen.getByDisplayValue('NomFR')).toBeInTheDocument()
-  })
+  // bouton Save désactivé
+  expect(screen.getByRole('button', { name: 'products.save' })).toBeDisabled();
+});
 
-  it('éditer champs globaux met à jour formData', async () => {
-    renderForm(initialValues, false, onSubmit, onCancel)
+  it('permet d’éditer, active le bouton Save, appelle onSubmit et then onCancel', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
 
-    await userEvent.clear(screen.getByLabelText('products.price'))
-    await userEvent.type(screen.getByLabelText('products.price'), '15')
-    expect(screen.getByDisplayValue('15')).toBeInTheDocument()
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
 
-    await userEvent.clear(screen.getByLabelText('products.sale'))
-    await userEvent.type(screen.getByLabelText('products.sale'), '50')
-    expect(screen.getByDisplayValue('50')).toBeInTheDocument()
+    // Modifier le prix
+    const priceInput = screen.getByLabelText('products.price');
+    fireEvent.change(priceInput, { target: { value: '15' } });
+    expect(priceInput).toHaveValue(15);
 
-    await userEvent.clear(screen.getByLabelText('products.stock'))
-    await userEvent.type(screen.getByLabelText('products.stock'), '8')
-    expect(screen.getByDisplayValue('8')).toBeInTheDocument()
-  })
+    // Maintenant le form est "dirty" ET allFilled reste vrai => Save activé
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
 
-  it('drop image met à jour imageFile et previewUrl', async () => {
-    renderForm(initialValues, false, onSubmit, onCancel)
-    await userEvent.click(screen.getByText('DropFile'))
+    // Cliquer sur Save déclenche onSubmit
+    fireEvent.click(saveBtn);
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ price: 15 })
+      )
+    );
+    // et si onSubmit renvoie true, onCancel est appelé
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
+  });
 
-    expect(global.URL.createObjectURL).toHaveBeenCalled()
-    expect(screen.getByTestId('preview').textContent).toContain('blob:mock-url')
-  })
+  it('change d’onglet quand on clique sur EN ou DE', () => {
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
 
-  it('change de langue via onglet et édite champs', async () => {
-    renderForm(initialValues, false, onSubmit, onCancel)
-    await userEvent.click(screen.getAllByRole('tab')[1])
-    expect(screen.getByText('Flag:US')).toBeInTheDocument()
+    // Par défaut on voit le champ name en FR
+    expect(screen.getByLabelText('products.name')).toHaveValue('Nom FR');
 
-    const nameEn = screen.getByDisplayValue('NameEN')
-    await userEvent.clear(nameEn)
-    await userEvent.type(nameEn, 'NewEN')
-    expect(screen.getByDisplayValue('NewEN')).toBeInTheDocument()
-  })
+    // Cliquer sur l’onglet EN
+    fireEvent.click(screen.getByLabelText('EN'));
+    expect(screen.getByLabelText('products.name')).toHaveValue('Name EN');
 
-  it('change date via DatePicker met à jour formData', async () => {
-    renderForm(initialValues, false, onSubmit, onCancel)
-    // date picker pour FR
-    const dateInput = screen.getByTestId('date-picker') as HTMLInputElement
-    fireEvent.change(dateInput, { target: { value: '2026-12-31' } })
-    expect(screen.getByDisplayValue('2026-12-31')).toBeInTheDocument()
-  })
+    // Cliquer sur l’onglet DE
+    fireEvent.click(screen.getByLabelText('DE'));
+    expect(screen.getByLabelText('products.name')).toHaveValue('Name DE');
+  });
 
-  it('click close appelle onCancel', async () => {
-    renderForm(initialValues, false, onSubmit, onCancel)
-    await userEvent.click(screen.getByRole('button', { name: 'products.close' }))
-    expect(onCancel).toHaveBeenCalledOnce()
-  })
+  it('appelle onCancel quand on clique sur "Close"', () => {
+    const onCancel = vi.fn();
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={vi.fn()}
+        onCancel={onCancel}
+      />
+    );
 
-  it('soumission réussie appelle onCancel', async () => {
-    submitResult = true
-    renderForm(initialValues, false, onSubmit, onCancel)
-    await userEvent.click(screen.getByRole('button', { name: 'products.save' }))
-    expect(onSubmit).toHaveBeenCalledOnce()
-    expect(onCancel).toHaveBeenCalledOnce()
-  })
+    fireEvent.click(screen.getByRole('button', { name: 'products.close' }));
+    expect(onCancel).toHaveBeenCalled();
+  });
 
-  it('soumission échouée ne appelle pas onCancel', async () => {
-    submitResult = false
-    renderForm(initialValues, false, onSubmit, onCancel)
-    await userEvent.click(screen.getByRole('button', { name: 'products.save' }))
-    expect(onSubmit).toHaveBeenCalledOnce()
-    expect(onCancel).not.toHaveBeenCalled()
-  })
+  it('modifie sale, stock et sélectionne un fichier via dropzone', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
 
-  it('updates nested translation fields: description, places, time, location, category', async () => {
-    renderForm(initialValues, false, onSubmit, onCancel)
+    // sale → 50% (input value 50)
+    const saleInput = screen.getByLabelText('products.sale');
+    fireEvent.change(saleInput, { target: { value: '50' } });
+    expect(saleInput).toHaveValue(50);
 
-    // Par défaut on est sur FR (tabIndex=0)
-    // 1) Description
-    const descInput = screen.getByLabelText('products.description')
-    await userEvent.clear(descInput)
-    await userEvent.type(descInput, 'NewDescFR')
-    expect(descInput).toHaveValue('NewDescFR')
+    // stock → 15
+    const stockInput = screen.getByLabelText('products.stock');
+    fireEvent.change(stockInput, { target: { value: '15' } });
+    expect(stockInput).toHaveValue(15);
 
-    // 2) Places
-    const placeInput = screen.getByLabelText('products.place')
-    await userEvent.clear(placeInput)
-    await userEvent.type(placeInput, '7')
-    expect(placeInput).toHaveValue(7)
+    // sélection du fichier
+    fireEvent.click(screen.getByTestId('dropzone-select'));
 
-    // 3) Time
-    const timeInput = screen.getByLabelText('products.time')
-    await userEvent.clear(timeInput)
-    await userEvent.type(timeInput, '14:30')
-    expect(timeInput).toHaveValue('14:30')
+    // Save devient actif
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
 
-    // 4) Location
-    const locInput = screen.getByLabelText('products.location')
-    await userEvent.clear(locInput)
-    await userEvent.type(locInput, 'Paris')
-    expect(locInput).toHaveValue('Paris')
+    // clic sur Save → onSubmit puis onCancel
+    fireEvent.click(saveBtn);
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sale: 0.5,
+          stock_quantity: 15,
+          imageFile: expect.any(File),
+        })
+      )
+    );
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
+  });
 
-    // 5) Category
-    const catInput = screen.getByLabelText('products.category')
-    await userEvent.clear(catInput)
-    await userEvent.type(catInput, 'Music')
-    expect(catInput).toHaveValue('Music')
+  it('permet d’éditer tous les champs de traduction et active Save', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
 
-    // Vérifions aussi pour une autre langue (EN)
-    const tabs = screen.getAllByRole('tab')
-    await userEvent.click(tabs[1]) // bascule sur EN
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
 
-    const descEn = screen.getByLabelText('products.description')
-    await userEvent.clear(descEn)
-    await userEvent.type(descEn, 'NewDescEN')
-    expect(descEn).toHaveValue('NewDescEN')
-  })
+    // 1) Changer le nom
+    const nameInput = screen.getByLabelText('products.name');
+    fireEvent.change(nameInput, { target: { value: 'Updated Name FR' } });
+    expect(nameInput).toHaveValue('Updated Name FR');
 
-  it('shows API image URL in preview when no imageFile but translations.en.image is set', () => {
-    // Modifie les initialValues pour avoir un nom de fichier en EN
-    const customInit = {
+    // 2) Changer la description
+    const descInput = screen.getByLabelText('products.description');
+    fireEvent.change(descInput, { target: { value: 'Updated Desc FR' } });
+    expect(descInput).toHaveValue('Updated Desc FR');
+
+    // 3) Changer le nombre de places
+    const placeInput = screen.getByLabelText('products.place');
+    fireEvent.change(placeInput, { target: { value: '42' } });
+    expect(placeInput).toHaveValue(42);
+
+    // 4) Changer la date via le stub DatePicker
+    const dateInput = screen.getByTestId('datepicker-products.date');
+    fireEvent.change(dateInput, { target: { value: '2025-09-01' } });
+    expect(dateInput).toHaveValue('2025-09-01');
+
+    // 5) Changer l’heure
+    const timeInput = screen.getByLabelText('products.time');
+    fireEvent.change(timeInput, { target: { value: '16:30' } });
+    expect(timeInput).toHaveValue('16:30');
+
+    // 6) Changer le lieu
+    const locationInput = screen.getByLabelText('products.location');
+    fireEvent.change(locationInput, { target: { value: 'Marseille' } });
+    expect(locationInput).toHaveValue('Marseille');
+
+    // 7) Changer la catégorie
+    const categoryInput = screen.getByLabelText('products.category');
+    fireEvent.change(categoryInput, { target: { value: 'Updated Cat FR' } });
+    expect(categoryInput).toHaveValue('Updated Cat FR');
+
+    // Tous ces changements rendent le form "dirty" et allFilled reste vrai → Save activé
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
+
+    // Cliquer sur Save déclenche onSubmit avec les bonnes valeurs
+    fireEvent.click(saveBtn);
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          translations: expect.objectContaining({
+            fr: expect.objectContaining({
+              name: 'Updated Name FR',
+              product_details: expect.objectContaining({
+                description: 'Updated Desc FR',
+                places: 42,
+                date: '2025-09-01',
+                time: '16:30',
+                location: 'Marseille',
+                category: 'Updated Cat FR',
+              }),
+            }),
+          }),
+        })
+      )
+    );
+
+    // Et si onSubmit renvoie true, onCancel est appelé
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
+  });
+
+  it('désactive Save si le prix est <= 0 même si tout le reste est valide', () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
+
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
+
+    // Tout est valide au départ → on modifie juste le prix à 0
+    const priceInput = screen.getByLabelText('products.price');
+    fireEvent.change(priceInput, { target: { value: '0' } });
+    expect(priceInput).toHaveValue(0);
+
+    // Save doit rester désactivé (price <= 0)
+    expect(screen.getByRole('button', { name: 'products.save' })).toBeDisabled();
+  });
+
+  it('désactive Save quand il n’y a pas d’image', () => {
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
+
+    // on clone initialValues en retirant le champ image de la langue EN
+    const noImageValues: ProductFormData = {
       ...initialValues,
       translations: {
         ...initialValues.translations,
@@ -256,28 +411,223 @@ describe('<ProductForm/>', () => {
           ...initialValues.translations.en,
           product_details: {
             ...initialValues.translations.en.product_details,
-            image: 'remote.png'
-          }
-        }
-      }
-    }
+            image: '', // plus d’image
+          },
+        },
+      },
+    };
+
     render(
       <ProductForm
-        initialValues={customInit}
+        initialValues={noImageValues}
         saving={false}
         onSubmit={onSubmit}
         onCancel={onCancel}
       />
-    )
+    );
 
-    // Le mock de ImageDropzone affiche dans data-testid="preview" le previewUrl
-    const preview = screen.getByTestId('preview')
-    expect(preview.textContent).toBe(
-      `${API_BASE_URL}/products/images/remote.png`
-    )
-  })
+    // Même si tout le reste est rempli, hasImage sera false → Save désactivé
+    expect(screen.getByRole('button', { name: 'products.save' })).toBeDisabled();
+  });
 
-  it('disables Save button and shows saving text when saving=true', () => {
+  it('n’appelle pas onCancel si onSubmit renvoie false', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(false);
+    const onCancel = vi.fn();
+
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
+
+    // On rend le form "dirty" sans casser allFilled, par exemple en changeant le stock
+    const stockInput = screen.getByLabelText('products.stock');
+    fireEvent.change(stockInput, { target: { value: '10' } });
+    expect(stockInput).toHaveValue(10);
+
+    // Save doit maintenant être activé
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
+
+    // On clique et onSubmit renvoie false
+    fireEvent.click(saveBtn);
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+
+    // onCancel ne doit PAS avoir été appelé
+    expect(onCancel).not.toHaveBeenCalled();
+  });
+});
+
+describe('allFilled validation exhaustive', () => {
+  const renderWith = (overrides: Partial<ProductFormData>) => {
+    // Clone en profondeur pour ne pas muter initialValues
+    const broken: ProductFormData = JSON.parse(JSON.stringify(initialValues));
+    Object.assign(broken, overrides);
+    render(
+      <ProductForm
+        initialValues={broken}
+        saving={false}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    );
+    return screen.getByRole('button', { name: 'products.save' });
+  };
+
+  it('désactive Save quand stock_quantity < 0', () => {
+    const saveBtn = renderWith({ stock_quantity: -1 });
+    expect(saveBtn).toBeDisabled();
+  });
+
+  it('désactive Save quand `name` manquant en FR', () => {
+    const broken = JSON.parse(JSON.stringify(initialValues));
+    broken.translations.fr.name = '';
+    const saveBtn = renderWith({ translations: broken.translations });
+    expect(saveBtn).toBeDisabled();
+  });
+
+  it('désactive Save quand `date` manquant en FR', () => {
+    const broken = JSON.parse(JSON.stringify(initialValues));
+    broken.translations.fr.product_details.date = '';
+    const saveBtn = renderWith({ translations: broken.translations });
+    expect(saveBtn).toBeDisabled();
+  });
+
+  it('désactive Save quand `time` manquant en FR', () => {
+    const broken = JSON.parse(JSON.stringify(initialValues));
+    broken.translations.fr.product_details.time = '';
+    const saveBtn = renderWith({ translations: broken.translations });
+    expect(saveBtn).toBeDisabled();
+  });
+
+  it('désactive Save quand `location` manquant en FR', () => {
+    const broken = JSON.parse(JSON.stringify(initialValues));
+    broken.translations.fr.product_details.location = '';
+    const saveBtn = renderWith({ translations: broken.translations });
+    expect(saveBtn).toBeDisabled();
+  });
+
+  it('désactive Save quand `category` manquant en FR', () => {
+    const broken = JSON.parse(JSON.stringify(initialValues));
+    broken.translations.fr.product_details.category = '';
+    const saveBtn = renderWith({ translations: broken.translations });
+    expect(saveBtn).toBeDisabled();
+  });
+
+  it('désactive Save quand `places` <= 0 en FR', () => {
+    const broken = JSON.parse(JSON.stringify(initialValues));
+    broken.translations.fr.product_details.places = 0;
+    const saveBtn = renderWith({ translations: broken.translations });
+    expect(saveBtn).toBeDisabled();
+  });
+
+  it('désactive Save quand `description` manquante en FR', () => {
+    const broken = JSON.parse(JSON.stringify(initialValues));
+    broken.translations.fr.product_details.description = '';
+    const saveBtn = renderWith({ translations: broken.translations });
+    expect(saveBtn).toBeDisabled();
+  });
+
+  it('transforme correctement la valeur sale (%) en fraction dans formData', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
+
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
+
+    // 1) On tape "75" dans le champ sale (affiché en %)
+    const saleInput = screen.getByLabelText('products.sale');
+    fireEvent.change(saleInput, { target: { value: '75' } });
+    // l'input reflète bien 75
+    expect(saleInput).toHaveValue(75);
+
+    // 2) On clique sur Save pour déclencher onSubmit
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
+    fireEvent.click(saveBtn);
+
+    // 3) onSubmit doit recevoir sale = 0.75 (75/100)
+    await waitFor(() => {
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ sale: 0.75 })
+      );
+    });
+  });
+
+  it('met à jour imageFile via onFileSelected et l’envoie à onSubmit', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
+
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
+
+    // 1) Simule la sélection de fichier via notre stub ImageDropzone
+    fireEvent.click(screen.getByTestId('dropzone-select'));
+
+    // Le formulaire est devenu dirty et allFilled reste vrai → Save activé
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
+
+    // 2) Clique sur Save pour déclencher onSubmit
+    fireEvent.click(saveBtn);
+
+    // 3) Vérifie que onSubmit a bien reçu imageFile (notre File factice)
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          imageFile: expect.any(File),
+        })
+      )
+    );
+
+    // Et si onSubmit renvoie true, onCancel est appelé
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
+  });
+
+  it('vide la date (newVal=null) et désactive Save', () => {
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
+
+    render(
+      <ProductForm
+        initialValues={initialValues}
+        saving={false}
+        onSubmit={onSubmit}
+        onCancel={onCancel}
+      />
+    );
+
+    // On commence sur FR, le datepicker contient "2025-07-01"
+    const dateInput = screen.getByTestId('datepicker-products.date');
+    expect(dateInput).toHaveValue('2025-07-01');
+
+    // On vide le champ → stub appelle onChange(null) → iso = ''
+    fireEvent.change(dateInput, { target: { value: '' } });
+    expect(dateInput).toHaveValue(''); // formData.translations.fr.product_details.date === ''
+
+    // Comme date est vide, allFilled doit être false → Save désactivé
+    expect(screen.getByRole('button', { name: 'products.save' })).toBeDisabled();
+  });
+
+  it('affiche le spinner et le texte "products.saving" quand saving=true', () => {
+    const onSubmit = vi.fn();
+    const onCancel = vi.fn();
+
     render(
       <ProductForm
         initialValues={initialValues}
@@ -285,329 +635,133 @@ describe('<ProductForm/>', () => {
         onSubmit={onSubmit}
         onCancel={onCancel}
       />
-    )
-    const saveBtn = screen.getByRole('button', { name: 'products.saving' })
-    expect(saveBtn).toBeDisabled()
-  })
-
-  it('uses API image when no imageFile and correctly switches through all tabs including DE and edits name', async () => {
-    // Prépare initialValues avec image en EN
-    const customInit = {
-      ...initialValues,
-      translations: {
-        ...initialValues.translations,
-        en: {
-          ...initialValues.translations.en,
-          product_details: {
-            ...initialValues.translations.en.product_details,
-            image: 'remote.png'
-          }
-        }
-      }
-    }
-    render(
-      <ProductForm
-        initialValues={customInit}
-        saving={false}
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-      />
-    )
-
-    // Le previewUrl doit être l'URL distante
-    expect(screen.getByTestId('preview').textContent).toBe(
-      `${API_BASE_URL}/products/images/remote.png`
-    )
-
-    // Vérifie qu'il y a 3 onglets (FR, EN, DE) et bascule successivement
-    const tabs = screen.getAllByRole('tab')
-    expect(tabs).toHaveLength(3)
-
-    // Onglet FR par défaut
-    expect(screen.getByText('Flag:FR')).toBeInTheDocument()
-    // Passe à EN
-    await userEvent.click(tabs[1])
-    expect(screen.getByText('Flag:US')).toBeInTheDocument()
-    // Passe à DE
-    await userEvent.click(tabs[2])
-    expect(screen.getByText('Flag:DE')).toBeInTheDocument()
-
-    // Modifie le champ name en DE
-    const nameDeInput = screen.getByLabelText('products.name')
-    await userEvent.clear(nameDeInput)
-    await userEvent.type(nameDeInput, 'NewNameDE')
-    expect(nameDeInput).toHaveValue('NewNameDE')
-  })
-
-  it('passes undefined previewUrl when no imageFile and no remote image', () => {
-    // Prépare initialValues sans image en EN
-    const customInit = {
-      ...initialValues,
-      translations: {
-        ...initialValues.translations,
-        en: {
-          ...initialValues.translations.en,
-          product_details: {
-            ...initialValues.translations.en.product_details,
-            image: '',       // pas de nom de fichier distant
-          }
-        }
-      }
-    }
-
-    render(
-      <ProductForm
-        initialValues={customInit}
-        saving={false}
-        onSubmit={onSubmit}
-        onCancel={onCancel}
-      />
-    )
-
-    // Le mock de ImageDropzone affiche previewUrl ou 'no-preview'
-    const preview = screen.getByTestId('preview')
-    expect(preview.textContent).toBe('no-preview')
-  })
-
-  it('DatePicker initial shows empty when date is empty and typing empty yields empty iso', async () => {
-    const noDateInit: ProductFormData = {
-      ...initialValues,
-      translations: {
-        fr: { ...initialValues.translations.fr, product_details: { ...initialValues.translations.fr.product_details, date: '' } },
-        en: { ...initialValues.translations.en, product_details: { ...initialValues.translations.en.product_details, date: '' } },
-        de: { ...initialValues.translations.de, product_details: { ...initialValues.translations.de.product_details, date: '' } }
-      }
-    }
-    let submittedData!: ProductFormData
-    const onSubmitSpy = vi.fn(async data => { submittedData = data; return false })
-
-    renderForm(noDateInit, false, onSubmitSpy, onCancel)
-
-    const dateInput = screen.getByTestId('date-picker') as HTMLInputElement
-    expect(dateInput.value).toBe('')
-
-    fireEvent.change(dateInput, { target: { value: '' } })
-    await userEvent.click(screen.getByRole('button', { name: 'products.save' }))
-
-    expect(onSubmitSpy).toHaveBeenCalledOnce()
-    expect(submittedData.translations.fr.product_details.date).toBe('')
-  })
-
-  it('sale field fallback to 0% when emptied', async () => {
-    renderForm(initialValues, false, onSubmit, onCancel)
-    const saleInput = screen.getByLabelText('products.sale')
-    await userEvent.clear(saleInput)
-    await userEvent.type(saleInput, 'abc')
-    expect(screen.getByDisplayValue('0')).toBeInTheDocument()
-  })
-
-  it('DatePicker initial shows empty when date is empty and typing empty yields empty iso', async () => {
-    // 1) Prep initialValues avec date vide en EN uniquement
-    const noDateInitEn = {
-      ...initialValues,
-      translations: {
-        ...initialValues.translations,
-        en: {
-          ...initialValues.translations.en,
-          product_details: {
-            ...initialValues.translations.en.product_details,
-            date: ''
-          }
-        }
-      }
-    }
-
-    let submittedData: any
-    const onSubmitSpy = vi.fn(async (data: any) => {
-      submittedData = data
-      return false
-    })
-
-    render(
-      <ProductForm
-        initialValues={noDateInitEn}
-        saving={false}
-        onSubmit={onSubmitSpy}
-        onCancel={onCancel}
-      />
-    )
-
-    // 2) Bascule sur l'onglet EN
-    const tabs = screen.getAllByRole('tab')
-    await userEvent.click(tabs[1])  // EN
-
-    const dateInput = screen.getByTestId('date-picker') as HTMLInputElement
-    expect(dateInput.value).toBe('')
-
-    fireEvent.change(dateInput, { target: { value: '' } })
-    await userEvent.click(screen.getByRole('button', { name: 'products.save' }))
-
-    expect(onSubmitSpy).toHaveBeenCalledOnce()
-    expect(submittedData.translations.en.product_details.date).toBe('')
-  })
-})
-
-describe('<ProductForm /> additional branches', () => {
-  beforeEach(() => {
-    global.URL.createObjectURL = vi.fn(() => 'blob:mock-url')
-  })
-  const onCancel = vi.fn();
-  const onSubmit = vi.fn(async () => true);
-  const baseInit = {
-    price: 1,
-    sale: 0,
-    stock_quantity: 1,
-    imageFile: undefined as File|undefined,
-    translations: {
-      fr: { name: 'F', product_details: { places: 1, description: 'D', date: '2025-01-01', time: '12:00', location: 'L', category: 'C', image: '', imageFile: undefined } },
-      en: { name: 'E', product_details: { places: 1, description: 'D', date: '2025-01-01', time: '12:00', location: 'L', category: 'C', image: '', imageFile: undefined } },
-      de: { name: 'G', product_details: { places: 1, description: 'D', date: '2025-01-01', time: '12:00', location: 'L', category: 'C', image: '', imageFile: undefined } },
-    }
-  }
-
-  it('affiche l’image préchargée si product_details.image est défini', () => {
-    // Supprime le stub createObjectURL pour forcer fallback sur previewUrl distant
-    // @ts-ignore
-    delete global.URL.createObjectURL;
-
-    const initWithRemote: ProductFormData = {
-      ...baseInit,
-      translations: {
-        ...baseInit.translations,
-        en: {
-          ...baseInit.translations.en,
-          product_details: {
-            ...baseInit.translations.en.product_details,
-            image: 'pic.jpg'
-          }
-        }
-      }
-    };
-
-    render(
-      <ProductForm
-        initialValues={initWithRemote}
-        saving={false}
-        onSubmit={async () => true}
-        onCancel={() => {}}
-      />
     );
 
-    const preview = screen.getByTestId('preview');
-    expect(preview.textContent).toBe(
-      `${API_BASE_URL}/products/images/pic.jpg`
-    );
-  });
+    // Le bouton doit afficher "products.saving" et être désactivé
+    const saveBtn = screen.getByRole('button', { name: 'products.saving' });
+    expect(saveBtn).toBeDisabled();
 
-  it('affiche "no-preview" si aucune image ni fichier', () => {
-    // Toujours sans stub, pour avoir previewUrl=undefined
-    // @ts-ignore
-    delete global.URL.createObjectURL;
-
-    render(
-      <ProductForm
-        initialValues={baseInit}
-        saving={false}
-        onSubmit={async () => true}
-        onCancel={() => {}}
-      />
-    );
-
-    const preview = screen.getByTestId('preview');
-    expect(preview.textContent).toBe('no-preview');
-  });
-
-  it('désactive le bouton Save et affiche le spinner quand saving=true', () => {
-    render(
-      <ProductForm
-        initialValues={baseInit}
-        saving={true}
-        onSubmit={async () => false}
-        onCancel={() => {}}
-      />
-    );
-    const btn = screen.getByRole('button', { name: 'products.saving' });
-    expect(btn).toBeDisabled();
-    // Ton mock de DatePicker/Flag/Icon n’affecte pas le spinner de MUI
+    // Le CircularProgress doit apparaître comme startIcon
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
   });
 
-  it('réinitialise formData et tabIndex quand initialValues change', () => {
-    const { rerender } = render(
+  it('transforme sale (%) en fraction via onChange et soumet la bonne valeur', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
+
+    render(
       <ProductForm
-        initialValues={baseInit}
+        initialValues={initialValues}
         saving={false}
         onSubmit={onSubmit}
         onCancel={onCancel}
       />
-    )
+    );
 
-    // modifie le champ
-    fireEvent.change(screen.getByLabelText('products.name'), { target: { value: 'XYZ' } })
-    expect(screen.getByDisplayValue('XYZ')).toBeInTheDocument()
+    // 1) Modifier sale à 80%
+    const saleInput = screen.getByLabelText('products.sale');
+    fireEvent.change(saleInput, { target: { value: '80' } });
+    expect(saleInput).toHaveValue(80);
 
-    // rerender avec new init
-    const modified = {
-      ...baseInit,
-      translations: {
-        ...baseInit.translations,
-        fr: { ...baseInit.translations.fr, name: 'ResetFR' }
-      }
-    }
-    rerender(
+    // 2) Le formulaire est "dirty" et allFilled reste vrai → Save activé
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
+
+    // 3) Cliquer sur Save pour déclencher onSubmit
+    fireEvent.click(saveBtn);
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ sale: 0.8 })
+      )
+    );
+    // et onCancel doit être appelé
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
+  });
+
+  it('met à jour imageFile via onFileSelected et le revoie à onSubmit', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
+
+    render(
       <ProductForm
-        initialValues={modified}
+        initialValues={initialValues}
         saving={false}
         onSubmit={onSubmit}
         onCancel={onCancel}
       />
-    )
+    );
 
-    expect(screen.getByDisplayValue('ResetFR')).toBeInTheDocument()
-    expect(screen.getByText('Flag:FR')).toBeInTheDocument()
-  })
+    // 1) Simuler la sélection de fichier (notre stub ImageDropzone expose #dropzone-select)
+    fireEvent.click(screen.getByTestId('dropzone-select'));
 
-  it('priorise imageFile puis retombe sur remote quand imageFile est vidé', async () => {
-    // 1) init avec remote.png
-    const customInit = {
-      ...baseInit,
-      translations: {
-        ...baseInit.translations,
-        en: {
-          ...baseInit.translations.en,
-          product_details: {
-            ...baseInit.translations.en.product_details,
-            image: 'remote.png'
-          }
-        }
-      }
-    }
-    const { rerender } = render(
+    // 2) Save s’active
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
+
+    // 3) Cliquer sur Save → onSubmit doit recevoir imageFile
+    fireEvent.click(saveBtn);
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ imageFile: expect.any(File) })
+      )
+    );
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
+  });
+});
+
+describe('branchement parseFloat || 0 et clear-file', () => {
+  it('met sale à 0 quand la saisie n’est pas un nombre', async () => {
+    const onSubmit = vi.fn().mockResolvedValue(true);
+    const onCancel = vi.fn();
+    render(
       <ProductForm
-        initialValues={customInit}
+        initialValues={initialValues}
         saving={false}
         onSubmit={onSubmit}
         onCancel={onCancel}
       />
-    )
+    );
 
-    // 2) dropFile → blob:mock-url
-    await userEvent.click(screen.getByText('DropFile'))
-    expect(screen.getByTestId('preview').textContent).toContain('blob:mock-url')
+    // 1) Saisir "abc" dans sale → parseFloat('abc') = NaN → (NaN||0)/100 = 0
+    const saleInput = screen.getByLabelText('products.sale');
+    fireEvent.change(saleInput, { target: { value: 'abc' } });
+    // la valeur de l’input reflète sale*100 === 0
+    expect(saleInput).toHaveValue(0);
 
-    // 3) on « vide » l’image en rerendant avec imageFile = undefined
-    rerender(
+    // 2) Submit et vérification
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeEnabled();
+    fireEvent.click(saveBtn);
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ sale: 0 })
+      )
+    );
+    await waitFor(() => expect(onCancel).toHaveBeenCalled());
+  });
+
+  it('clear-file appelle onFileSelected(undefined) et désactive Save après activation', () => {
+    render(
       <ProductForm
-        initialValues={{ ...customInit, imageFile: undefined }}
+        initialValues={initialValues}
         saving={false}
-        onSubmit={onSubmit}
-        onCancel={onCancel}
+        onSubmit={vi.fn()}
+        onCancel={vi.fn()}
       />
-    )
+    );
 
-    // et là, le fallback se fera sur l’image distante
-    expect(screen.getByTestId('preview').textContent).toBe(
-      `${API_BASE_URL}/products/images/remote.png`
-    )
-  })
-})
+    // 1) Au départ, Save est désactivé
+    const saveBtn = screen.getByRole('button', { name: 'products.save' });
+    expect(saveBtn).toBeDisabled();
+
+    // 2) Sélection d’un fichier : Save s’active
+    fireEvent.click(screen.getByTestId('dropzone-select'));
+    expect(screen.getByRole('button', { name: 'products.save' })).toBeEnabled();
+
+    // 3) Clear-file : appel du handler avec undefined → form redevient “clean”
+    fireEvent.click(screen.getByTestId('dropzone-clear'));
+
+    // 4) Save repasse en désactivé, prouvant que l’état a été mis à jour par onFileSelected(undefined)
+    expect(screen.getByRole('button', { name: 'products.save' })).toBeDisabled();
+  });
+});

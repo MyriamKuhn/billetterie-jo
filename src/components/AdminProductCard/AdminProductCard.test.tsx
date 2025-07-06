@@ -114,11 +114,32 @@ describe('AdminProductCard', () => {
     expect(onRefresh).toHaveBeenCalled();
   });
 
-  it('shows error notification when save fails', async () => {
-    onSave.mockResolvedValue(false);
-    render(<AdminProductCard product={defaultProduct} lang="en" onViewDetails={onViewDetails} onSave={onSave} onRefresh={onRefresh} onDuplicate={onDuplicate} />);
+  it('show error notification when save fails', async () => {
+    // onSave rejette en « false »
+    onSave.mockResolvedValueOnce(false);
+
+    render(
+      <AdminProductCard
+        product={defaultProduct}
+        lang="en"
+        onViewDetails={onViewDetails}
+        onSave={onSave}
+        onRefresh={onRefresh}
+        onDuplicate={onDuplicate}
+      />
+    );
+
+    // rendre le formulaire « dirty » pour activer le bouton Save
+    fireEvent.change(screen.getByLabelText('products.price'), { target: { value: '110' } });
+
+    // cliquer sur Save
     fireEvent.click(screen.getByText('products.save'));
-    await waitFor(() => expect(notifyMock).toHaveBeenCalledWith('errors.save_failed', 'error'));
+
+    // attendre la notification d’erreur et s’assurer que onRefresh n’a PAS été appelé
+    await waitFor(() => {
+      expect(notifyMock).toHaveBeenCalledWith('errors.save_failed', 'error');
+      expect(onRefresh).not.toHaveBeenCalled();
+    });
   });
 });
 

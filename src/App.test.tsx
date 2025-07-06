@@ -56,6 +56,8 @@ vi.mock('./pages/UserTicketsPage', () => ({ __esModule: true, default: () => <di
 vi.mock('./pages/InvoicesPage', () => ({ __esModule: true, default: () => <div data-testid="page-invoices">Invoices</div> }));
 vi.mock('./pages/AdminDashboardPage', () => ({ __esModule: true, default: () => <div data-testid="page-admin-dashboard">Admin Dashboard</div> }));
 vi.mock('./pages/AdminProductsPage', () => ({ __esModule: true, default: () => <div data-testid="page-admin-products">Admin Products</div> }));
+vi.mock('./pages/AdminUsersPage', () => ({ __esModule: true, default: () => <div data-testid="page-admin-users">Admin Users</div> }));
+vi.mock('./pages/AdminEmployeesPage', () => ({ __esModule: true, default: () => <div data-testid="page-admin-employees">Admin Employees</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -287,6 +289,22 @@ describe('Routes supplémentaires dans <App />', () => {
     window.history.pushState({}, '', '/admin/tickets');
     render(<App mode="light" toggleMode={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('page-admin-products')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+
+  it('affiche AdminUsersPage sur "/admin/users" quand RequireAuth autorise l’accès (stubbed)', async () => {
+    window.history.pushState({}, '', '/admin/users');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-admin-users')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+
+  it('affiche AdminEmployeesPage sur "/admin/employees" quand RequireAuth autorise l’accès (stubbed)', async () => {
+    window.history.pushState({}, '', '/admin/employees');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-admin-employees')).toBeInTheDocument());
     // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
     expect(screen.queryByTestId('page-home')).toBeNull();
   });

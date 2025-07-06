@@ -12,7 +12,7 @@ import { FilterSelect }  from '../FilterSelect';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 
-interface UsersFiltersProps {
+export interface UsersFiltersProps {
   role: 'user' | 'employee';
   filters: {
     firstname: string;
