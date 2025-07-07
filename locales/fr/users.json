@@ -1,0 +1,79 @@
+{
+  "filters": {
+    "title": "Filtres",
+    "firstname": "Prénom",
+    "lastname": "Nom",
+    "email": "Email",
+    "user_per_page": "Clients par page",
+    "employee_per_page": "Employés par page",
+    "reset": "Réinitialiser",
+    "close": "Fermer les filtres"
+  },
+  "errors": {
+    "title": "Oops… une erreur est survenue",
+    "unexpected": "Une erreur inattendue est survenue lors de la récupération des clients.",
+    "unexpected_employee": "Une erreur inattendue est survenue lors de la récupération des employés.",
+    "error_user": "Le client que vous essayez de consulter n'existe pas ou a été supprimé.",
+    "error_employee": "L'employé que vous essayez de consulter n'existe pas ou a été supprimé.",
+    "not_found": "Aucun client correspondant trouvé",
+    "not_found_employee": "Aucun employé correspondant trouvé",
+    "retry": "Réessayer",
+    "home": "Retour à l’accueil",
+    "save_failed": "Échec de la sauvegarde des modifications.",
+    "creation_failed": "Échec de la création de l'employé."
+  },
+  "seo": {
+    "title": "Gestion des clients - Billetterie JO Paris 2024",
+    "description": "Gérez les clients de la billetterie des Jeux Olympiques de Paris 2024. Consultez, modifiez et gérez les informations des clients.",
+    "title_employee": "Gestion des employés - Billetterie JO Paris 2024",
+    "description_employee": "Gérez les employés de la billetterie des Jeux Olympiques de Paris 2024. Consultez, modifiez et gérez les informations des employés."
+  },
+  "users": {
+    "title": "Gestion des clients"
+  },
+  "user": {
+    "title": "Client #{{id}}",
+    "title_employee": "Employé #{{id}}",
+    "active": "Actif",
+    "inactive": "Bloqué",
+    "twofa_enabled": "2FA activée",
+    "twofa_disabled": "2FA désactivée",
+    "email_verified": "Email vérifié",
+    "email_not_verified": "Email non vérifié",
+    "created_on": "Créé le {{date}} à {{time}}",
+    "updated_on": "Mis à jour le {{date}} à {{time}}",
+    "firstname": "Prénom",
+    "lastname": "Nom",
+    "email": "Email",
+    "save": "Enregistrer les modifications",
+    "saving": "Enregistrement...",
+    "success": "Données du client mises à jour !",
+    "success_employee": "Données de l'employé mises à jour !",
+    "toggle_active": "Modifier statut actif",
+    "toggle_twofa": "Désactiver 2FA",
+    "toggle_verify_email": "Vérifier l'email",
+    "details_title": "Détails du client #{{id}}",
+    "details_title_employee": "Détails de l'employé #{{id}}",
+    "name": "Nom complet :",
+    "pending_email_change": "Changement d'email en attente",
+    "old_email": "Ancien email",
+    "new_email": "Nouvel email",
+    "requested_on": "Demandé le {{date}} à {{time}}",
+    "no_pending_email": "Aucune demande de changement d'email en attente",
+    "details_email": "Email :",
+    "close": "Fermer",
+    "see_details": "Voir les détails"
+  },
+  "employees": {
+    "title": "Gestion des employés"
+  },
+  "employee": {
+    "create_new": "Créer un nouvel employé",
+    "create_intro": "Créez un nouvel employé pour gérer les opérations de billetterie.",
+    "create_button": "Créer un employé",
+    "success": "Employé créé avec succès !",
+    "invalid_email": "L'email doit être valide.",
+    "creation": "Création de l'employé...",
+    "create": "Créer l'employé"
+  }
+}

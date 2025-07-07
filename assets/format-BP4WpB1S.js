@@ -1,1 +1,0 @@
-function a(r,e="en",n="EUR"){return new Intl.NumberFormat(e,{style:"currency",currency:n}).format(r)}function m(r,e="en",n={day:"numeric",month:"long",year:"numeric"}){if(!r)return"";const t=new Date(r);return isNaN(t.getTime())?"":new Intl.DateTimeFormat(e,n).format(t)}export{a,m as f};
