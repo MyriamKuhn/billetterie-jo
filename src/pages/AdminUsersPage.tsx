@@ -122,7 +122,6 @@ export default function AdminUsersPage() {
       />
       <AdminEmployeeCreateModal
         open={createOpen}
-        lang={lang}
         onClose={() => setCreateOpen(false)}
         onRefresh={() => setFilters(f=>({...f}))}
       />

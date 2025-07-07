@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>7/7</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -112,25 +112,25 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import axios from 'axios';
@@ -146,13 +146,13 @@ interface CreateEmployeeBody {
   password_confirmation: string;
 }
 &nbsp;
-export function <span class="fstat-no" title="function not covered" >useCreateEmployee() {</span>
-  const token = <span class="cstat-no" title="statement not covered" >useAuthStore(<span class="fstat-no" title="function not covered" >s =&gt; <span class="cstat-no" title="statement not covered" >s</span>.authToken)</span>;</span>
-<span class="cstat-no" title="statement not covered" >  return async function <span class="fstat-no" title="function not covered" >createEmployee(</span></span>
+export function useCreateEmployee() {
+  const token = useAuthStore(s =&gt; s.authToken);
+  return async function createEmployee(
     body: CreateEmployeeBody
   ): Promise&lt;boolean&gt; {
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      await axios.post(</span>
+    try {
+      await axios.post(
         `${API_BASE_URL}/api/users/employees`,
         body,
         {
@@ -162,10 +162,10 @@ export function <span class="fstat-no" title="function not covered" >useCreateEm
           },
         }
       );
-<span class="cstat-no" title="statement not covered" >      return true;</span>
+      return true;
     } catch (err) {
-<span class="cstat-no" title="statement not covered" >      logError('useCreateEmployee', err);</span>
-<span class="cstat-no" title="statement not covered" >      return false;</span>
+      logError('useCreateEmployee', err);
+      return false;
     }
   };
 }</pre></td></tr></table></pre>
@@ -175,7 +175,7 @@ export function <span class="fstat-no" title="function not covered" >useCreateEm
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-06T23:14:55.031Z
+                at 2025-07-07T21:20:34.173Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
