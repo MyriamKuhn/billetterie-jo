@@ -12,7 +12,7 @@
     "title_admin": "Admin Dashboard",
     "subtitle": "Manage your personal information and security settings",
     "subtitle_admin": "Manage your admin account information. We recommend not sharing this information with others and enabling two-factor authentication for added security.",
-    "name": "Name and Surname",
+    "name": "Last Name and First Name",
     "email": "Email",
     "firstname": "First Name",
     "lastname": "Last Name",

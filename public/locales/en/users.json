@@ -67,7 +67,7 @@
   "employees": {
     "title": "Employee Management"
   },
-  "employe": {
+  "employee": {
     "create_new": "Create new employee",
     "create_intro": "Create a new employee to manage ticketing operations.",
     "create_button": "Create Employee",
