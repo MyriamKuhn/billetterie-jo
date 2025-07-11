@@ -64,8 +64,8 @@ export default function AdminProductsPage() {
           homeButtonText={t('errors.home')}
         />
       </PageWrapper>
-  );
-}
+    );
+  }
   
   // --- Rendu normal loader / grille / pagination ---
   return (

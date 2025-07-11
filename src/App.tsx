@@ -34,6 +34,7 @@ const InvoicesPage = lazy(() => import('./pages/InvoicesPage'));
 const UserTicketsPage = lazy(() => import('./pages/UserTicketsPage'));
 const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
 const AdminEmployeesPage = lazy(() => import('./pages/AdminEmployeesPage'));
+const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
 
 
 
@@ -100,6 +101,7 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/admin/tickets" element={<RequireAuth requiredRole="admin"><AdminProductsPage /></RequireAuth>} />
                 <Route path="/admin/users" element={<RequireAuth requiredRole="admin"><AdminUsersPage /></RequireAuth>} />
                 <Route path="/admin/employees" element={<RequireAuth requiredRole="admin"><AdminEmployeesPage /></RequireAuth>} />
+                <Route path="/admin/orders" element={<RequireAuth requiredRole="admin"><AdminOrdersPage /></RequireAuth>} />
                 
               </Routes>
             </Suspense>
