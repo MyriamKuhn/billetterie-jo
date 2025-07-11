@@ -1,5 +1,5 @@
 import type { TicketStatus } from '../../types/tickets'
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
@@ -12,7 +12,11 @@ import { FilterSelect } from '../FilterSelect'
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@mui/material/styles';
 import type { AdminTicketFilters } from '../../types/admin'
-import { FilterField } from '../FilterField'
+import { useUsers } from '../../hooks/useUsers'
+import { useAuthStore } from '../../stores/useAuthStore'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import CircularProgress from '@mui/material/CircularProgress'
 
 interface Props {
   filters: AdminTicketFilters
@@ -24,24 +28,50 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
   const theme = useTheme()
   const [open, setOpen] = useState(false)
 
-  // Options de statut : adapter selon vos statuts exacts
-  const statusToLabel: Record<TicketStatus, string> = {
+  const token = useAuthStore((state) => state.authToken)
+
+  // Fetch all users once
+  const userFetchParams = useMemo(
+    () => ({ firstname: '', lastname: '', email: '', perPage: 1000000000, page: 1 }),
+    [filters.per_page]
+  )
+  const { users, loading: usersLoading } = useUsers(
+    userFetchParams,
+    token!,
+    'user'
+  )
+
+  // Prepare options: include "All users" at top
+  const allOption = useMemo(() => ({ label: t('filters.user_all'), id: undefined }), [t])
+  const allOptions = useMemo(
+    () => [allOption, ...users.map(u => ({ label: `${u.firstname} ${u.lastname} (${u.email})`, id: u.id }))],
+    [users, allOption]
+  )
+
+  // Status options
+  const statusMap: Record<string, string> = {
     '': t('filters.status_all'),
     issued: t('filters.status_issued'),
     used: t('filters.status_used'),
     refunded: t('filters.status_refunded'),
     cancelled: t('filters.status_cancelled'),
   }
-  
-  const labelToStatus: Record<string, TicketStatus> = Object.entries(statusToLabel).reduce(
-      (acc, [code, label]) => {
-        acc[label] = code as TicketStatus
-        return acc
-      },
-      {} as Record<string, TicketStatus>
-    )
-    const statusOptionsLabels = Object.values(statusToLabel)
-    const currentStatusLabel = statusToLabel[filters.status]
+  const statusOptions = Object.values(statusMap)
+  const labelToStatus = Object.fromEntries(
+    Object.entries(statusMap).map(([k, v]) => [v, k])
+  ) as Record<string, TicketStatus>
+  const currentStatusLabel = statusMap[filters.status]
+
+  const handleUserChange = useCallback(
+    (_: any, option: { label: string; id?: number } | null, reason?: string) => {
+      if (reason === 'clear') {
+        onChange({ user_id: undefined, page: 1 })
+      } else {
+        onChange({ user_id: option?.id, page: 1 })
+      }
+    },
+    [onChange]
+  )
 
   const content = (
     <Box sx={{ width: 260, py: 2, px: 1 }}>
@@ -53,22 +83,40 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
         <FilterSelect<string>
           label={t('filters.status_label')}
           value={currentStatusLabel}
-          options={statusOptionsLabels}
-          onChange={selectedLabel => {
-            const statusCode = labelToStatus[selectedLabel]
-            onChange({ status: statusCode, page: 1 })
-          }}
+          options={statusOptions}
+          onChange={label => onChange({ status: labelToStatus[label], page: 1 })}
         />
 
         {/* Filtre par utilisateur */}
-        <FilterField
-          label={t('filters.user_id')}
-          type="number"
-          value={filters.user_id != null ? String(filters.user_id) : ''}
-          onChange={v => {
-            const n = v === '' ? undefined : parseInt(v, 10)
-            onChange({ user_id: n, page: 1 })
-          }}
+        <Autocomplete
+          clearText={t('filters.clear_user')}
+          size="small"
+          options={allOptions}
+          loading={usersLoading}
+          value={allOptions.find(o => o.id === filters.user_id) ?? allOption}
+          onChange={handleUserChange}
+          isOptionEqualToValue={(option, value) => option.id === value.id}
+          getOptionLabel={option => option.label}
+          filterOptions={(options, { inputValue }) =>
+            options.filter(o =>
+              o.label.toLowerCase().includes(inputValue.toLowerCase())
+            )
+          }
+          renderInput={params => (
+            <TextField
+              {...params}
+              label={t('filters.user')}
+              InputProps={{
+                ...params.InputProps,
+                endAdornment: (
+                  <>
+                    {usersLoading ? <CircularProgress size={16} /> : null}
+                    {params.InputProps.endAdornment}
+                  </>
+                )
+              }}
+            />
+          )}
         />
 
         {/* Par page */}

@@ -61,12 +61,14 @@
     "status_cancelled": "Annulé",
     "status_label": "Statut",
     "title": "Filtres",
-    "user_id": "Client",
+    "user": "Client",
+    "user_all": "Tous",
     "event_date_from": "Du",
     "event_date_to": "Au",
     "per_page": "Commandes par page",
     "reset": "Réinitialiser",
-    "close": "Fermer"
+    "close": "Fermer",
+    "clear_user": "Effacer"
   },
   "tickets": {
     "create_new": "Créer un billet gratuit",
