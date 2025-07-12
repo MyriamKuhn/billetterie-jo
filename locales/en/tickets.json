@@ -37,7 +37,8 @@
     "download_invoice": "Download invoice",
     "download_success": "Ticket downloaded successfully",
     "no_tickets": "No tickets found",
-    "title": "My tickets"
+    "title": "My tickets",
+    "free_ticket": "Free ticket"
   },
   "errors": {
     "product_fetch_failed": "Failed to retrieve ticket data",

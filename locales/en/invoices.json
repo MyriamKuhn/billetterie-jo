@@ -40,7 +40,8 @@
     "reference": "Reference",
     "date": "Date",
     "amount": "Amount",
-    "see_tickets": "View tickets"
+    "see_tickets": "View tickets",
+    "free_ticket": "Free"
   },
   "snackbar": {
     "pending_message": "Payment is pending. The invoice will be available once payment is confirmed.",

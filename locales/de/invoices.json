@@ -40,7 +40,8 @@
     "reference": "Referenz",
     "date": "Datum",
     "amount": "Betrag",
-    "see_tickets": "Tickets ansehen"
+    "see_tickets": "Tickets ansehen",
+    "free_ticket": "Kostenlos"
   },
   "snackbar": {
     "pending_message": "Die Zahlung ist ausstehend. Die Rechnung steht zur Verfügung, sobald die Zahlung bestätigt wurde.",
