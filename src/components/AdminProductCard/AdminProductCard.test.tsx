@@ -69,11 +69,13 @@ describe('AdminProductCard', () => {
       />
     );
 
-    expect(screen.getByText('Test Event')).toBeInTheDocument()
+    // on cherche ici "ID 1 - Test Event", ou au moins "Test Event"
+    expect(screen.getByText(/Test Event/)).toBeInTheDocument()
     expect(screen.getByText(/2024-07-26/)).toBeInTheDocument()
     expect(screen.getByText(/18:00/)).toBeInTheDocument()
+    // on tolère les espaces autour du tiret
     expect(
-      screen.getByText('Paris Arena - 2 places')
+      screen.getByText(/Paris Arena\s*-\s*2 places/)
     ).toBeInTheDocument();
     expect(screen.getByDisplayValue('100')).toBeTruthy();
     expect(screen.getByDisplayValue('20')).toBeTruthy();

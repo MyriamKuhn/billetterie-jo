@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>53/53</span>
+                <span class='fraction'>55/55</span>
             </div>
         
             
@@ -39,14 +39,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>26/26</span>
+                <span class='fraction'>27/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>29/29</span>
+                <span class='fraction'>30/30</span>
             </div>
         
             
@@ -178,7 +178,9 @@
 <a name='L113'></a><a href='#L113'>113</a>
 <a name='L114'></a><a href='#L114'>114</a>
 <a name='L115'></a><a href='#L115'>115</a>
-<a name='L116'></a><a href='#L116'>116</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -214,6 +216,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -226,18 +229,19 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -329,6 +333,7 @@ const InvoicesPage = lazy(() =&gt; import('./pages/InvoicesPage'));
 const UserTicketsPage = lazy(() =&gt; import('./pages/UserTicketsPage'));
 const AdminUsersPage = lazy(() =&gt; import('./pages/AdminUsersPage'));
 const AdminEmployeesPage = lazy(() =&gt; import('./pages/AdminEmployeesPage'));
+const AdminOrdersPage = lazy(() =&gt; import('./pages/AdminOrdersPage'));
 &nbsp;
 &nbsp;
 &nbsp;
@@ -369,7 +374,6 @@ export default function App({ mode, toggleMode }: AppProps) {
               &lt;Routes&gt;
                 &lt;Route path="/" element={&lt;HomePage /&gt;} /&gt;
                 &lt;Route path="/tickets" element={&lt;ProductsPage /&gt;} /&gt;
-                &lt;Route path="/cart" element={&lt;CartPage /&gt;} /&gt;
                 &lt;Route path="/contact" element={&lt;ContactPage /&gt;} /&gt;
                 &lt;Route path="/legal-mentions" element={&lt;LegalMentionsPage /&gt;} /&gt;
                 &lt;Route path="/terms" element={&lt;TermsPage /&gt;} /&gt;
@@ -386,6 +390,7 @@ export default function App({ mode, toggleMode }: AppProps) {
                 {/* Protected routes */}
                 &lt;Route path="/user/dashboard" element={&lt;RequireAuth requiredRole="user"&gt;&lt;UserDashboardPage /&gt;&lt;/RequireAuth&gt;}/&gt;
                 &lt;Route path="/checkout" element={&lt;RequireAuth requiredRole="user"&gt;&lt;CheckoutPage /&gt;&lt;/RequireAuth&gt;} /&gt;
+                &lt;Route path="/cart" element={&lt;RequireAuth requiredRole="user"&gt;&lt;CartPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/confirmation" element={&lt;RequireAuth requiredRole="user"&gt;&lt;ConfirmationPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/user/orders" element={&lt;RequireAuth requiredRole="user"&gt;&lt;InvoicesPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/user/tickets" element={&lt;RequireAuth requiredRole="user"&gt;&lt;UserTicketsPage /&gt;&lt;/RequireAuth&gt;} /&gt;
@@ -395,6 +400,7 @@ export default function App({ mode, toggleMode }: AppProps) {
                 &lt;Route path="/admin/tickets" element={&lt;RequireAuth requiredRole="admin"&gt;&lt;AdminProductsPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/admin/users" element={&lt;RequireAuth requiredRole="admin"&gt;&lt;AdminUsersPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 &lt;Route path="/admin/employees" element={&lt;RequireAuth requiredRole="admin"&gt;&lt;AdminEmployeesPage /&gt;&lt;/RequireAuth&gt;} /&gt;
+                &lt;Route path="/admin/orders" element={&lt;RequireAuth requiredRole="admin"&gt;&lt;AdminOrdersPage /&gt;&lt;/RequireAuth&gt;} /&gt;
                 
               &lt;/Routes&gt;
             &lt;/Suspense&gt;
@@ -415,7 +421,7 @@ export default function App({ mode, toggleMode }: AppProps) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-07-07T21:20:34.173Z
+                at 2025-07-12T16:55:38.951Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -124,11 +124,10 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
   }, [productId, locale]);
 
   const handleSubmit = async () => {
-    if (!userId || !productId) return
     setSaving(true)
     const payload = {
-      user_id: userId,
-      product_id: productId,
+      user_id: userId!,
+      product_id: productId!,
       quantity,
       locale
     }

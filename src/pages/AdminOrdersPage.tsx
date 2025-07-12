@@ -35,7 +35,6 @@ export default function AdminOrdersPage() {
     if (validationErrors) {
       const cleanup: Partial<Filters> = {};
   
-      if (validationErrors.status)   { cleanup.status = ''; }
       if (validationErrors.user_id)  { cleanup.user_id   = undefined; }
   
       setFilters(f => ({ ...f, ...cleanup }));
