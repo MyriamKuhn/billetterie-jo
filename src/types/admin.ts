@@ -46,7 +46,37 @@ export interface ProductFormData {
   translations: Record<LanguageCode, TranslationEntry>;
 }
 
-export type AdminPaymentsStatus = 'pending' | 'paid' | 'failed' | 'refunded';
+export type AdminPaymentsStatus = 'pending' | 'paid' | 'failed' | 'refunded' | '';
+
+export interface AdminPayments {
+  uuid: string;
+  invoice_link: string;
+  cart_snapshot: [
+    {
+      product_id: number;
+      product_name: string;
+      ticket_type: string;
+      ticket_places: number;
+      quantity: number;
+      unit_price: number;
+      discount_rate: number;
+      discounted_price: number;
+    }
+  ]
+  amount: number;
+  payment_method: 'paypal' | 'stripe' | 'free';
+  status: AdminPaymentsStatus;
+  transaction_id: string | null;
+  paid_at: string | null;
+  refunded_at: string | null;
+  refunded_amount: number | null;
+  user: {
+    id: number;
+    email: string;
+  };
+  created_at: string;
+  updated_at: string;
+}
 
 export interface AdminTicket {
   id: number;
@@ -86,6 +116,14 @@ export interface AdminTicket {
 export interface AdminTicketFilters {
   status: TicketStatus;
   user_id?: number;
+  per_page: number;
+  page: number;
+}
+
+export interface AdminPaymentFilters {
+  q: string;
+  status: AdminPaymentsStatus;
+  payment_method: 'paypal' | 'stripe' | 'free' | '';
   per_page: number;
   page: number;
 }

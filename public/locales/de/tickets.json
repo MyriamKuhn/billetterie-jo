@@ -30,7 +30,7 @@
     "no_pdf": "Kein Ticket-PDF verfügbar",
     "no_invoice": "Keine Rechnung verfügbar",
     "qr_alt": "Ticket QR-Code",
-    "token": "Ticket-Referenz",
+    "token": "Ticket-Referenz: {{token}}",
     "download_pdf": "Ticket-PDF herunterladen",
     "download_ticket": "Ticket herunterladen",
     "download_invoice_pdf": "Rechnung-PDF herunterladen",

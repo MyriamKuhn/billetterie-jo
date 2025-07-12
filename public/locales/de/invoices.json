@@ -37,9 +37,9 @@
     "download_not_ready": "Zahlung ausstehend, Rechnung nicht verfügbar",
     "download_not_available": "Zahlung fehlgeschlagen, keine Rechnung verfügbar",
     "download_not_available_generic": "Rechnung nicht verfügbar",
-    "reference": "Referenz",
-    "date": "Datum",
-    "amount": "Betrag",
+    "reference": "Referenz: {{reference}}",
+    "date": "Datum: {{date}}",
+    "amount": "Betrag: {{amount}}",
     "see_tickets": "Tickets ansehen",
     "free_ticket": "Kostenlos"
   },

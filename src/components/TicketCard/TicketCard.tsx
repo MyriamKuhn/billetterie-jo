@@ -179,7 +179,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
           {/* Token */}
           {!loadingProduct && ticket.token && (
             <Typography variant="body2" sx={{ mb: 3 }}>
-              {t('tickets.token')}: {ticket.token}
+              {t('tickets.token', { token: ticket.token })}
             </Typography>
           )}
 

@@ -38,9 +38,9 @@
     "download_not_ready": "Paiement en attente, facture non disponible",
     "download_not_available": "Paiement échoué, pas de facture disponible",
     "download_not_available_generic": "Facture non disponible",
-    "reference": "Référence",
-    "date": "Date",
-    "amount": "Montant",
+    "reference": "Référence : {{reference}}",
+    "date": "Date : {{date}}",
+    "amount": "Montant : {{amount}}",
     "see_tickets": "Voir les tickets",
     "free_ticket": "Gratuit"
   },

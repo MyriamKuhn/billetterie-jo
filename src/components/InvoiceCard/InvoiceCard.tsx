@@ -130,15 +130,15 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
           <CardContent sx={{ flexGrow: 1 }}>
             {/* Référence / UUID */}
             <Typography variant="h6">
-              {t('card.reference')}: {invoice.uuid}
+              {t('card.reference', { reference: invoice.uuid })}
             </Typography>
             {/* Date de création */}
             <Typography variant="body2" sx={{ mt: 0.5 }}>
-              {t('card.date')}: {dateStr}
+              {t('card.date', { date: dateStr })}
             </Typography>
             {/* Montant */}
             <Typography variant="body2" sx={{ mt: 0.5 }}>
-              {t('card.amount')}: {amountStr}
+              {t('card.amount', { amount: amountStr })}
             </Typography>
             {/* Statut avec Chip */}
             <Box sx={{ mt: 1 }}>

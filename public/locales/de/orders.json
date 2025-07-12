@@ -44,8 +44,8 @@
     "download_invoice_pdf": "Rechnung-PDF herunterladen",
     "download_invoice": "Rechnung",
     "download_ticket": "Ticket",
-    "save": "Änderungen speichern",
-    "saving": "Speichern…",
+    "save": "Speichern",
+    "saving": "Speicherung…",
     "no_product": "Kein Produkt für diese Bestellung gefunden.",
     "no_location": "Kein Ort für dieses Produkt angegeben.",
     "free_ticket": "Kostenloses Ticket"
