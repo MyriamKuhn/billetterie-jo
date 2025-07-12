@@ -1,11 +1,24 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
-import { useCreateProduct } from '../../hooks/useCreateProduct';
 import { useCustomSnackbar } from '../../hooks/useCustomSnackbar';
 import { useTranslation } from 'react-i18next';
-import type { ProductFormData } from '../../types/admin';
-import { ProductForm } from '../ProductForm';
+import { useAuthStore } from '../../stores/useAuthStore';
+import { useFreeTicket } from '../../hooks/useFreeTicket';
+import DialogContent from '@mui/material/DialogContent';
+import CircularProgress from '@mui/material/CircularProgress';
+import { FilterField } from '../FilterField';
+import { FilterRadios } from './../FilterRadios/FilterRadios';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import { Box, Card, CardContent, Divider, Typography } from '@mui/material';
+import OlympicLoader from '../OlympicLoader';
+import axios from 'axios';
+import { API_BASE_URL } from '../../config';
+import type { User } from '../../types/user';
+import { logError } from '../../utils/logger';
+import type { Product } from '../../types/products';
+import { formatDate } from '../../utils/format';
 
 interface Props {
   open: boolean;
@@ -14,122 +27,266 @@ interface Props {
 }
 
 export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
-  const { t } = useTranslation('adminProducts');
+  if (!open) return null
+  const { t } = useTranslation('orders');
+  const token = useAuthStore((state) => state.authToken);
   const { notify } = useCustomSnackbar();
-  const createProduct = useCreateProduct();
+  const freeTicket = useFreeTicket();
+
+
+  const [userId, setUserId] = useState<number | null>(null);
+  const [productId, setProductId] = useState<number | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const [locale, setLocale] = useState<'fr'|'en'|'de'>('fr');
   const [saving, setSaving] = useState(false);
 
-  // Valeurs initiales "vierges"
-  const initialValues = useMemo<ProductFormData>(() => ({
-    price: 0,
-    sale: 0,
-    stock_quantity: 0,
-    imageFile: undefined,
-    translations: {
-      fr: {
-        name: '',
-        product_details: {
-          places: 0,
-          description: '',
-          date: '',
-          time: '',
-          location: '',
-          category: '',
-          image: '',      
-          imageFile: undefined,
-        },
-      },
-      en: {
-        name: '',
-        product_details: {
-          places: 0,
-          description: '',
-          date: '',
-          time: '',
-          location: '',
-          category: '',
-          image: '',
-          imageFile: undefined,
-        },
-      },
-      de: {
-        name: '',
-        product_details: {
-          places: 0,
-          description: '',
-          date: '',
-          time: '',
-          location: '',
-          category: '',
-          image: '',
-          imageFile: undefined,
-        },
-      },
-    },
-  }), []);
+  const [loadingUser, setLoadingUser] = useState(false);
+  const [loadingProduct, setLoadingProduct] = useState(false);
+  const [errorUser, setErrorUser] = useState<string | null>(null);
+  const [errorProduct, setErrorProduct] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+
+  const headers = { Authorization: `Bearer ${token}`, 'Accept-Language': locale };
+
+  useEffect(() => {
+    if (userId !== null && userId > 0) {
+      setErrorUser(null);
+      setLoadingUser(true);
+      setUser(null);
+
+      axios.get<{ user: User }>(
+        `${API_BASE_URL}/api/users/${userId}`,
+        { headers }
+      )
+      .then(res => setUser(res.data.user))
+      .catch(err => {
+        logError('AdminTicketCreateModalUserDetails', err);
+        setErrorUser(t('errors.user_not_found'));
+      })
+    } else {
+      setUser(null);
+      setErrorUser(null);
+      setLoadingUser(false);
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    if (!user?.email) return;
+
+    axios.get(`${API_BASE_URL}/api/users?email=${encodeURIComponent(user.email)}`,
+      { headers }
+    )
+    .then(res => {
+      const usersList = res.data.data.users;
+      if (Array.isArray(usersList) && usersList.length > 0) {
+        const fetchedUser = usersList[0];
+        if (fetchedUser.role !== 'user') {
+          setErrorUser(t('errors.only_users_allowed'));
+          setUser(null);
+        } else {
+          setErrorUser(null);
+        }
+      } else {
+        setErrorUser(t('errors.user_not_found'));
+        setUser(null);
+      }
+    })
+    .catch(err => {
+      logError('AdminTicketCreateModalUserCheck', err);
+      setErrorUser(t('errors.user_not_found'));
+      setUser(null);  
+    })
+    .finally(() => setLoadingUser(false));
+  }, [user]);
+
+
+  useEffect(() => {
+    if (productId !== null && productId > 0) {
+      setErrorProduct(null);
+      setLoadingProduct(true);
+      setProduct(null);
+
+      axios.get<{ data: Product }>(
+        `${API_BASE_URL}/api/products/${productId}`,
+        { headers }
+      )
+      .then(res => setProduct(res.data.data))
+      .catch(err => {
+        logError('AdminTicketCreateModalProductDetails', err);
+        setErrorProduct(t('errors.product_not_found'));
+      })
+      .finally(() => setLoadingProduct(false));
+    } else {
+      setProduct(null);
+      setErrorProduct(null);
+    }
+  }, [productId, locale]);
+
+  const handleSubmit = async () => {
+    if (!userId || !productId) return
+    setSaving(true)
+    const payload = {
+      user_id: userId,
+      product_id: productId,
+      quantity,
+      locale
+    }
+    const ok = await freeTicket(payload)
+    setSaving(false)
+    if (ok) {
+      notify(t('freeTicket.success'), 'success');
+      onRefresh()
+      onClose()
+    } else {
+      notify(t('errors.save_failed'), 'error');
+    }
+  }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        {t('products.create_new')}
+        {t('freeTicket.title')}
       </DialogTitle>
 
-      <ProductForm
-        initialValues={initialValues}
-        saving={saving}
-        onSubmit={async data => {
-          setSaving(true);
+      <Divider />
 
-          const body = new FormData();
-          body.append('price', data.price.toString());
-          body.append('sale', data.sale.toString());
-          body.append('stock_quantity', data.stock_quantity.toString());
-          (['fr','en','de'] as const).forEach(code => {
-            const tr = data.translations[code];
-            body.append(`translations[${code}][name]`, tr.name);
-            body.append(
-              `translations[${code}][product_details][places]`,
-              tr.product_details.places.toString()
-            );
-            body.append(
-              `translations[${code}][product_details][description]`,
-              tr.product_details.description
-            );
-            body.append(
-              `translations[${code}][product_details][date]`,
-              tr.product_details.date
-            );
-            body.append(
-              `translations[${code}][product_details][time]`,
-              tr.product_details.time
-            );
-            body.append(
-              `translations[${code}][product_details][location]`,
-              tr.product_details.location
-            );
-            body.append(
-              `translations[${code}][product_details][category]`,
-              tr.product_details.category
-            );
-          });
-          if (data.imageFile) {
-            body.append('image', data.imageFile, data.imageFile.name);
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+  {/* === ton ancien form « FilterField / FilterRadios » */}
+  <FilterField
+    type="number"
+    label={t('freeTicket.userId')}
+    value={userId != null ? String(userId) : ''}
+    onChange={value => {
+      const n = parseInt(value, 10)
+      setUserId(Number.isNaN(n) ? null : n)
+    }}
+  />
+
+  <FilterField
+    type="number"
+    label={t('freeTicket.productId')}
+    value={productId != null ? String(productId) : ''}
+    onChange={value => {
+      const n = parseInt(value, 10)
+      setProductId(Number.isNaN(n) ? null : n)
+    }}
+  />
+
+  <FilterField
+    type="number"
+    label={t('freeTicket.quantity')}
+    value={String(quantity)}
+    onChange={value => {
+      const n = parseInt(value, 10)
+      setQuantity(Number.isNaN(n) ? 0 : n)
+    }}
+  />
+
+  <FilterRadios<'fr'|'en'|'de'>
+    legend={t('freeTicket.locale')}
+    value={locale}
+    options={[
+      { value: 'fr', label: t('freeTicket.fr') },
+      { value: 'en', label: t('freeTicket.en') },
+      { value: 'de', label: t('freeTicket.de') },
+    ]}
+    onChange={setLocale}
+  />
+
+  <Divider />
+
+  {/* === Section Prévisualisation en Grid === */}
+  <Typography variant="body1">{t('freeTicket.previsualisation')}</Typography>
+
+  <Box
+    sx={{
+      display: 'grid',
+      gap: 2,
+      gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+      pt: 1,
+    }}
+  >
+    {(loadingUser || loadingProduct) && (
+      <Box sx={{ gridColumn: '1 / -1', textAlign: 'center' }}>
+        <OlympicLoader />
+      </Box>
+    )}
+
+    {errorUser && (
+      <Box sx={{ gridColumn: '1 / -1' }} color="error.main">
+        {errorUser}
+      </Box>
+    )}
+    {errorProduct && (
+      <Box sx={{ gridColumn: '1 / -1' }} color="error.main">
+        {errorProduct}
+      </Box>
+    )}
+
+    {!loadingUser && !errorUser && user && (
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="subtitle1" gutterBottom>
+            {t('freeTicket.user')}
+          </Typography>
+          <Typography sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{`${user.firstname} ${user.lastname}`}</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            {user.email}
+          </Typography>
+        </CardContent>
+      </Card>
+    )}
+
+    {!loadingProduct && !errorProduct && product && (
+      <Card variant="outlined">
+        <CardContent>
+          <Typography variant="subtitle1" gutterBottom>
+            {t('freeTicket.product')}
+          </Typography>
+          <Typography variant='body1' sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere', mb: 1 }}>{product.name}</Typography>
+          <Typography variant="body2" sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{t('freeTicket.productDetails')}</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>{t('freeTicket.places', { count: product.product_details.places } )} </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+              {formatDate(product.product_details.date, locale)} - {product.product_details.time}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
+            {product.product_details.location}
+          </Typography>
+        </CardContent>
+      </Card>
+    )}
+
+    {!loadingUser &&
+      !loadingProduct &&
+      !errorUser &&
+      !errorProduct &&
+      !user &&
+      !product && (
+        <Box sx={{ gridColumn: '1 / -1' }}>
+          <Typography>{t('freeTicket.noDetails')}</Typography>
+        </Box>
+    )}
+  </Box>
+</DialogContent>
+
+      <Divider />
+
+      <DialogActions>
+        <Button onClick={onClose}>{t('freeTicket.cancel')}</Button>
+        <Button 
+          onClick={handleSubmit} 
+          variant="contained" 
+          disabled={saving || !userId || !productId || quantity <= 0 || !locale || userId <= 0 || productId <= 0}
+          startIcon={ saving
+            ? <CircularProgress color="inherit" size={16} />
+            : undefined
           }
-
-          const ok = await createProduct(body);
-          setSaving(false);
-
-          if (ok) {
-            notify(t('products.success'), 'success');
-            onRefresh();
-            return true;
-          } else {
-            notify(t('errors.save_failed'), 'error');
-            return false;
-          }
-        }}
-        onCancel={onClose}
-      />
+        >
+          {saving ? t('freeTicket.creation') : t('freeTicket.create')}
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 }

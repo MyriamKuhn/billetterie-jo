@@ -20,7 +20,8 @@
     "update_success": "Quantity updated",
     "remaining": "{{count}} available",
     "cgv_not_accepted": "You must accept the General Terms and Conditions of Sale to proceed",
-    "payment_in_progress": "Payment in progress, please wait"
+    "payment_in_progress": "Payment in progress, please wait",
+    "no_items_for_admin": "You cannot make purchases as an administrator or employee. Please log in as a customer to continue."
   },
   "errors": {
     "error_load": "Unable to load cart, please try again",

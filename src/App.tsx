@@ -75,7 +75,6 @@ export default function App({ mode, toggleMode }: AppProps) {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/tickets" element={<ProductsPage />} />
-                <Route path="/cart" element={<CartPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/legal-mentions" element={<LegalMentionsPage />} />
                 <Route path="/terms" element={<TermsPage />} />
@@ -92,6 +91,7 @@ export default function App({ mode, toggleMode }: AppProps) {
                 {/* Protected routes */}
                 <Route path="/user/dashboard" element={<RequireAuth requiredRole="user"><UserDashboardPage /></RequireAuth>}/>
                 <Route path="/checkout" element={<RequireAuth requiredRole="user"><CheckoutPage /></RequireAuth>} />
+                <Route path="/cart" element={<RequireAuth requiredRole="user"><CartPage /></RequireAuth>} />
                 <Route path="/confirmation" element={<RequireAuth requiredRole="user"><ConfirmationPage /></RequireAuth>} />
                 <Route path="/user/orders" element={<RequireAuth requiredRole="user"><InvoicesPage /></RequireAuth>} />
                 <Route path="/user/tickets" element={<RequireAuth requiredRole="user"><UserTicketsPage /></RequireAuth>} />

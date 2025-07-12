@@ -33,7 +33,6 @@ export function AdminTicketGrid({ tickets, onSave, onRefresh, onCreate }: AdminT
         <AdminTicketCard
           key={ticket.token}
           ticket={ticket}
-          invoiceLink={ticket.pdf_filename || ''}
           onSave={onSave}
           onRefresh={onRefresh}
         />

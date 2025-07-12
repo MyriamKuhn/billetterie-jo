@@ -237,21 +237,20 @@ export function TicketCard({ ticket }: TicketCardProps) {
           </Tooltip>
 
           {/* Télécharger facture si disponible */}
-          {ticket.payment_uuid && (
-            <Tooltip title={t('tickets.download_invoice_pdf')}>
-              <span>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  startIcon={downloadingInvoice ? <CircularProgress size={16} /> : <ReceiptIcon />}
-                  onClick={handleDownloadInvoice}
-                  disabled={downloadingInvoice}
-                >
-                  {t('tickets.download_invoice')}
-                </Button>
-              </span>
-            </Tooltip>
-          )}
+          <Tooltip title={ticket.product_snapshot.discounted_price === 0 ? t('tickets.free_ticket') : t('tickets.download_invoice_pdf')}>
+            <span>
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={downloadingInvoice ? <CircularProgress size={16} /> : <ReceiptIcon />}
+                onClick={handleDownloadInvoice}
+                disabled={downloadingInvoice || ticket.product_snapshot.discounted_price === 0}
+              >
+                {ticket.product_snapshot.discounted_price === 0 ? t('tickets.free_ticket') : t('tickets.download_invoice')}
+              </Button>
+            </span>
+          </Tooltip>
+
         </Box>
       </Card>
     </Box>

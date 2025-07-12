@@ -61,7 +61,7 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
   return (
     <Card sx={{ p:2, display: 'flex', flexDirection: 'column', gap: 1 }}>
       <CardContent>
-        <Typography variant="h6">{p.name}</Typography>
+        <Typography variant="h6">ID {p.id} - {p.name}</Typography>
         <Typography variant="body2">
           {formatDate(p.product_details.date, lang)}{p.product_details.time && ` – ${p.product_details.time}`}
         </Typography>

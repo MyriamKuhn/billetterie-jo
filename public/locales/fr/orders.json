@@ -19,7 +19,12 @@
     "download_error": "Échec du téléchargement du billet. Veuillez réessayer.",
     "invoice_download_error": "Échec du téléchargement de la facture. Veuillez réessayer.",
     "product_fetch_failed": "Échec de la récupération des informations du produit. Veuillez réessayer.",
-    "no_pdf": "Aucun PDF disponible pour ce billet."
+    "no_pdf": "Aucun PDF disponible pour ce billet.",
+    "user_not_found": "Client non trouvé.",
+    "product_not_found": "Billet non trouvé.",
+    "save_failed": "Échec de la création du billet gratuit. Veuillez réessayer.",
+    "main": "Erreur lors de la récupération des données.",
+    "only_users_allowed": "Seuls les clients peuvent être sélectionnés pour créer un billet gratuit."
   },
   "orders": {
     "title": "Gestion des commandes",
@@ -42,7 +47,8 @@
     "save": "Enregistrer les modifications",
     "saving": "Enregistrement...",
     "no_product": "Aucun produit trouvé pour cette commande.",
-    "no_location": "Aucun lieu spécifié pour ce produit."
+    "no_location": "Aucun lieu spécifié pour ce produit.",
+    "free_ticket": "Billet gratuit"
   },
   "invoices": {
     "status": {
@@ -75,5 +81,26 @@
     "create_intro": "Créez un billet gratuit pour un utilisateur. Ce billet sera ajouté à la commande de l'utilisateur.",
     "create_button": "Créer un billet gratuit",
     "download_success": "Téléchargement réussi."
+  },
+  "freeTicket": {
+    "success": "Billet gratuit créé avec succès.",
+    "title": "Créer un billet gratuit",
+    "userId": "ID du client",
+    "productId": "ID du billet",
+    "quantity": "Quantité",
+    "locale": "Langue",
+    "fr": "Français",
+    "en": "Anglais",  
+    "de": "Allemand",
+    "previsualisation": "Prévisualisation du billet",
+    "user": "Client",
+    "product": "Billet",
+    "productDetails": "Détails du billet :",
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places",
+    "noDetails": "Aucun détail disponible, veuillez remplir les champs.",
+    "cancel": "Fermer",
+    "create": "Créer le billet",
+    "creation": "Création..."
   }
 }

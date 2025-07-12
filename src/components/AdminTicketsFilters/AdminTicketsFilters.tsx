@@ -110,10 +110,10 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
                 ...params.InputProps,
                 endAdornment: (
                   <>
-                    {usersLoading ? <CircularProgress size={16} /> : null}
+                    {usersLoading && <CircularProgress size={16} />}
                     {params.InputProps.endAdornment}
                   </>
-                )
+                ),
               }}
             />
           )}

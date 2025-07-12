@@ -102,6 +102,11 @@ export const useCartStore = create<CartState>()(
         }
       };
 
+      const isPrivilegedUser = () => {
+        const role = useAuthStore.getState().role;
+        return role === 'admin' || role === 'employee';
+      };
+
       return {
         items: [],
         guestCartId: null,
@@ -119,6 +124,10 @@ export const useCartStore = create<CartState>()(
         setCartId: (id: string | null) => set({ cartId: id }),
 
         loadCart: async () => {
+          if (isPrivilegedUser()) {
+            logWarn('loadCart', 'Attempt to load cart by privileged user');
+            return;
+          }
           try {
             const res = await axiosInstance.get('/api/cart');
 
@@ -159,6 +168,9 @@ export const useCartStore = create<CartState>()(
         },
 
         addItem: async (id, quantity, availableQuantity) => {
+          if (isPrivilegedUser()) {
+            throw new Error('CartLockedForPrivilegedUser');
+          }
           if (get().isLocked) {
             throw new Error('CartLocked');
           }
@@ -180,6 +192,9 @@ export const useCartStore = create<CartState>()(
         },
 
         clearCart: async () => {
+          if (isPrivilegedUser()) {
+            throw new Error('CartLockedForPrivilegedUser');
+          }
           if (get().isLocked) {
             throw new Error('CartLocked');
           }

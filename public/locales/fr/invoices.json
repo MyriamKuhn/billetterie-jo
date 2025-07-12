@@ -41,7 +41,8 @@
     "reference": "Référence",
     "date": "Date",
     "amount": "Montant",
-    "see_tickets": "Voir les tickets"
+    "see_tickets": "Voir les tickets",
+    "free_ticket": "Gratuit"
   },
   "snackbar": {
     "pending_message": "Le paiement est en attente. La facture sera disponible une fois le paiement confirmé.",

@@ -152,7 +152,11 @@ export function AdminTicketCard({ ticket, onSave, onRefresh }: TicketCardProps) 
           <Typography variant="h6">
             {t('orders.ticket_id', { id: ticket.id })}
           </Typography>
-          <Chip label={t(`invoices.status.${ticket.payment.status}`)} color={getPaymentStatusChipColor(ticket.payment.status)} size="small" sx={{ ml: 1 }} />
+          {ticket.payment.status === 'paid' && snap?.discounted_price === 0 ? (
+            <Chip label={t('orders.free_ticket')} color={getPaymentStatusChipColor(ticket.payment.status)} size="small" sx={{ ml: 1 }} />
+          ) : (
+            <Chip label={t(`invoices.status.${ticket.payment.status}`)} color={getPaymentStatusChipColor(ticket.payment.status)} size="small" sx={{ ml: 1 }} />
+          )}
         </Box>
 
         {/* Event Info */}
@@ -180,20 +184,27 @@ export function AdminTicketCard({ ticket, onSave, onRefresh }: TicketCardProps) 
 
         {/* Actions */}
         <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1, alignItems: 'center' }}>
-          <Tooltip title={t('orders.download_ticket')}>
+          <Tooltip title={t('orders.download_pdf')}>
             <span>
               <Button size="small" variant="outlined" startIcon={ticketLoading ? <CircularProgress size={16} /> : <DownloadIcon />} onClick={handleDownload} disabled={ticketLoading}>
                 {t('orders.download_ticket')}
               </Button>
             </span>
           </Tooltip>
-          <Tooltip title={t('orders.download_invoice_pdf')}>
+
+          <Tooltip title={snap?.discounted_price === 0 ? t('orders.free_ticket') : t('orders.download_invoice_pdf')}>
             <span>
-              <Button size="small" variant="outlined" startIcon={invoiceLoading ? <CircularProgress size={16} /> : <ReceiptIcon />} onClick={handleInvoice} disabled={invoiceLoading}>
-                {t('orders.download_invoice')}
+              <Button 
+                size="small" 
+                variant="outlined" 
+                startIcon={invoiceLoading ? <CircularProgress size={16} /> : <ReceiptIcon />} 
+                onClick={handleInvoice} 
+                disabled={invoiceLoading || snap?.discounted_price === 0}>
+                {snap?.discounted_price === 0 ? t('orders.free_ticket') : t('orders.download_invoice')}
               </Button>
             </span>
           </Tooltip>
+
           {/* FilterSelect wrapped in Box for layout */}
           <Box sx={{ ml: 'auto' }}>
             <FilterSelect<string>

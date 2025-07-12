@@ -21,7 +21,8 @@
     "remaining_one": "{{count}} disponible",
     "remaining_other": "{{count}} disponibles",
     "cgv_not_accepted": "Vous devez accepter les Conditions Générales de Vente pour continuer",
-    "payment_in_progress": "Paiement en cours, veuillez patienter"
+    "payment_in_progress": "Paiement en cours, veuillez patienter",
+    "no_items_for_admin": "Vous ne pouvez pas effectuer d'achats en tant qu'administrateur ou employé. Veuillez vous connecter en tant que client pour continuer."
   },
   "errors": {
     "error_load": "Impossible de charger le panier, veuillez réessayer",

@@ -37,7 +37,8 @@
     "download_invoice": "Télécharger facture",
     "download_success": "Billet téléchargé avec succès",
     "no_tickets": "Aucun billet trouvé",
-    "title": "Mes billets"
+    "title": "Mes billets",
+    "free_ticket": "Billet gratuit"
   },
   "errors": {
     "product_fetch_failed": "Échec de la récupération des données des billets",

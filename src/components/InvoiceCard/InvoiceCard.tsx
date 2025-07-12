@@ -45,7 +45,12 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
   const amountStr = formatCurrency(invoice.amount, lang, 'EUR')
 
   // Texte pour le statut, on peut utiliser i18n ou fallback brut
-  const statusLabel = t(`card.status.${invoice.status}`, invoice.status)
+  let statusLabel;
+  if (invoice.status === 'paid' && invoice.amount === 0) {
+    statusLabel = t('card.free_ticket')
+  } else {
+    statusLabel = t(`card.status.${invoice.status}`)
+  }
   const chipColor = getStatusChipColor(invoice.status)
 
   // Déterminer si on autorise le téléchargement

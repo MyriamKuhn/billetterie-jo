@@ -37,7 +37,8 @@
     "download_invoice": "Rechnung herunterladen",
     "download_success": "Ticket erfolgreich heruntergeladen",
     "no_tickets": "Keine Tickets gefunden",
-    "title": "Meine Tickets"
+    "title": "Meine Tickets",
+    "free_ticket": "Gratis Ticket"
   },
   "errors": {
     "product_fetch_failed": "Fehler beim Abrufen der Ticketdaten",
