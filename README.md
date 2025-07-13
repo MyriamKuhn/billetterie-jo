@@ -156,10 +156,11 @@ yarn coverage
 ## 🚀 Future Evolutions
 
 Planned improvements:
-- PWA support & offline caching
 - Order flow visualization dashboard
 - Admin analytics with Recharts
 - Additional languages (ES / PT…)
+- PWA (Progressive Web App) for an app-like experience and web installation without an app store
+- Employe dedicated App to install on mobile
 
 ---
 
@@ -200,6 +201,7 @@ Planned improvements:
 - **Dev Utilities:**  
   - identity-obj-proxy (for CSS modules in tests)  
   - jsdom (test environment)  
+  - SheetJS (xlsx) + FileSaver (front‐end export CSV & Excel)
 
 - **Third-Party Integrations:**  
   - Google reCAPTCHA (`react-google-recaptcha`)

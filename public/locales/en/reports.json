@@ -1,0 +1,36 @@
+{
+  "errors": {
+    "title": "Oops! An error occurred",
+    "message": "We encountered a problem fetching the data. Please try again later.",
+    "retry": "Retry",
+    "go_home": "Go Home",
+    "no_reports": "No reports found.",
+    "download": "Error downloading the report. Please try again."
+  },
+  "seo": {
+    "title": "Reports – Paris 2024 Olympic Ticketing",
+    "description": "View activity and transaction reports for the Paris 2024 Olympic ticketing."
+  },
+  "reports": {
+    "title": "Reports",
+    "sales_count": "Number of sales made: {{count}}",
+    "success": "Report exported successfully",
+    "download_title": "Download Report",
+    "download_description": "Download the sales report in CSV or Excel format."
+  },
+  "filters": {
+    "sales_count": "Sales",
+    "title": "Filters",
+    "sort_by": "Sort by",
+    "per_page": "Reports per page",
+    "reset": "Reset",
+    "close": "Close"
+  },
+  "export": {
+    "product_id": "Ticket ID",
+    "product_name": "Ticket Name",
+    "sales_count": "Sales Count",
+    "sheetname": "Sales Report",
+    "filename": "sales_report_{{today}}"
+  }
+}

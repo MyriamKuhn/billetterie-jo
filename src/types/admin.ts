@@ -127,3 +127,20 @@ export interface AdminPaymentFilters {
   per_page: number;
   page: number;
 }
+
+export interface ReportProductSales {
+  product_id: number;
+  product_name: string;
+  sales_count: number;
+}
+
+export interface AdminReportsResponse {
+  data: ReportProductSales[];
+}
+
+export interface AdminReportsFilters {
+  sort_by: 'sales_count';
+  sort_order: 'asc' | 'desc';
+  per_page: number;
+  page: number;
+}
