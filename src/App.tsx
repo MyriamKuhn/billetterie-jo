@@ -13,7 +13,8 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { RequireAuth } from './components/RequireAuth';
 
 const HomePage    = lazy(() => import('./pages/HomePage'));
-const TicketsPage = lazy(() => import('./pages/TicketsPage'));
+const ProductsPage = lazy(() => import('./pages/ProductsPage'));
+const AdminProductsPage = lazy(() => import('./pages/AdminProductsPage'));
 const LegalMentionsPage = lazy(() => import('./pages/LegalMentionsPage'));
 const TermsPage = lazy(() => import('./pages/TermsPage'));
 const PolicyPage = lazy(() => import('./pages/PolicyPage'));
@@ -30,10 +31,12 @@ const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const ConfirmationPage = lazy(() => import('./pages/ConfirmationPage'));
 const InvoicesPage = lazy(() => import('./pages/InvoicesPage'));
-const TicketsShowPage = lazy(() => import('./pages/TicketsShowPage'));
-
-
-
+const UserTicketsPage = lazy(() => import('./pages/UserTicketsPage'));
+const AdminUsersPage = lazy(() => import('./pages/AdminUsersPage'));
+const AdminEmployeesPage = lazy(() => import('./pages/AdminEmployeesPage'));
+const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
+const AdminPaymentsPage = lazy(() => import('./pages/AdminPaymentsPage'));
+const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'));
 
 interface AppProps {
   mode: 'light' | 'dark';
@@ -68,8 +71,7 @@ export default function App({ mode, toggleMode }: AppProps) {
             }>
               <Routes>
                 <Route path="/" element={<HomePage />} />
-                <Route path="/tickets" element={<TicketsPage />} />
-                <Route path="/cart" element={<CartPage />} />
+                <Route path="/tickets" element={<ProductsPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/legal-mentions" element={<LegalMentionsPage />} />
                 <Route path="/terms" element={<TermsPage />} />
@@ -79,6 +81,7 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/verification-result/:status" element={<VerificationResultPage />} />
                 <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 <Route path="/password-reset" element={<PasswordResetPage />} />
+                <Route path="/cart" element={<CartPage />} />
 
                 {/* Unauthorized route */}
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
@@ -88,10 +91,17 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/checkout" element={<RequireAuth requiredRole="user"><CheckoutPage /></RequireAuth>} />
                 <Route path="/confirmation" element={<RequireAuth requiredRole="user"><ConfirmationPage /></RequireAuth>} />
                 <Route path="/user/orders" element={<RequireAuth requiredRole="user"><InvoicesPage /></RequireAuth>} />
-                <Route path="/user/tickets" element={<RequireAuth requiredRole="user"><TicketsShowPage /></RequireAuth>} />
+                <Route path="/user/tickets" element={<RequireAuth requiredRole="user"><UserTicketsPage /></RequireAuth>} />
 
                 {/* Admin routes */}
                 <Route path="/admin/dashboard" element={<RequireAuth requiredRole="admin"><AdminDashboardPage /></RequireAuth>} />
+                <Route path="/admin/tickets" element={<RequireAuth requiredRole="admin"><AdminProductsPage /></RequireAuth>} />
+                <Route path="/admin/users" element={<RequireAuth requiredRole="admin"><AdminUsersPage /></RequireAuth>} />
+                <Route path="/admin/employees" element={<RequireAuth requiredRole="admin"><AdminEmployeesPage /></RequireAuth>} />
+                <Route path="/admin/orders" element={<RequireAuth requiredRole="admin"><AdminOrdersPage /></RequireAuth>} />
+                <Route path="/admin/payments" element={<RequireAuth requiredRole="admin"><AdminPaymentsPage /></RequireAuth>} />
+                <Route path="/admin/reports" element={<RequireAuth requiredRole="admin"><AdminReportsPage /></RequireAuth>} />
+                
               </Routes>
             </Suspense>
           </ErrorBoundary>

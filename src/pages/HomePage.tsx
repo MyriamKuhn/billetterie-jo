@@ -23,7 +23,7 @@ const events: Event[] = [
   { id: 4, imageUrl: judoImg }, 
 ];
 
-export default function TicketsPage() {
+export default function HomePage() {
   const { t } = useTranslation('home');
 
   return (

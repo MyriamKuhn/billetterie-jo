@@ -16,8 +16,8 @@
     "status_label": "Status"
   },
   "tickets": {
-    "places_one": "{{count}} place",
-    "places_other": "{{count}} places",
+    "places_one": "{{count}} seat",
+    "places_other": "{{count}} seats",
     "status": {
       "issued": "Issued",
       "used": "Used",
@@ -30,14 +30,15 @@
     "no_pdf": "No ticket PDF available",
     "no_invoice": "No invoice available",
     "qr_alt": "Ticket QR code",
-    "token": "Ticket reference",
+    "token": "Ticket reference: {{token}}",
     "download_pdf": "Download ticket PDF",
     "download_ticket": "Download ticket",
     "download_invoice_pdf": "Download invoice PDF",
     "download_invoice": "Download invoice",
     "download_success": "Ticket downloaded successfully",
     "no_tickets": "No tickets found",
-    "title": "My tickets"
+    "title": "My tickets",
+    "free_ticket": "Free ticket"
   },
   "errors": {
     "product_fetch_failed": "Failed to retrieve ticket data",

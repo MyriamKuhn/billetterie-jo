@@ -45,7 +45,12 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
   const amountStr = formatCurrency(invoice.amount, lang, 'EUR')
 
   // Texte pour le statut, on peut utiliser i18n ou fallback brut
-  const statusLabel = t(`card.status.${invoice.status}`, invoice.status)
+  let statusLabel;
+  if (invoice.status === 'paid' && invoice.amount === 0) {
+    statusLabel = t('card.free_ticket')
+  } else {
+    statusLabel = t(`card.status.${invoice.status}`)
+  }
   const chipColor = getStatusChipColor(invoice.status)
 
   // Déterminer si on autorise le téléchargement
@@ -125,15 +130,15 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
           <CardContent sx={{ flexGrow: 1 }}>
             {/* Référence / UUID */}
             <Typography variant="h6">
-              {t('card.reference')}: {invoice.uuid}
+              {t('card.reference', { reference: invoice.uuid })}
             </Typography>
             {/* Date de création */}
             <Typography variant="body2" sx={{ mt: 0.5 }}>
-              {t('card.date')}: {dateStr}
+              {t('card.date', { date: dateStr })}
             </Typography>
             {/* Montant */}
             <Typography variant="body2" sx={{ mt: 0.5 }}>
-              {t('card.amount')}: {amountStr}
+              {t('card.amount', { amount: amountStr })}
             </Typography>
             {/* Statut avec Chip */}
             <Box sx={{ mt: 1 }}>

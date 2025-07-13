@@ -6,6 +6,9 @@ import {
   getUserTickets,
   getUserTicketPdf,
   getUserQr,
+  getAdminInvoice,
+  getAdminTicketPdf,
+  getAdminQr,
 } from './billingService'
 import { API_BASE_URL } from '../config'
 import type { InvoiceFilters } from '../types/invoices'
@@ -226,6 +229,89 @@ describe('API helpers', () => {
     it('should throw on non-200 status', async () => {
       mockedAxios.get.mockResolvedValueOnce({ status: 404, data: new Blob() })
       await expect(getUserQr('qr.png', 'tok')).rejects.toThrow('HTTP 404')
+    })
+  })
+})
+
+describe('admin endpoints', () => {
+  describe('getAdminInvoice', () => {
+    it('downloads admin invoice when status 200', async () => {
+      const blob = new Blob(['pdf'], { type: 'application/pdf' })
+      mockedAxios.get.mockResolvedValueOnce({ status: 200, data: blob })
+
+      const invoiceLink = 'admin_inv.pdf'
+      const token = 'admintok'
+      const result = await getAdminInvoice(invoiceLink, token)
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${API_BASE_URL}/api/invoices/admin/${encodeURIComponent(invoiceLink)}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/pdf',
+          },
+          responseType: 'blob',
+        }
+      )
+      expect(result).toBe(blob)
+    })
+
+    it('throws on non-200 status', async () => {
+      mockedAxios.get.mockResolvedValueOnce({ status: 403, data: new Blob() })
+      await expect(getAdminInvoice('foo.pdf', 'tok')).rejects.toThrow(
+        'Error while downloading invoice: HTTP 403'
+      )
+    })
+  })
+
+  describe('getAdminTicketPdf', () => {
+    it('throws if rawPdfFilename has no basename', async () => {
+      await expect(getAdminTicketPdf('/some/path/', 'tok')).rejects.toThrow(
+        'Invalid filename: "/some/path/"'
+      )
+    })
+
+    it('downloads admin ticket PDF when status 200', async () => {
+      const blob = new Blob(['ticket'], { type: 'application/pdf' })
+      mockedAxios.get.mockResolvedValueOnce({ status: 200, data: blob })
+
+      const result = await getAdminTicketPdf('/var/tmp/tk.pdf', 'admintok')
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${API_BASE_URL}/api/tickets/admin/${encodeURIComponent('tk.pdf')}`,
+        {
+          headers: { Authorization: `Bearer admintok`, Accept: 'application/pdf' },
+          responseType: 'blob',
+        }
+      )
+      expect(result).toBe(blob)
+    })
+
+    it('throws when status is not 200', async () => {
+      mockedAxios.get.mockResolvedValueOnce({ status: 500, data: new Blob() })
+      await expect(getAdminTicketPdf('file.pdf', 'tok')).rejects.toThrow('HTTP 500')
+    })
+  })
+
+  describe('getAdminQr', () => {
+    it('downloads admin QR blob when status 200', async () => {
+      const qr = new Blob(['png'], { type: 'image/png' })
+      mockedAxios.get.mockResolvedValueOnce({ status: 200, data: qr })
+
+      const result = await getAdminQr('code.png', 'admintok2')
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        `${API_BASE_URL}/api/tickets/admin/qr/${encodeURIComponent('code.png')}`,
+        {
+          headers: { Authorization: `Bearer admintok2`, Accept: 'image/png' },
+          responseType: 'blob',
+        }
+      )
+      expect(result).toBe(qr)
+    })
+
+    it('throws when server returns non-200', async () => {
+      mockedAxios.get.mockResolvedValueOnce({ status: 404, data: new Blob() })
+      await expect(getAdminQr('notfound.png', 'tok')).rejects.toThrow('HTTP 404')
     })
   })
 })

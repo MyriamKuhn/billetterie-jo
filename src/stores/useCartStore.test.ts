@@ -1,5 +1,5 @@
 // src/stores/useCartStore.test.ts
-import { describe, it, expect, beforeEach, beforeAll, vi } from 'vitest';
+import { describe, it, expect, beforeEach, beforeAll, vi, type Mock } from 'vitest';
 import { act } from '@testing-library/react';
 import { API_BASE_URL } from '../config';
 
@@ -518,3 +518,52 @@ describe('useCartStore – edge-cases loadCart sans payload / sans meta / sans d
   });
 });
 
+describe('useCartStore – privileged-user guards', () => {
+  let store: typeof useCartStore;
+  let axiosMock: typeof __mockAxios;
+
+  beforeEach(async () => {
+    // reset modules so our interceptors get re-created with fresh mocks
+    const { store: freshStore, axiosMock: freshAxios } = await resetModulesAndImport();
+    store = freshStore;
+    axiosMock = freshAxios;
+
+    // clear any previous state
+    store.setState({
+      items: [],
+      guestCartId: null,
+      cartId: null,
+      isLocked: false,
+    });
+
+    // make sure axiosMock.get/patch/delete are clear
+    axiosMock.get.mockClear();
+    axiosMock.patch.mockClear();
+    axiosMock.delete.mockClear();
+
+    // stub logger mocks
+    (logWarn as Mock).mockClear();
+  });
+
+  it('loadCart should early-return + warn when role is admin', async () => {
+    // simulate admin
+    (useAuthStore.getState as Mock).mockReturnValue({ authToken: 'TOK', role: 'admin' });
+
+    await store.getState().loadCart();
+
+    expect(axiosMock.get).not.toHaveBeenCalled();
+    expect(logWarn).toHaveBeenCalledWith('loadCart', 'Attempt to load cart by privileged user');
+  });
+
+  it('addItem should throw CartLockedForPrivilegedUser when role is employee', async () => {
+    (useAuthStore.getState as Mock).mockReturnValue({ authToken: 'TOK', role: 'employee' });
+
+    await expect(store.getState().addItem('1', 1, 5)).rejects.toThrow('CartLockedForPrivilegedUser');
+  });
+
+  it('clearCart should throw CartLockedForPrivilegedUser when role is admin', async () => {
+    (useAuthStore.getState as Mock).mockReturnValue({ authToken: 'TOK', role: 'admin' });
+
+    await expect(store.getState().clearCart()).rejects.toThrow('CartLockedForPrivilegedUser');
+  });
+});

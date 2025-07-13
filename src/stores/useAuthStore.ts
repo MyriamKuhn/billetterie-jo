@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 export type UserRole = 'user' | 'admin' | 'employee';
 
-interface AuthState {
+export interface AuthState {
   authToken: string | null;
   role: UserRole | null;
   remember: boolean;

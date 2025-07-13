@@ -3,6 +3,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import CartPreview from './CartPreview';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 
+vi.mock('../../stores/useAuthStore');
+
+import * as authStore from '../../stores/useAuthStore';
+
 // ─── ❶ Préparation des variables modifiables ──────────────────────────────────
 let storeState: { items: any[]; isLocked?: boolean } = { items: [], isLocked: false };
 const mockAddItem = vi.fn();
@@ -72,14 +76,23 @@ vi.mock('../OlympicLoader', () => ({
 
 describe('<CartPreview />', () => {
   beforeEach(() => {
+    vi.spyOn(authStore, 'useAuthStore').mockImplementation(selector =>
+      selector({
+        role: 'user',
+        authToken: '',
+        remember: false,
+        setToken: () => {},
+        clearToken: () => {},
+      } as any)
+    );
+    cleanup();
     mockNotify.mockClear();
     mockAddItem.mockClear();
     mockReload.mockClear();
     mockLoading = false;
     mockHasError = false;
     mockIsReloading = false;
-    storeState.items = [];
-    cleanup();
+    storeState = { items: [], isLocked: false };
   });
 
   function renderWithTheme() {
@@ -404,5 +417,24 @@ describe('<CartPreview />', () => {
       expect(mockNotify).toHaveBeenCalledWith('cart:errors.cart_locked', 'warning');
       expect(mockAddItem).not.toHaveBeenCalled();
     });
+  });
+
+  it('affiche le message no_items_for_admin quand on est admin', async () => {
+    // Pour CE test, on override juste cette fois-ci le spy
+    vi.spyOn(authStore, 'useAuthStore').mockImplementation(selector =>
+      selector({
+        role: 'admin',
+        authToken: '',
+        remember: false,
+        setToken: () => {},
+        clearToken: () => {},
+      } as any)
+    );
+
+    storeState.items = []; // peu importe
+    renderWithTheme();
+
+    fireEvent.click(screen.getByLabelText('common:navbar.cart'));
+    expect(await screen.findByText('cart:cart.no_items_for_admin')).toBeInTheDocument();
   });
 });

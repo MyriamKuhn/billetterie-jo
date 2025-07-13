@@ -77,6 +77,30 @@ export async function getUserInvoice(
   
   return response.data
 }
+
+export async function getAdminInvoice(
+  invoice_link: string,
+  token: string
+): Promise<Blob> {
+  const url = `${API_BASE_URL}/api/invoices/admin/${encodeURIComponent(invoice_link)}`
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/pdf',
+  };  
+
+  const response = await axios.get(url, {
+    headers,
+    responseType: 'blob',
+  })
+
+  if (response.status !== 200) {
+    throw new Error(`Error while downloading invoice: HTTP ${response.status}`)
+  }
+  
+  return response.data
+}
   
 /**
  * Récupère la liste paginée des tickets de l’utilisateur.
@@ -161,6 +185,31 @@ export async function getUserTicketPdf(
   return response.data
 }
 
+export async function getAdminTicketPdf(
+  rawPdfFilename: string,
+  token: string
+): Promise<Blob> {
+  const filename = rawPdfFilename.replace(/^.*[\\/]/, '')
+
+  if (!filename) {
+    throw new Error(`Invalid filename: "${rawPdfFilename}"`)
+  }
+  
+  const url = `${API_BASE_URL}/api/tickets/admin/${encodeURIComponent(filename)}`
+  const headers: Record<string, string> = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/pdf',
+  }
+  const response = await axios.get(url, {
+    headers,
+    responseType: 'blob',
+  })
+  if (response.status !== 200) {
+    throw new Error(`HTTP ${response.status}`)
+  }
+  return response.data
+}
+
 /**
  * Récupère le QR code d’un ticket en tant que Blob (PNG).
  * @param qrFilename Nom du fichier QR (ex. "qr_abc123.png")
@@ -172,6 +221,25 @@ export async function getUserQr(
   token: string
 ): Promise<Blob> {
   const url = `${API_BASE_URL}/api/tickets/qr/${encodeURIComponent(qrFilename)}`
+  const headers: Record<string, string> = {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'image/png',
+  }
+  const response = await axios.get(url, {
+    headers,
+    responseType: 'blob',
+  })
+  if (response.status !== 200) {
+    throw new Error(`HTTP ${response.status}`)
+  }
+  return response.data
+}
+
+export async function getAdminQr(
+  qrFilename: string,
+  token: string
+): Promise<Blob> {
+  const url = `${API_BASE_URL}/api/tickets/admin/qr/${encodeURIComponent(qrFilename)}`
   const headers: Record<string, string> = {
     'Authorization': `Bearer ${token}`,
     'Accept': 'image/png',
