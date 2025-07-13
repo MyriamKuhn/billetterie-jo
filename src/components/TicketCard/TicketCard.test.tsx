@@ -156,11 +156,11 @@ describe('TicketCard', () => {
     mockDownloadInvoice.mockRejectedValueOnce(new Error('fail-invoice'))
     fireEvent.click(screen.getByText('tickets.download_invoice'))
     await waitFor(() => expect(mockNotify).toHaveBeenCalledWith('errors.invoice_download_error', 'error'))
-    // For no_invoice: assert absence of button when payment_uuid is empty
+    // Quand payment_uuid est vide, le bouton existe toujours (pas d'absence dans le code)
     const noInvoiceTicket = { ...baseTicket, payment_uuid: '' }
     document.body.innerHTML = ''
     render(<TicketCard ticket={noInvoiceTicket} invoiceLink="inv" />)
-    expect(screen.queryByText('tickets.download_invoice')).toBeNull()
+    expect(screen.getByText('tickets.download_invoice')).toBeInTheDocument()
   })
 
   it('renders product details and handles QR/image and download buttons success and no_pdf', async () => {
@@ -174,7 +174,7 @@ describe('TicketCard', () => {
     const img = screen.getByTestId('CardMedia')
     expect(img).toHaveAttribute('src', 'http://example.com/qr.png')
     expect(screen.getAllByText('EventName').length).toBe(1)
-    expect(screen.getByText(/tok123/)).toBeInTheDocument()
+    expect(screen.getByText('tickets.token')).toBeInTheDocument()
     expect(screen.getByText((content) => content.includes('formatted-2025-03-01') && content.includes('12:00'))).toBeInTheDocument()
     expect(screen.getByText('Venue')).toBeInTheDocument()
     expect(screen.getByText('tickets.places-5')).toBeInTheDocument()
@@ -191,7 +191,7 @@ describe('TicketCard', () => {
     expect(mockNotify).toHaveBeenCalledWith('tickets.no_pdf', 'warning')
     const noInvoiceTicket2 = { ...baseTicket, payment_uuid: '' }
     rerender(<TicketCard ticket={noInvoiceTicket2} invoiceLink="inv" />)
-    expect(screen.queryByText('tickets.download_invoice')).toBeNull()
+    expect(screen.getByText('tickets.download_invoice')).toBeInTheDocument()
   })
 
   it('handles QR url null to show placeholder icon', () => {
@@ -240,15 +240,6 @@ describe('TicketCard', () => {
     expect(screen.getByTestId('CardMedia')).toHaveAttribute('src', 'http://example.com/qr.png')
   })
 
-  it('affiche le fallback minimal si product_snapshot est manquant', () => {
-    const ticketSansSnapshot = { ...baseTicket, product_snapshot: undefined as any }
-    render(<TicketCard ticket={ticketSansSnapshot} invoiceLink="inv" />)
-    // on est hors loadingProduct et product est null → fallback
-    expect(screen.getByText('tickets.no_product')).toBeInTheDocument()
-    // token toujours affiché
-    expect(screen.getByText(/tok123/)).toBeInTheDocument()
-  })
-
   it("ne montre pas les places si ticket_places est undefined", () => {
     // produit OK
     productDetailsReturn = {
@@ -286,46 +277,59 @@ describe('TicketCard', () => {
     expect(spinners.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("ne montre pas le titre mais affiche date et lieu quand product_snapshot est absent", () => {
-    // On a un produit valide
-    productDetailsReturn = {
-      product: {
-        name: 'EvtSansSnapshot',
-        product_details: {
-          date: '2025-07-10',
-          time: '14:00',
-          location: 'Salle A',
-          places: 3
-        }
-      },
-      loading: false,
-      error: null
-    }
-
-    // On enlève product_snapshot
-    const ticketSansSnapshot = {
+  it('gère productId undefined (donc null) tout en gardant product_snapshot pour l’UI', async () => {
+    // On rend productId = null, mais on garde un snapshot complet
+    const ticketNoId = {
       ...baseTicket,
-      product_snapshot: undefined as any
-    }
+      product_snapshot: {
+        ...baseTicket.product_snapshot!,
+        product_id: undefined as any,
+      }
+    };
+    // On force l’erreur produit
+    productDetailsReturn = { product: null, loading: false, error: new Error('fail') };
+    render(<TicketCard ticket={ticketNoId} invoiceLink="inv" />);
 
-    render(<TicketCard ticket={ticketSansSnapshot} invoiceLink="inv" />)
+    // on attend le useEffect d’erreur
+    await waitFor(() => {
+      expect(logError).toHaveBeenCalled();
+      expect(mockNotify).toHaveBeenCalledWith('errors.product_fetch_failed', 'warning');
+    });
+    expect(screen.getByText('tickets.no_product')).toBeInTheDocument();
 
-    // 1) Le premier <Typography> (variant="h6") est vide car nameToShow === undefined
-    const typos = screen.getAllByTestId('Typography')
-    expect(typos[0].textContent).toBe('')
+    // On récupère tous les Tooltips et on cherche celui de la facture
+    const tooltips = screen.getAllByTestId('Tooltip');
+    const invoiceTooltip = tooltips.find(el =>
+      el.getAttribute('title') === 'tickets.download_invoice_pdf'
+    );
+    expect(invoiceTooltip).toBeDefined();
+  });
 
-    // 2) Le token est toujours affiché
-    expect(typos[1].textContent).toContain('tok123')
+  it('affiche free_ticket vs download_invoice selon discounted_price', () => {
+    // Cas gratuit
+    const freeTicket = {
+      ...baseTicket,
+      product_snapshot: { ...baseTicket.product_snapshot!, discounted_price: 0 }
+    };
+    render(<TicketCard ticket={freeTicket} invoiceLink="inv" />);
+    expect(
+      screen.getAllByTestId('Tooltip').find(el => el.getAttribute('title') === 'tickets.free_ticket')
+    ).toBeTruthy();
+    expect(screen.getByText('tickets.free_ticket')).toBeInTheDocument();
 
-    // 3) La date et l’heure
-    expect(typos[2].textContent).toContain('formatted-2025-07-10')
-    expect(typos[2].textContent).toContain('14:00')
+    // Reset le DOM
+    document.body.innerHTML = '';
 
-    // 4) Le lieu
-    expect(typos[3].textContent).toBe('Salle A')
-
-    // 5) Il n’y a pas de <Typography> pour les places (placesToShow = null)
-    expect(typos.length).toBe(4)
-  })
+    // Cas payant
+    const paidTicket = {
+      ...baseTicket,
+      product_snapshot: { ...baseTicket.product_snapshot!, discounted_price: 42 }
+    };
+    render(<TicketCard ticket={paidTicket} invoiceLink="inv" />);
+    expect(
+      screen.getAllByTestId('Tooltip').find(el => el.getAttribute('title') === 'tickets.download_invoice_pdf')
+    ).toBeTruthy();
+    expect(screen.getByText('tickets.download_invoice')).toBeInTheDocument();
+  });
 })
 

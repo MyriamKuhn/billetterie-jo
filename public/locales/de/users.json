@@ -1,0 +1,79 @@
+{
+  "filters": {
+    "title": "Filter",
+    "firstname": "Vorname",
+    "lastname": "Nachname",
+    "email": "E-Mail",
+    "user_per_page": "Kunden pro Seite",
+    "employee_per_page": "Mitarbeiter pro Seite",
+    "reset": "Zurücksetzen",
+    "close": "Filter schließen"
+  },
+  "errors": {
+    "title": "Hoppla… ein Fehler ist aufgetreten",
+    "unexpected": "Beim Laden der Kunden ist ein unerwarteter Fehler aufgetreten.",
+    "unexpected_employee": "Beim Laden der Mitarbeiter ist ein unerwarteter Fehler aufgetreten.",
+    "error_user": "Der angezeigte Kunde existiert nicht oder wurde gelöscht.",
+    "not_found": "Kein Kunde gefunden",
+    "not_found_employee": "Kein Mitarbeiter gefunden",
+    "error_employee": "Der angezeigte Mitarbeiter existiert nicht oder wurde gelöscht.",
+    "retry": "Erneut versuchen",
+    "home": "Zurück zur Startseite",
+    "save_failed": "Änderungen konnten nicht gespeichert werden.",
+    "creation_failed": "Mitarbeiter konnte nicht erstellt werden."
+  },
+  "seo": {
+    "title": "Kundenverwaltung – Olympischer Ticketverkauf Paris 2024",
+    "description": "Verwalten Sie die Kunden des Ticketingsystems für die Olympischen Spiele Paris 2024. Kundeninformationen ansehen, bearbeiten und verwalten.",
+    "title_employee": "Mitarbeiterverwaltung – Olympischer Ticketverkauf Paris 2024",
+    "description_employee": "Verwalten Sie die Mitarbeiter des Ticketingsystems für die Olympischen Spiele Paris 2024. Mitarbeiterinformationen ansehen, bearbeiten und verwalten."
+  },
+  "users": {
+    "title": "Kundenverwaltung"
+  },
+  "user": {
+    "title": "Kunde #{{id}}",
+    "title_employee": "Mitarbeiter #{{id}}",
+    "active": "Aktiv",
+    "inactive": "Gesperrt",
+    "twofa_enabled": "2FA aktiviert",
+    "twofa_disabled": "2FA deaktiviert",
+    "email_verified": "E-Mail bestätigt",
+    "email_not_verified": "E-Mail nicht bestätigt",
+    "created_on": "Erstellt am {{date}} um {{time}}",
+    "updated_on": "Aktualisiert am {{date}} um {{time}}",
+    "firstname": "Vorname",
+    "lastname": "Nachname",
+    "email": "E-Mail",
+    "save": "Änderungen speichern",
+    "saving": "Speichern…",
+    "success": "Kundendaten aktualisiert!",
+    "success_employee": "Mitarbeiterdaten aktualisiert!",
+    "toggle_active": "Status aktiv umschalten",
+    "toggle_twofa": "2FA deaktivieren",
+    "toggle_verify_email": "E-Mail bestätigen",
+    "details_title": "Kundendetails #{{id}}",
+    "details_title_employee": "Mitarbeiterdetails #{{id}}",
+    "name": "Vollständiger Name:",
+    "pending_email_change": "Ausstehende E-Mail-Änderung",
+    "old_email": "Alte E-Mail",
+    "new_email": "Neue E-Mail",
+    "requested_on": "Angefordert am {{date}} um {{time}}",
+    "no_pending_email": "Keine ausstehende E-Mail-Änderung",
+    "details_email": "E-Mail:",
+    "close": "Schließen",
+    "see_details": "Details anzeigen"
+  },
+  "employees": {
+    "title": "Mitarbeiterverwaltung"
+  },
+  "employee": {
+    "create_new": "Neuen Mitarbeiter erstellen",
+    "create_intro": "Erstellen Sie einen neuen Mitarbeiter, um Ticketoperationen zu verwalten.",
+    "create_button": "Mitarbeiter erstellen",
+    "success": "Mitarbeiter erfolgreich erstellt!",
+    "invalid_email": "Die E-Mail muss gültig sein.",
+    "creation": "Mitarbeiter wird erstellt...",
+    "create": "Mitarbeiter erstellen"
+  }
+}

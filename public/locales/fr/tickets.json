@@ -30,14 +30,15 @@
     "no_pdf": "Aucun billet PDF disponible",
     "no_invoice": "Aucune facture disponible",
     "qr_alt": "QR Code du billet",
-    "token": "Référence du billet",
+    "token": "Référence du billet : {{token}}",
     "download_pdf": "Télécharger le billet PDF",
     "download_ticket": "Télécharger billet",
     "download_invoice_pdf": "Télécharger la facture PDF",
     "download_invoice": "Télécharger facture",
     "download_success": "Billet téléchargé avec succès",
     "no_tickets": "Aucun billet trouvé",
-    "title": "Mes billets"
+    "title": "Mes billets",
+    "free_ticket": "Billet gratuit"
   },
   "errors": {
     "product_fetch_failed": "Échec de la récupération des données des billets",

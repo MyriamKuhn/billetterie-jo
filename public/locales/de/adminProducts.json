@@ -1,0 +1,45 @@
+{
+  "seo": {
+    "title": "Ticketverwaltung – Paris 2024 Olympische Tickets",
+    "description": "Verwalten Sie Tickets für die Veranstaltungen der Olympischen und Paralympischen Spiele Paris 2024. Fügen Sie Tickets für Wettbewerbe und Zeremonien hinzu, bearbeiten oder löschen Sie diese."
+  },
+  "products": {
+    "title": "Ticketverwaltung",
+    "places_one": "{{count}} Platz",
+    "places_other": "{{count}} Plätze",
+    "price": "Preis ohne Rabatt",
+    "sale": "Rabatt",
+    "stock": "Lagerbestand",
+    "save": "Änderungen speichern",
+    "saving": "Speichern...",
+    "updateDetails": "Details aktualisieren",
+    "success": "Änderungen erfolgreich gespeichert",
+    "close": "Schließen",
+    "modification": "Ticket {{id}} bearbeiten",
+    "name": "Ticketname",
+    "description": "Beschreibung",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "location": "Ort",
+    "category": "Kategorie",
+    "place": "Anzahl der Plätze",
+    "currentPrice": "Aktueller Preis",
+    "newPrice": "Neuer Preis",
+    "no_image": "Kein Bild verfügbar",
+    "image_here": "Bild hier ablegen oder zum Auswählen klicken",
+    "duplication": "Ticket {{id}} duplizieren",
+    "duplicate": "Ticket duplizieren",
+    "create_new": "Neues Ticket erstellen",
+    "create_intro": "Um ein Ticket zu erstellen, zu bearbeiten oder zu duplizieren, sind alle Felder erforderlich und Sie müssen ein Bild hinzufügen. Das Bild muss im JPG-, JPEG-, PNG-, GIF- oder SVG-Format vorliegen und darf 2 MB nicht überschreiten. Sobald ein Bild hinzugefügt wurde, können Sie es oben im Formular in der Vorschau sehen. Einige Änderungen können einige Zeit in Anspruch nehmen, bis sie angewendet werden.",
+    "create_button": "Ticket erstellen"
+  },
+  "errors": {
+    "title": "Hoppla… ein Fehler ist aufgetreten",
+    "unexpected": "Beim Abrufen der Tickets ist ein unerwarteter Fehler aufgetreten.",
+    "not_found": "Kein passendes Ticket gefunden",
+    "retry": "Erneut versuchen",
+    "home": "Zur Startseite zurückkehren",
+    "save_failed": "Speichern der Änderungen fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "loading": "Lädt..."
+  }
+}

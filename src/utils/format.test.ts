@@ -123,3 +123,55 @@ describe('formatDate', () => {
   });
 });
 
+import { formatTime } from './format';
+
+describe('formatTime', () => {
+  it('returns empty string for undefined input', () => {
+    expect(formatTime()).toBe('');
+  });
+
+  it('returns empty string for invalid date string', () => {
+    expect(formatTime('not-a-date')).toBe('');
+  });
+
+  it('formats time with default locale (en) and default options', () => {
+    const iso = '2025-07-14T14:30:00Z';
+    // on en, Intl.DateTimeFormat('en', options).format
+    const expected = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric' }).format(new Date(iso));
+    expect(formatTime(iso)).toBe(expected);
+  });
+
+  it('formats time in fr-FR locale, replacing ":" with "h"', () => {
+    const iso = '2025-07-14T14:30:00Z';
+    const raw = new Intl.DateTimeFormat('fr-FR', { hour: 'numeric', minute: 'numeric' }).format(new Date(iso));
+    const expected = raw.replace(/^(\d{1,2}):(\d{2})$/, '$1h$2');
+    expect(formatTime(iso, 'fr-FR')).toBe(expected);
+  });
+
+  it('formats time in de-DE locale, appending " Uhr"', () => {
+    const iso = '2025-07-14T14:30:00Z';
+    const raw = new Intl.DateTimeFormat('de-DE', { hour: 'numeric', minute: 'numeric' }).format(new Date(iso));
+    const expected = `${raw} Uhr`;
+    expect(formatTime(iso, 'de-DE')).toBe(expected);
+  });
+
+  it('applies custom time format options (including seconds)', () => {
+    const iso = '2025-07-14T14:30:45Z';
+    const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' } as const;
+    const expected = new Intl.DateTimeFormat('en-US', options).format(new Date(iso));
+    expect(formatTime(iso, 'en-US', options)).toBe(expected);
+  });
+
+  it('uses locale correctly when hour is single digit (e.g. 9:05)', () => {
+    const iso = '2025-07-14T09:05:00Z';
+    // UTC 09:05 → local 11:05 (CEST)
+    const rawEn = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric' }).format(new Date(iso));
+    expect(formatTime(iso)).toBe(rawEn);
+
+    const rawFr = new Intl.DateTimeFormat('fr-FR', { hour: 'numeric', minute: 'numeric' }).format(new Date(iso));
+    const expectedFr = rawFr.replace(/^(\d{1,2}):(\d{2})$/, '$1h$2');
+    expect(formatTime(iso, 'fr-FR')).toBe(expectedFr);
+  });
+});
+
+

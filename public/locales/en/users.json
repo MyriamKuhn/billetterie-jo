@@ -1,0 +1,79 @@
+{
+  "filters": {
+    "title": "Filters",
+    "firstname": "First name",
+    "lastname": "Last name",
+    "email": "Email",
+    "user_per_page": "Customers per page",
+    "employee_per_page": "Employees per page",
+    "reset": "Reset",
+    "close": "Close filters"
+  },
+  "errors": {
+    "title": "Oops… an error occurred",
+    "unexpected": "An unexpected error occurred while fetching customers.",
+    "unexpected_employee": "An unexpected error occurred while fetching employees.",
+    "error_user": "The customer you are trying to view does not exist or has been deleted.",
+    "error_employee": "The employee you are trying to view does not exist or has been deleted.",
+    "not_found": "No matching customers found",
+    "not_found_employee": "No matching employees found",
+    "retry": "Retry",
+    "home": "Back to home",
+    "save_failed": "Failed to save changes.",
+    "creation_failed": "Failed to create employee."
+  },
+  "seo": {
+    "title": "Customer Management – Paris 2024 Olympic Ticketing",
+    "description": "Manage the customers of the Paris 2024 Olympic ticketing system. View, edit, and administer customers information.",
+    "title_employee": "Employee Management – Paris 2024 Olympic Ticketing",
+    "description_employee": "Manage the employees of the Paris 2024 Olympic ticketing system. View, edit, and administer employee information."
+  },
+  "users": {
+    "title": "Customer Management"
+  },
+  "user": {
+    "title": "Customer #{{id}}",
+    "title_employee": "Employee #{{id}}",
+    "active": "Active",
+    "inactive": "Blocked",
+    "twofa_enabled": "2FA enabled",
+    "twofa_disabled": "2FA disabled",
+    "email_verified": "Email verified",
+    "email_not_verified": "Email not verified",
+    "created_on": "Created on {{date}} at {{time}}",
+    "updated_on": "Updated on {{date}} at {{time}}",
+    "firstname": "First name",
+    "lastname": "Last name",
+    "email": "Email",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "success": "Customer data updated!",
+    "success_employee": "Employee data updated!",
+    "toggle_active": "Toggle active status",
+    "toggle_twofa": "Disable 2FA",
+    "toggle_verify_email": "Verify email",
+    "details_title": "Customer details #{{id}}",
+    "details_title_employee": "Employee details #{{id}}",
+    "name": "Full name:",
+    "pending_email_change": "Pending email change",
+    "old_email": "Old email",
+    "new_email": "New email",
+    "requested_on": "Requested on {{date}} at {{time}}",
+    "no_pending_email": "No pending email change",
+    "details_email": "Email:",
+    "close": "Close",
+    "see_details": "See details"
+  },
+  "employees": {
+    "title": "Employee Management"
+  },
+  "employee": {
+    "create_new": "Create new employee",
+    "create_intro": "Create a new employee to manage ticketing operations.",
+    "create_button": "Create Employee",
+    "success": "Employee created successfully!",
+    "invalid_email": "Email must be valid.",
+    "creation": "Creating employee...",
+    "create": "Create Employee"
+  }
+}

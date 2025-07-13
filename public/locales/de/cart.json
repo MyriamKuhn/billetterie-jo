@@ -20,7 +20,8 @@
     "update_success": "Menge aktualisiert",
     "remaining": "{{count}} verfügbar",
     "cgv_not_accepted": "Sie müssen die Allgemeinen Verkaufsbedingungen akzeptieren, um fortzufahren",
-    "payment_in_progress": "Zahlung wird verarbeitet, bitte warten"
+    "payment_in_progress": "Zahlung wird verarbeitet, bitte warten",
+    "no_items_for_admin": "Sie können als Administrator oder Mitarbeiter keine Einkäufe tätigen. Bitte melden Sie sich als Kunde an, um fortzufahren."
   },
   "errors": {
     "error_load": "Der Einkaufskorb konnte nicht geladen werden, bitte versuchen Sie es erneut",

@@ -1,0 +1,79 @@
+{
+  "filters": {
+    "status_all": "Tous",
+    "status_pending": "En attente",
+    "status_paid": "Payé",
+    "status_failed": "Échoué",
+    "status_refunded": "Remboursé",
+    "status_free": "Gratuit",
+    "payment_method_": "Tous",
+    "payment_method_paypal": "PayPal",
+    "payment_method_stripe": "Stripe",
+    "payment_method_free": "Gratuit",
+    "title": "Filtres",
+    "name": "Email ou UUID",
+    "status_label": "Statut",
+    "payment_method_label": "Méthode de paiement",
+    "per_page": "Paiments par page",
+    "reset": "Réinitialiser",
+    "close": "Fermer"
+  },
+  "errors": {
+    "no_payments": "Aucun paiement trouvé",
+    "title": "Oops ! Une erreur s'est produite",
+    "message": "Nous n'avons pas pu charger les paiements. Veuillez réessayer plus tard.",
+    "retry": "Réessayer",
+    "go_home": "Retour à l'accueil"
+  },
+  "seo": {
+    "title": "Gestion des paiements - Billetterie JO Paris 2024",
+    "description": "Gérez les paiements des commandes pour les événements des Jeux Olympiques et Paralympiques de Paris 2024. Consultez l'historique des paiements, filtrez par statut et méthode de paiement, et téléchargez les factures."
+  },
+  "payments": {
+    "title": "Gestion des paiements",
+    "free_ticket": "Billet gratuit",
+    "status": {
+      "paid": "Payé",
+      "pending": "En attente",
+      "refunded": "Remboursé",
+      "failed": "Échoué"
+    },
+    "download_invoice": "Télécharger la facture",
+    "download_not_ready": "La facture n'est pas encore prête. Veuillez réessayer plus tard.",
+    "download_not_available": "La facture n'est pas disponible pour ce paiement.",
+    "download_not_available_generic": "La facture n'est pas disponible pour ce paiement pour le moment.",
+    "reference": "Référence",
+    "created_at": "Créé le {{date}} à {{time}}",
+    "paid_at": "Payé le {{date}} à {{time}}",
+    "refunded_at": "Remboursé le {{date}} à {{time}} de {{amount}}",
+    "amount": "Montant : {{amount}}",
+    "amount_free": "Gratuit",
+    "method": "Méthode de paiement : {{method}}",
+    "methods": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "free": "Gratuit"
+    },
+    "transaction_id": "ID de transaction : {{id}}",
+    "client": "Client : #{{id}} ({{email}})",
+    "cart_details": "Détails du panier",
+    "cart_items": "{{count}} article(s)",
+    "places_one": "{{count}} place",
+    "places_other": "{{count}} places",
+    "quantity": "Nombre de billets : {{quantity}}",
+    "payment_info": "Informations paiement",
+    "client_info": "Informations client",
+    "refund_label": "Procéder à un remboursement",
+    "refund_info": "Vous devrez rembourser le montant total du paiement. N'oubliez pas de marquer les billets correspondants comme remboursés.",
+    "refund_amount": "Montant du remboursement",
+    "refunding": "Remboursement...",
+    "confirm_refund": "Rembourser",
+    "refund_success": "Remboursement effectué avec succès.",
+    "refund_error": "Une erreur s'est produite lors du remboursement. Veuillez réessayer."
+  },
+  "snackbar": {
+    "pending_message": "Le paiement est en attente. La facture sera disponible une fois le paiement confirmé.",
+    "failed_message": "Le paiement a échoué. Aucune facture n’est disponible.",
+    "unavailable_message": "La facture n’est pas disponible."
+  }
+}

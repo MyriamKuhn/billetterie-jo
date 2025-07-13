@@ -30,14 +30,15 @@
     "no_pdf": "Kein Ticket-PDF verfügbar",
     "no_invoice": "Keine Rechnung verfügbar",
     "qr_alt": "Ticket QR-Code",
-    "token": "Ticket-Referenz",
+    "token": "Ticket-Referenz: {{token}}",
     "download_pdf": "Ticket-PDF herunterladen",
     "download_ticket": "Ticket herunterladen",
     "download_invoice_pdf": "Rechnung-PDF herunterladen",
     "download_invoice": "Rechnung herunterladen",
     "download_success": "Ticket erfolgreich heruntergeladen",
     "no_tickets": "Keine Tickets gefunden",
-    "title": "Meine Tickets"
+    "title": "Meine Tickets",
+    "free_ticket": "Gratis Ticket"
   },
   "errors": {
     "product_fetch_failed": "Fehler beim Abrufen der Ticketdaten",

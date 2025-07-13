@@ -1,0 +1,45 @@
+{
+  "seo": {
+    "title": "Ticket Management – Paris 2024 Olympic Ticketing",
+    "description": "Manage tickets for the Paris 2024 Olympic and Paralympic Games events. Add, edit, and delete tickets for competitions and ceremonies."
+  },
+  "products": {
+    "title": "Ticket Management",
+    "places_one": "{{count}} seat",
+    "places_other": "{{count}} seats",
+    "price": "Price before discount",
+    "sale": "Sale",
+    "stock": "Quantity in stock",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "updateDetails": "Update details",
+    "success": "Changes saved successfully",
+    "close": "Close",
+    "modification": "Editing ticket {{id}}",
+    "name": "Ticket name",
+    "description": "Description",
+    "date": "Date",
+    "time": "Time",
+    "location": "Location",
+    "category": "Category",
+    "place": "Number of seats",
+    "currentPrice": "Current price",
+    "newPrice": "New price",
+    "no_image": "No image available",
+    "image_here": "Drop your image here or click to select",
+    "duplication": "Duplicating ticket {{id}}",
+    "duplicate": "Duplicate ticket",
+    "create_new": "Create new ticket",
+    "create_intro": "To create, edit, or duplicate a ticket, all fields are required and you must add an image. The image must be in JPG, JPEG, PNG, GIF, or SVG format and not exceed 2 MB. Once an image is added, you can preview it at the top of the form. Some changes may take a while to apply.",
+    "create_button": "Create ticket"
+  },
+  "errors": {
+    "title": "Oops… an error occurred",
+    "unexpected": "An unexpected error occurred while fetching tickets.",
+    "not_found": "No matching ticket found",
+    "retry": "Retry",
+    "home": "Return to home",
+    "save_failed": "Failed to save changes. Please try again.",
+    "loading": "Loading..."
+  }
+}

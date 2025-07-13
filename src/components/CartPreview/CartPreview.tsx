@@ -21,11 +21,13 @@ import { formatCurrency } from '../../utils/format';
 import { useReloadCart } from '../../hooks/useReloadCart';
 import { useStockChangeNotifier } from '../../hooks/useStockChangeNotifier';
 import { useCustomSnackbar } from '../../hooks/useCustomSnackbar';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 export default function CartPreview() {
   const { t } = useTranslation(['common', 'cart']);
   const { notify } = useCustomSnackbar();
   const lang = useLanguageStore(s => s.lang);
+  const role = useAuthStore(s => s.role);
 
   // Reload logic extracted
   const { loading, hasError, reload, isReloading } = useReloadCart();
@@ -130,6 +132,10 @@ export default function CartPreview() {
           <Typography sx={{ p: 2 }} variant="body2">
             {t('cart:cart.unavailable')}
           </Typography>
+        ) : (role === 'admin' || role === 'employee') ? (
+        <Typography sx={{ p: 2 }} variant="body2">
+          {t('cart:cart.no_items_for_admin')}
+        </Typography>
         ) : items.length === 0 ? (
           <Typography sx={{ p: 2 }} variant="body2">
             {t('cart:cart.empty')}
