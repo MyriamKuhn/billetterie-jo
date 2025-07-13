@@ -174,7 +174,7 @@ describe('TicketCard', () => {
     const img = screen.getByTestId('CardMedia')
     expect(img).toHaveAttribute('src', 'http://example.com/qr.png')
     expect(screen.getAllByText('EventName').length).toBe(1)
-    expect(screen.getByText(/tok123/)).toBeInTheDocument()
+    expect(screen.getByText('tickets.token')).toBeInTheDocument()
     expect(screen.getByText((content) => content.includes('formatted-2025-03-01') && content.includes('12:00'))).toBeInTheDocument()
     expect(screen.getByText('Venue')).toBeInTheDocument()
     expect(screen.getByText('tickets.places-5')).toBeInTheDocument()

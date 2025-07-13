@@ -18,7 +18,7 @@ import Button from '@mui/material/Button'
 import { CardActions, Divider } from '@mui/material'
 
 // Helper to map invoice status to MUI Chip color
-const getPaymentStatusChipColor = (status: AdminPaymentsStatus): 'success' | 'info' | 'warning' | 'error' | 'default' => {
+export const getPaymentStatusChipColor = (status: AdminPaymentsStatus): 'success' | 'info' | 'warning' | 'error' | 'default' => {
   switch (status) {
     case 'paid': return 'success'
     case 'pending': return 'info'

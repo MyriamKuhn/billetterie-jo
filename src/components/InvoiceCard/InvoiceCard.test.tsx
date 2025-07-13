@@ -3,8 +3,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock external dependencies
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string, fallback?: string) => fallback || key })
-}))
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      // Interpole reference, date ou amount si fournis
+      if (options && typeof options.reference !== 'undefined') {
+        return `${key}-${options.reference}`;
+      }
+      if (options && typeof options.date !== 'undefined') {
+        return `${key}-${options.date}`;
+      }
+      if (options && typeof options.amount !== 'undefined') {
+        return `${key}-${options.amount}`;
+      }
+      return key;
+    }
+  })
+}));
 vi.mock('../../utils/format', () => ({
   formatDate: (date: string, lang: string) => `formatted-date-${date}-${lang}`,
   formatCurrency: (amount: number, lang: string, currency: string) => `formatted-currency-${amount}-${lang}-${currency}`
