@@ -190,6 +190,9 @@ Planned improvements:
 - **Cookies & Consent:**  
   - React Cookie Consent (`react-cookie-consent`)  
 
+- **QR Scanning:**  
+  - html5-qrcode (camera-based QR code scanning in browser)
+
 - **Testing:**  
   - Vitest  
   - React Testing Library (`@testing-library/react`, `@testing-library/dom`, `@testing-library/user-event`)  
