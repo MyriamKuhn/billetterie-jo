@@ -101,6 +101,7 @@
     "noDetails": "Keine Details verfügbar, bitte Felder ausfüllen.",
     "cancel": "Schließen",
     "create": "Ticket erstellen",
-    "creation": "Erstellung…"
+    "creation": "Erstellung…",
+    "stock": "Verfügbare Stückzahl: {{quantity}}"
   }
 }

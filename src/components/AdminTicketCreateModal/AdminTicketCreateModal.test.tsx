@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { vi } from 'vitest'
 import axios from 'axios'
 
@@ -99,20 +99,67 @@ describe('AdminTicketCreateModal', () => {
     expect(screen.getByText('freeTicket.create')).toBeInTheDocument()
   })
 
-  it('désactive Create si invalid et l’active quand valide', () => {
+  it('désactive Create si invalid et l’active quand valide', async () => {
+    // --- mock des trois appels axios.get nécessaires ---
+    const fakeUser = { id:1, firstname:'John', lastname:'Doe', email:'john@x', role:'user' }
+    const fakeProduct = {
+      id:2, name:'BilletTest', stock_quantity:5,
+      product_details:{ places:10, date:'2025-08-01', time:'18:00', location:'Paris' }
+    }
+    axiosGetMock
+      // GET /users/1
+      .mockResolvedValueOnce({ data: { user: fakeUser } })
+      // GET /users?email=...
+      .mockResolvedValueOnce({ data: { data: { users: [fakeUser] } } })
+      // GET /products/2
+      .mockResolvedValueOnce({ data: { data: fakeProduct } })
+
     render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh}/>)
-    const btn = screen.getByText('freeTicket.create')
+
+    const btn = screen.getByRole('button', { name: 'freeTicket.create' })
     expect(btn).toBeDisabled()
 
+    // 1) Saisie userId → on a désormais une vraie preview
     fireEvent.change(screen.getByTestId('freeTicket.userId'), { target: { value: '1' } })
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeInTheDocument())
     expect(btn).toBeDisabled()
 
+    // 2) Saisie productId → on a la preview produit
     fireEvent.change(screen.getByTestId('freeTicket.productId'), { target: { value: '2' } })
-    // quantité par défaut = 1, tout est valide
+    await waitFor(() => expect(screen.getByText('BilletTest')).toBeInTheDocument())
     expect(btn).toBeEnabled()
 
+    // 3) quantity = 0 → désactivé
     fireEvent.change(screen.getByTestId('freeTicket.quantity'), { target: { value: '0' } })
     expect(btn).toBeDisabled()
+  })
+
+  it('désactive Create si stock_quantity <= 0', async () => {
+  // mock produit en rupture de stock
+  ;(axios.get as any)
+    // premier appel pour /users/1
+    .mockResolvedValueOnce({ data: { user: { id:1, firstname:'A', lastname:'B', email:'a@x' } } })
+    // deuxième pour lookup email
+    .mockResolvedValueOnce({ data: { data: { users: [{ id:1, firstname:'A', lastname:'B', email:'a@x', role:'user' }] } } })
+    // troisième pour /products/2 avec stock 0
+    .mockResolvedValueOnce({ data: { data: { 
+      id:2, name:'ProdRupture', stock_quantity:0,
+      product_details:{ places:5, date:'2025-08-01', time:'12:00', location:'Paris' }
+    } } })
+
+  render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh}/>)
+  const btn = screen.getByRole('button', { name: 'freeTicket.create' })
+
+  // on charge user
+  fireEvent.change(screen.getByTestId('freeTicket.userId'), { target: { value: '1' } })
+  await waitFor(() => expect(screen.getByText('A B')).toBeInTheDocument())
+
+  // on charge produit
+  fireEvent.change(screen.getByTestId('freeTicket.productId'), { target: { value: '2' } })
+  await waitFor(() => expect(screen.getByText('ProdRupture')).toBeInTheDocument())
+
+  // stock = 0 → bouton reste désactivé
+  expect(btn).toBeDisabled()
   })
 
   it('fetch user puis affiche preview user', async () => {
@@ -173,7 +220,35 @@ describe('AdminTicketCreateModal', () => {
   })
 
   it('handleSubmit appelle freeTicket et notifie success & error', async () => {
+    // 1) Mock de l’API pour que user et product se chargent
+    const fakeUser = { id:1, firstname:'John', lastname:'Doe', email:'john@x', role:'user' }
+    const fakeProduct = {
+      id:2, name:'BilletTest', stock_quantity:5,
+      product_details:{ places:10, date:'2025-08-01', time:'18:00', location:'Paris' }
+    }
+    axiosGetMock
+      // GET /users/1
+      .mockResolvedValueOnce({ data: { user: fakeUser } })
+      // GET /users?email=...
+      .mockResolvedValueOnce({ data: { data: { users: [fakeUser] } } })
+      // GET /products/2
+      .mockResolvedValueOnce({ data: { data: fakeProduct } })
+
     render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh}/>)
+
+    // 2) Remplir et attendre les previews pour débloquer le bouton
+    fireEvent.change(screen.getByTestId('freeTicket.userId'), {
+      target: { value: '1' }
+    })
+    await waitFor(() => expect(screen.queryByTestId('loader')).not.toBeInTheDocument())
+    expect(screen.getByText('John Doe')).toBeInTheDocument()
+
+    fireEvent.change(screen.getByTestId('freeTicket.productId'), {
+      target: { value: '2' }
+    })
+    await waitFor(() => expect(screen.queryByTestId('loader')).not.toBeInTheDocument())
+    expect(screen.getByText('BilletTest')).toBeInTheDocument()
+
     fireEvent.change(screen.getByTestId('freeTicket.userId'), { target: { value: '1' } })
     fireEvent.change(screen.getByTestId('freeTicket.productId'), { target: { value: '2' } })
     fireEvent.change(screen.getByTestId('freeTicket.quantity'), { target: { value: '1' } })
@@ -409,4 +484,229 @@ describe('AdminTicketCreateModal', () => {
       }
     })
   })
+
+  it('désactive Create si quantity > stock_quantity', async () => {
+    // 1) mock des appels user / lookup email / product
+    const fakeUser = { id:1, firstname:'John', lastname:'Doe', email:'john@x', role:'user' }
+    const fakeProduct = {
+      id:2,
+      name:'BilletTest',
+      stock_quantity: 3,            // stock à 3 places
+      product_details: {
+        places: 3,
+        date: '2025-08-01',
+        time: '18:00',
+        location: 'Paris',
+      }
+    }
+    axiosGetMock
+      .mockResolvedValueOnce({ data: { user: fakeUser } })                 // GET /users/1
+      .mockResolvedValueOnce({ data: { data: { users: [fakeUser] } } })   // GET /users?email=...
+      .mockResolvedValueOnce({ data: { data: fakeProduct } })             // GET /products/2
+
+    render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh}/>)
+
+    // 2) remplir userId et attendre preview
+    fireEvent.change(screen.getByTestId('freeTicket.userId'), { target: { value: '1' } })
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeInTheDocument())
+
+    // 3) remplir productId et attendre preview
+    fireEvent.change(screen.getByTestId('freeTicket.productId'), { target: { value: '2' } })
+    await waitFor(() => expect(screen.getByText('BilletTest')).toBeInTheDocument())
+
+    // 4) mettre quantity à 4 (> stock 3)
+    const qtyInput = screen.getByTestId('freeTicket.quantity') as HTMLInputElement
+    fireEvent.change(qtyInput, { target: { value: '4' } })
+    expect(qtyInput.value).toBe('4')
+
+    // 5) le bouton reste désactivé car 4 > 3
+    const btn = screen.getByRole('button', { name: /freeTicket.create/i })
+    expect(btn).toBeDisabled()
+  })
+
+  it('désactive Create si product.stock_quantity est undefined (fallback 0) et quantity > 0', async () => {
+    // 1) mock user details & lookup email
+    const fakeUser = { id:1, firstname:'John', lastname:'Doe', email:'john@x', role:'user' }
+    axiosGetMock
+      .mockResolvedValueOnce({ data: { user: fakeUser } })               // GET /users/1
+      .mockResolvedValueOnce({ data: { data: { users: [fakeUser] } } }) // GET /users?email=...
+
+    // 2) mock product fetch qui renvoie un produit sans stock_quantity
+    const fakeProductPartial = {
+      id: 2,
+      name: 'ProduitSansStock',
+      // pas de stock_quantity ici
+      product_details: {
+        places: 5,
+        date: '2025-08-01',
+        time: '12:00',
+        location: 'Paris',
+      }
+    }
+    axiosGetMock.mockResolvedValueOnce({ data: { data: fakeProductPartial } }) // GET /products/2
+
+    // 3) render
+    render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh} />)
+
+    // 4) remplir userId et attendre la preview user
+    fireEvent.change(screen.getByTestId('freeTicket.userId'), { target: { value: '1' } })
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeInTheDocument())
+
+    // 5) remplir productId et attendre la preview produit
+    fireEvent.change(screen.getByTestId('freeTicket.productId'), { target: { value: '2' } })
+    await waitFor(() => expect(screen.getByText('ProduitSansStock')).toBeInTheDocument())
+
+    // 6) quantity par défaut = 1 > (undefined ?? 0) → bouton désactivé
+    const btn = screen.getByRole('button', { name: /freeTicket.create/i })
+    expect(btn).toBeDisabled()
+  })
+
+  it('désactive Create si user chargé mais pas de produit (fallback stock 0)', async () => {
+    // 1) mock des deux appels user / lookup email
+    const fakeUser = { id:1, firstname:'John', lastname:'Doe', email:'john@x', role:'user' }
+    axiosGetMock
+      .mockResolvedValueOnce({ data: { user: fakeUser } })               // GET /users/1
+      .mockResolvedValueOnce({ data: { data: { users: [fakeUser] } } }) // GET /users?email=...
+
+    render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh}/>)
+
+    // 2) remplir userId et attendre la preview utilisateur
+    fireEvent.change(screen.getByTestId('freeTicket.userId'), { target: { value: '1' } })
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeInTheDocument())
+
+    // 3) ne PAS renseigner productId (product reste null), quantity = 1 par défaut
+    //    → (product?.stock_quantity ?? 0) === 0 et 1 > 0 ⇒ bouton désactivé
+    const btn = screen.getByRole('button', { name: /freeTicket.create/i })
+    expect(btn).toBeDisabled()
+  })
+
+  it('désactive Create si productId renseigné mais produit fetché est undefined (fallback stock 0)', async () => {
+    // 1) mock les appels user / lookup email
+    const fakeUser = { id:1, firstname:'John', lastname:'Doe', email:'john@x', role:'user' };
+    axiosGetMock
+      .mockResolvedValueOnce({ data: { user: fakeUser } })               // GET /users/1
+      .mockResolvedValueOnce({ data: { data: { users: [fakeUser] } } }); // GET /users?email=...
+
+    // 2) mock l’appel produit qui renvoie data.data undefined
+    axiosGetMock.mockResolvedValueOnce({ data: { data: undefined } });    // GET /products/2
+
+    render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh}/>);
+
+    // 3) on remplit userId → preview user
+    fireEvent.change(screen.getByTestId('freeTicket.userId'), { target: { value: '1' } });
+    await waitFor(() => expect(screen.getByText('John Doe')).toBeInTheDocument());
+
+    // 4) on remplit productId → fetch produit “vide”
+    fireEvent.change(screen.getByTestId('freeTicket.productId'), { target: { value: '2' } });
+
+    // 5) on vérifie que le bouton reste désactivé
+    await waitFor(() => {
+      const btn = screen.getByRole('button', { name: /freeTicket.create/i });
+      expect(btn).toBeDisabled();
+    });
+  });
+
+  it('affiche noDetails par défaut quand ni user ni product n’ont été renseignés', () => {
+    render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh} />);
+
+    // On est en début de modal, pas de chargement, pas d’erreur, pas de user ni product
+    expect(screen.getByText('freeTicket.noDetails')).toBeInTheDocument();
+  });
+
+  it('refetches product when locale changes', async () => {
+    // 1) Préparez deux réponses successives pour /products/2
+    const fakeProduct = {
+      id: 2,
+      name: 'MonProduit',
+      stock_quantity: 10,
+      product_details: {
+        places: 10,
+        date: '2025-09-01',
+        time: '20:00',
+        location: 'Lyon',
+      },
+    };
+    const axiosGetMock = axios.get as unknown as ReturnType<typeof vi.fn>;
+    axiosGetMock
+      // premier appel pour productId=2 avec locale 'fr'
+      .mockResolvedValueOnce({ data: { data: fakeProduct } })
+      // deuxième appel pour même productId avec locale 'en'
+      .mockResolvedValueOnce({ data: { data: fakeProduct } });
+
+    render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh} />);
+
+    // 2) On renseigne productId pour déclencher le premier fetch
+    fireEvent.change(screen.getByTestId('freeTicket.productId'), {
+      target: { value: '2' },
+    });
+    await waitFor(() => {
+      expect(screen.getByText('MonProduit')).toBeInTheDocument();
+    });
+    expect(axiosGetMock).toHaveBeenCalledTimes(1);
+    // on vérifie le header initial
+    const [, firstConfig] = axiosGetMock.mock.calls[0];
+    expect(firstConfig.headers['Accept-Language']).toBe('fr');
+
+    // 3) On change la locale en 'en'
+    const radios = screen.getByTestId('freeTicket.locale');
+    const enInput = within(radios).getByDisplayValue('en');
+    fireEvent.click(enInput);
+
+    // 4) On attend le 2ᵉ fetch et on vérifie le nouveau header
+    await waitFor(() => {
+      expect(axiosGetMock).toHaveBeenCalledTimes(2);
+    });
+    const [, secondConfig] = axiosGetMock.mock.calls[1];
+    expect(secondConfig.headers['Accept-Language']).toBe('en');
+  });
+
+  it('affiche le loader pendant le chargement du produit', async () => {
+    const axiosGetMock = axios.get as unknown as ReturnType<typeof vi.fn>;
+
+    // 1) Premier appel (user) renvoie un user « vide » pour ne pas déclencher loadingUser
+    axiosGetMock
+      .mockResolvedValueOnce({ data: { user: { id: 1, firstname:'X', lastname:'Y', email:'x@y' } } })
+      .mockResolvedValueOnce({ data: { data: { users: [{ id:1, firstname:'X', lastname:'Y', email:'x@y', role:'user' }] } } });
+
+    // 2) Troisième appel (produit) ne résout jamais -> loadingProduct = true
+    axiosGetMock.mockReturnValueOnce(new Promise(() => {}));
+
+    render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh} />);
+
+    // Remplir userId pour que loadingUser disparaisse
+    fireEvent.change(screen.getByTestId('freeTicket.userId'), { target: { value: '1' } });
+    await waitFor(() => expect(screen.queryByTestId('loader')).not.toBeInTheDocument());
+
+    // Lancer le fetch produit qui reste pendu
+    fireEvent.change(screen.getByTestId('freeTicket.productId'), { target: { value: '42' } });
+
+    // On doit voir le loader produit
+    expect(screen.getByTestId('loader')).toBeInTheDocument();
+  });
+
+  it('traite un usersList non-array comme “user_not_found”', async () => {
+    const axiosGetMock = axios.get as unknown as ReturnType<typeof vi.fn>;
+    const fakeUser = { id:1, firstname:'Z', lastname:'Q', email:'z@q' };
+
+    // 1) GET /users/1 → renvoie l’utilisateur OK
+    axiosGetMock
+      .mockResolvedValueOnce({ data: { user: fakeUser } })
+      // 2) GET /users?email=… → renvoie users non-array
+      .mockResolvedValueOnce({ data: { data: { users: null } } });
+
+    render(<AdminTicketCreateModal open onClose={onClose} onRefresh={onRefresh}/>);
+
+    // on déclenche le premier useEffect
+    fireEvent.change(screen.getByTestId('freeTicket.userId'), {
+      target: { value: '1' },
+    });
+
+    // on doit retomber dans le else du lookup
+    await waitFor(() => {
+      expect(screen.getByText('errors.user_not_found')).toBeInTheDocument();
+    });
+
+    // et s'assurer qu'on a bien appelé logError ? non, ici c'est dans le .then,
+    // donc pas de logError, mais l'erreur affichée.
+  });
 })

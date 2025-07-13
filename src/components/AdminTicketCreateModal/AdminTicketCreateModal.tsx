@@ -253,6 +253,9 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
           <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}>
             {product.product_details.location}
           </Typography>
+          <Typography variant="body2" color={product.stock_quantity <= 0 ? "error.main" : "success"} sx={{ wordBreak: 'break-word', overflowWrap: 'anywhere', mt: 1 }}>
+            {t('freeTicket.stock', { quantity: product.stock_quantity })}
+          </Typography>
         </CardContent>
       </Card>
     )}
@@ -277,7 +280,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
         <Button 
           onClick={handleSubmit} 
           variant="contained" 
-          disabled={saving || !userId || !productId || quantity <= 0 || !locale || userId <= 0 || productId <= 0}
+          disabled={saving || !userId || !productId || quantity <= 0 || errorUser !== null || errorProduct !== null || quantity > (product?.stock_quantity ?? 0)}
           startIcon={ saving
             ? <CircularProgress color="inherit" size={16} />
             : undefined

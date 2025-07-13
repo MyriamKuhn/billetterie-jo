@@ -101,6 +101,7 @@
     "noDetails": "No details available, please fill out the fields.",
     "cancel": "Close",
     "create": "Create Ticket",
-    "creation": "Creating…"
+    "creation": "Creating…",
+    "stock": "Available quantity: {{quantity}}"
   }
 }

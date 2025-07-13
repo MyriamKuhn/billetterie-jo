@@ -101,6 +101,7 @@
     "noDetails": "Aucun détail disponible, veuillez remplir les champs.",
     "cancel": "Fermer",
     "create": "Créer le billet",
-    "creation": "Création..."
+    "creation": "Création...",
+    "stock": "Quantité disponible : {{quantity}}"
   }
 }
