@@ -1,0 +1,79 @@
+{
+  "filters": {
+    "status_all": "Alle",
+    "status_pending": "Ausstehend",
+    "status_paid": "Bezahlt",
+    "status_failed": "Fehlgeschlagen",
+    "status_refunded": "Erstattet",
+    "status_free": "Kostenlos",
+    "payment_method_": "Alle",
+    "payment_method_paypal": "PayPal",
+    "payment_method_stripe": "Stripe",
+    "payment_method_free": "Kostenlos",
+    "title": "Filter",
+    "name": "E-Mail oder UUID",
+    "status_label": "Status",
+    "payment_method_label": "Zahlungsmethode",
+    "per_page": "Zahlungen pro Seite",
+    "reset": "Zurücksetzen",
+    "close": "Schließen"
+  },
+  "errors": {
+    "no_payments": "Keine Zahlungen gefunden",
+    "title": "Hoppla! Ein Fehler ist aufgetreten",
+    "message": "Wir konnten die Zahlungen nicht laden. Bitte versuchen Sie es später noch einmal.",
+    "retry": "Erneut versuchen",
+    "go_home": "Startseite"
+  },
+  "seo": {
+    "title": "Zahlungsverwaltung – Olympischer Ticketverkauf Paris 2024",
+    "description": "Verwalten Sie Bestellzahlungen für die Olympischen und Paralympischen Spiele Paris 2024. Zahlungsübersicht anzeigen, nach Status und Methode filtern und Rechnungen herunterladen."
+  },
+  "payments": {
+    "title": "Zahlungsverwaltung",
+    "free_ticket": "Kostenloses Ticket",
+    "status": {
+      "paid": "Bezahlt",
+      "pending": "Ausstehend",
+      "refunded": "Erstattet",
+      "failed": "Fehlgeschlagen"
+    },
+    "download_invoice": "Rechnung herunterladen",
+    "download_not_ready": "Die Rechnung ist noch nicht fertig. Bitte versuchen Sie es später erneut.",
+    "download_not_available": "Für diese Zahlung ist keine Rechnung verfügbar.",
+    "download_not_available_generic": "Für diese Zahlung ist aktuell keine Rechnung verfügbar.",
+    "reference": "Referenz",
+    "created_at": "Erstellt am {{date}} um {{time}}",
+    "paid_at": "Bezahlt am {{date}} um {{time}}",
+    "refunded_at": "Erstattet am {{date}} um {{time}} in Höhe von {{amount}}",
+    "amount": "Betrag: {{amount}}",
+    "amount_free": "Kostenlos",
+    "method": "Zahlungsmethode: {{method}}",
+    "methods": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "free": "Kostenlos"
+    },
+    "transaction_id": "Transaktions-ID: {{id}}",
+    "client": "Kunde: #{{id}} ({{email}})",
+    "cart_details": "Warenkorb-Details",
+    "cart_items": "{{count}} Artikel",
+    "places_one": "{{count}} Platz",
+    "places_other": "{{count}} Plätze",
+    "quantity": "Anzahl der Tickets: {{quantity}}",
+    "payment_info": "Zahlungsinformationen",
+    "client_info": "Kundeninformationen",
+    "refund_label": "Erstattung durchführen",
+    "refund_info": "Sie müssen den vollen Zahlungsbetrag erstatten. Vergessen Sie nicht, die entsprechenden Tickets als erstattet zu markieren.",
+    "refund_amount": "Erstattungsbetrag",
+    "refunding": "Erstatten…",
+    "confirm_refund": "Erstatten",
+    "refund_success": "Erstattung erfolgreich durchgeführt.",
+    "refund_error": "Beim Verarbeiten der Erstattung ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "snackbar": {
+    "pending_message": "Die Zahlung ist ausstehend. Die Rechnung wird verfügbar, sobald die Zahlung bestätigt ist.",
+    "failed_message": "Die Zahlung ist fehlgeschlagen. Es ist keine Rechnung verfügbar.",
+    "unavailable_message": "Die Rechnung ist nicht verfügbar."
+  }
+}

@@ -1,0 +1,1 @@
+import{j as l}from"./react-C0aVURRx.js";import{$ as o}from"./mui-BBaOU7V-.js";function u({label:t,value:e,onChange:r,type:i}){return l.jsx(o,{label:t,type:i,size:"small",fullWidth:!0,value:e,onChange:s=>r(s.target.value),slotProps:{inputLabel:{shrink:!0}}})}export{u as F};

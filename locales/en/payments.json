@@ -1,0 +1,79 @@
+{
+  "filters": {
+    "status_all": "All",
+    "status_pending": "Pending",
+    "status_paid": "Paid",
+    "status_failed": "Failed",
+    "status_refunded": "Refunded",
+    "status_free": "Free",
+    "payment_method_": "All",
+    "payment_method_paypal": "PayPal",
+    "payment_method_stripe": "Stripe",
+    "payment_method_free": "Free",
+    "title": "Filters",
+    "name": "Email or UUID",
+    "status_label": "Status",
+    "payment_method_label": "Payment Method",
+    "per_page": "Payments per page",
+    "reset": "Reset",
+    "close": "Close"
+  },
+  "errors": {
+    "no_payments": "No payments found",
+    "title": "Oops! Something went wrong",
+    "message": "We couldn’t load the payments. Please try again later.",
+    "retry": "Retry",
+    "go_home": "Go Home"
+  },
+  "seo": {
+    "title": "Payment Management – Paris 2024 Olympic Ticketing",
+    "description": "Manage order payments for the Paris 2024 Olympic and Paralympic events. View payment history, filter by status and method, and download invoices."
+  },
+  "payments": {
+    "title": "Payment Management",
+    "free_ticket": "Free Ticket",
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "refunded": "Refunded",
+      "failed": "Failed"
+    },
+    "download_invoice": "Download Invoice",
+    "download_not_ready": "The invoice isn’t ready yet. Please try again later.",
+    "download_not_available": "The invoice is not available for this payment.",
+    "download_not_available_generic": "The invoice is currently unavailable for this payment.",
+    "reference": "Reference",
+    "created_at": "Created on {{date}} at {{time}}",
+    "paid_at": "Paid on {{date}} at {{time}}",
+    "refunded_at": "Refunded on {{date}} at {{time}} for {{amount}}",
+    "amount": "Amount: {{amount}}",
+    "amount_free": "Free",
+    "method": "Payment method: {{method}}",
+    "methods": {
+      "paypal": "PayPal",
+      "stripe": "Stripe",
+      "free": "Free"
+    },
+    "transaction_id": "Transaction ID: {{id}}",
+    "client": "Client: #{{id}} ({{email}})",
+    "cart_details": "Cart Details",
+    "cart_items": "{{count}} item(s)",
+    "places_one": "{{count}} seat",
+    "places_other": "{{count}} seats",
+    "quantity": "Number of Tickets: {{quantity}}",
+    "payment_info": "Payment Information",
+    "client_info": "Client Information",
+    "refund_label": "Process a Refund",
+    "refund_info": "You must refund the full payment amount. Don’t forget to mark the corresponding tickets as refunded.",
+    "refund_amount": "Refund Amount",
+    "refunding": "Refunding…",
+    "confirm_refund": "Refund",
+    "refund_success": "Refund processed successfully.",
+    "refund_error": "An error occurred while processing the refund. Please try again."
+  },
+  "snackbar": {
+    "pending_message": "The payment is pending. The invoice will be available once the payment is confirmed.",
+    "failed_message": "The payment failed. No invoice is available.",
+    "unavailable_message": "The invoice is not available."
+  }
+}

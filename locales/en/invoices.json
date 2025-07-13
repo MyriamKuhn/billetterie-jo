@@ -37,9 +37,9 @@
     "download_not_ready": "Payment pending, invoice not available",
     "download_not_available": "Payment failed, no invoice available",
     "download_not_available_generic": "Invoice not available",
-    "reference": "Reference",
-    "date": "Date",
-    "amount": "Amount",
+    "reference": "Reference: {{reference}}",
+    "date": "Date: {{date}}",
+    "amount": "Amount: {{amount}}",
     "see_tickets": "View tickets",
     "free_ticket": "Free"
   },
