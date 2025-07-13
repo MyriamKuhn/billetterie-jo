@@ -1,0 +1,36 @@
+{
+  "errors": {
+    "title": "Hoppla! Ein Fehler ist aufgetreten",
+    "message": "Beim Abrufen der Daten ist ein Problem aufgetreten. Bitte versuchen Sie es später erneut.",
+    "retry": "Erneut versuchen",
+    "go_home": "Zur Startseite",
+    "no_reports": "Keine Berichte gefunden.",
+    "download": "Fehler beim Herunterladen des Berichts. Bitte versuchen Sie es erneut."
+  },
+  "seo": {
+    "title": "Berichte – Olympischer Ticketverkauf Paris 2024",
+    "description": "Sehen Sie sich Aktivitäts- und Transaktionsberichte für das Paris 2024 Olympiaticketing an."
+  },
+  "reports": {
+    "title": "Berichte",
+    "sales_count": "Anzahl der Verkäufe: {{count}}",
+    "success": "Bericht erfolgreich exportiert",
+    "download_title": "Bericht herunterladen",
+    "download_description": "Laden Sie den Verkaufsbericht im CSV- oder Excel-Format herunter."
+  },
+  "filters": {
+    "sales_count": "Verkäufe",
+    "title": "Filter",
+    "sort_by": "Sortieren nach",
+    "per_page": "Berichte pro Seite",
+    "reset": "Zurücksetzen",
+    "close": "Schließen"
+  },
+  "export": {
+    "product_id": "Ticket-ID",
+    "product_name": "Ticket-Name",
+    "sales_count": "Verkaufszahl",
+    "sheetname": "Verkaufsbericht",
+    "filename": "verkaufsbericht_{{today}}"
+  }
+}

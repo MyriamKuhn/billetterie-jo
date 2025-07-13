@@ -1,0 +1,36 @@
+{
+  "errors": {
+    "title": "Ouups ! Une erreur est survenue",
+    "message": "Nous avons rencontré un problème lors de la récupération des données. Veuillez réessayer plus tard.",
+    "retry": "Réessayer",
+    "go_home": "Retour à l'accueil",
+    "no_reports": "Aucun rapport trouvé.",
+    "download": "Erreur lors du téléchargement du rapport. Veuillez réessayer."
+  },
+  "seo": {
+    "title": "Rapports - Billetterie JO Paris 2024",
+    "description": "Consultez les rapports d'activité et de transactions pour la billetterie des JO Paris 2024."
+  },
+  "reports": {
+    "title": "Rapports",
+    "sales_count": "Nombre de ventes effectuées : {{count}}",
+    "success": "Rapport exporté avec succès",
+    "download_title": "Télécharger le rapport",
+    "download_description": "Téléchargez le rapport de ventes en format CSV ou Excel."
+  },
+  "filters": {
+    "sales_count": "Ventes",
+    "title": "Filtres",
+    "sort_by": "Trier par",
+    "per_page": "Rapport par page",
+    "reset": "Réinitialiser",
+    "close": "Fermer"
+  },
+  "export": {
+    "product_id": "ID du billet",
+    "product_name": "Nom du billet",
+    "sales_count": "Nombre de ventes",
+    "sheetname": "Rapport de ventes",
+    "filename": "rapport_ventes_{{today}}"
+  }
+}
