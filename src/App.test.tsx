@@ -61,6 +61,7 @@ vi.mock('./pages/AdminEmployeesPage', () => ({ __esModule: true, default: () => 
 vi.mock('./pages/AdminOrdersPage', () => ({ __esModule: true, default: () => <div data-testid="page-admin-orders">Admin Orders</div> }));
 vi.mock('./pages/AdminPaymentsPage', () => ({ __esModule: true, default: () => <div data-testid="page-admin-payments">Admin Payments</div> }));
 vi.mock('./pages/AdminReportsPage', () => ({ __esModule: true, default: () => <div data-testid="page-admin-reports">Admin Reports</div> }));
+vi.mock('./pages/EmployeeDashboardPage', () => ({ __esModule: true, default: () => <div data-testid="page-employee-dashboard">Employee Dashboard</div> }));
 
 // ── 4️⃣ Stub useLanguageStore pour qu’il prenne un sélecteur ───────────────────
 vi.mock('./stores/useLanguageStore', () => ({
@@ -332,6 +333,14 @@ describe('Routes supplémentaires dans <App />', () => {
     window.history.pushState({}, '', '/admin/reports');
     render(<App mode="light" toggleMode={vi.fn()} />);
     await waitFor(() => expect(screen.getByTestId('page-admin-reports')).toBeInTheDocument());
+    // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
+    expect(screen.queryByTestId('page-home')).toBeNull();
+  });
+
+  it('affiche EmployeeDashboardPage sur "/employee/dashboard" quand RequireAuth autorise l’accès (stubbed)', async () => {
+    window.history.pushState({}, '', '/employee/dashboard');
+    render(<App mode="light" toggleMode={vi.fn()} />);
+    await waitFor(() => expect(screen.getByTestId('page-employee-dashboard')).toBeInTheDocument());
     // Vérifier qu’aucune autre page (home, login, etc.) n’est présente
     expect(screen.queryByTestId('page-home')).toBeNull();
   });
