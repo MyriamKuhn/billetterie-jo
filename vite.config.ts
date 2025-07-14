@@ -50,6 +50,12 @@ export default defineConfig({
           if (/[\\/]node_modules[\\/]react-helmet/.test(id))          return 'helmet';
           if (/[\\/]node_modules[\\/]react-cookie-consent/.test(id))  return 'cookie-consent';
           if (/[\\/]node_modules[\\/]zod/.test(id))                   return 'zod';
+          if (/[\\/]node_modules[\\/]html5-qrcode[\\/]/.test(id))     return 'qr-scanner';
+          if (/[\\/]node_modules[\\/]xlsx[\\/]/.test(id))             return 'xlsx';
+          if (/[\\/]node_modules[\\/]@stripe[\\/]/.test(id))          return 'stripe';
+          if (/[\\/]node_modules[\\/]@mui[\\/]x-data-grid[\\/]/.test(id)) return 'mui-data-grid';
+          if (/[\\/]node_modules[\\/]@mui[\\/]x-date-pickers[\\/]/.test(id)) return 'mui-date-pickers';
+          if (/[\\/]node_modules[\\/]qrcode\.react[\\/]/.test(id))    return 'qrcode-react';
 
           // 3) Tout le reste dans vendor
           return 'vendor';
