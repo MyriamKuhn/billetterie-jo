@@ -2,16 +2,20 @@
   "seo": {
     "title": "Mein Dashboard – Olympischer Ticketverkauf Paris 2024",
     "title_admin": "Mein Administrations-Dashboard – Olympischer Ticketverkauf Paris 2024",
+    "title_employee": "Mein Mitarbeiter-Dashboard – Olympischer Ticketverkauf Paris 2024",
     "description": "Verwalten Sie Ihre persönlichen Informationen und Sicherheitseinstellungen in Ihrem Kontodashboard.",
     "description_admin": "Verwalten Sie Ihre Administratorkontoinformationen. Sicherer Bereich für Administratoren des Olympischen Ticketverkaufs Paris 2024.",
+    "description_employee": "Verwalten Sie Ihre Mitarbeiterkontoinformationen. Sicherer Bereich für Mitarbeiter des Olympischen Ticketverkaufs Paris 2024.",
     "errorTitle": "Fehler – Olympischer Ticketverkauf Paris 2024",
     "errorDescription": "Beim Abrufen Ihres Profils ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut."
   },
   "dashboard": {
     "title": "Kundenbereich",
     "title_admin": "Administrationsbereich",
+    "title_employee": "Mitarbeiterbereich",
     "subtitle": "Verwalten Sie Ihre persönlichen Informationen und Sicherheitseinstellungen",
     "subtitle_admin": "Verwalten Sie Ihre Administratorkontoinformationen. Wir empfehlen, diese Informationen nicht mit anderen zu teilen und die Zwei-Faktor-Authentifizierung für zusätzliche Sicherheit zu aktivieren.",
+    "subtitle_employee": "Verwalten Sie Ihre Mitarbeiterkontoinformationen. Wir empfehlen, diese Informationen nicht mit anderen zu teilen und die Zwei-Faktor-Authentifizierung für zusätzliche Sicherheit zu aktivieren.",
     "name": "Vor- und Nachname",
     "email": "E-Mail",
     "firstname": "Vorname",

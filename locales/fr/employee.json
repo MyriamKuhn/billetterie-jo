@@ -1,0 +1,45 @@
+{
+  "seo": {
+    "title": "Scanner les billets - Billetterie JO Paris 2024",
+    "description": "Scannez les billets des spectateurs pour valider leur entrée aux événements des Jeux Olympiques de Paris 2024. Assurez-vous que chaque billet est valide et que les spectateurs peuvent accéder aux lieux."
+  },
+  "scan": {
+    "title": "Scanner le billets",
+    "ticket_token": "Code du billet : {{token}}",
+    "token": "Référence du billet : {{token}}",
+    "event_date": "Le {{date}} à {{time}} - {{location}}",
+    "event_places": "Nombre de places : {{places}}",
+    "client": "Propriétaire du billet :",
+    "status": {
+      "used": "Utilisé",
+      "issued": "Émis",
+      "refunded": "Remboursé",
+      "cancelled": "Annulé"
+    },
+    "scan_instructions": "Scannez le code QR du billet pour vérifier s'il correspond à l'événement, à la date et l'heure ainsi que le nombre de places.",
+    "instructions_manual": "Si le scan échoue, vous pouvez saisir manuellement le code du billet qui se trouve sous l'image du code QR dans le billet :",
+    "manual_label": "Code du billet",
+    "manual_button": "Valider le code",
+    "verification_title": "Vérification du billet",
+    "validating": "Validation",
+    "validate_button": "Valider le billet",
+    "already_used": "Ce billet a déjà été utilisé le {{dt}}.",
+    "fetching": "Récupération des informations du billet...",
+    "validated_title": "Billet validé",
+    "validated_message": "Le billet a été validé avec succès le {{dt}}.",
+    "verification_instructions": "Vérifiez les informations du billet ci-dessous pour confirmer sa validité.",
+    "reset_button": "Prochain scan"
+  },
+  "errors": {
+    "genericErrorTitle": "Ouups, une erreur s'est produite !",
+    "retry": "Réessayer",
+    "home": "Accueil",
+    "notFound": "Page non trouvée",
+    "notFoundMessage": "La page que vous cherchez n'existe pas ou a été déplacée.",
+    "unauthorized": "Accès non autorisé",
+    "unauthorizedMessage": "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",
+    "not_found": "Billet non trouvé. Veuillez vérifier le code du billet et réessayer.",
+    "fetch_error": "Erreur lors de la récupération des informations du billet. Veuillez réessayer.",
+    "validate_error": "Une erreur s'est produite lors de la validation du billet. Veuillez réessayer."
+  }
+}
