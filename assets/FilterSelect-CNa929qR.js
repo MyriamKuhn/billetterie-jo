@@ -1,1 +1,0 @@
-import{j as r}from"./react-C0aVURRx.js";import{ar as n,aB as i,j as m,M as o}from"./mui-uHutCCHi.js";function j({label:t,value:s,options:a,onChange:l}){return r.jsxs(n,{size:"small",fullWidth:!0,children:[r.jsx(i,{children:t}),r.jsx(m,{label:t,value:s,onChange:e=>l(e.target.value),children:a.map(e=>r.jsx(o,{value:e,children:e},e))})]})}export{j as F};

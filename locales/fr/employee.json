@@ -1,7 +1,9 @@
 {
   "seo": {
     "title": "Scanner les billets - Billetterie JO Paris 2024",
-    "description": "Scannez les billets des spectateurs pour valider leur entrée aux événements des Jeux Olympiques de Paris 2024. Assurez-vous que chaque billet est valide et que les spectateurs peuvent accéder aux lieux."
+    "title_validate": "Valider un billet - Billetterie JO Paris 2024",
+    "description": "Scannez les billets des spectateurs pour valider leur entrée aux événements des Jeux Olympiques de Paris 2024. Assurez-vous que chaque billet est valide et que les spectateurs peuvent accéder aux lieux.",
+    "description_validate": "Validez les billets des spectateurs pour les événements des Jeux Olympiques de Paris 2024 manuellement. Attention ne faites que ceci si vous êtes sûr que le ticket correspond à l'événement, à la date et l'heure ainsi que le nombre de places."
   },
   "scan": {
     "title": "Scanner le billets",
@@ -29,6 +31,16 @@
     "validated_message": "Le billet a été validé avec succès le {{dt}}.",
     "verification_instructions": "Vérifiez les informations du billet ci-dessous pour confirmer sa validité.",
     "reset_button": "Prochain scan"
+  },
+  "validate": {
+    "title": "Valider un billet manuellement",
+    "instructions_manual": "Entrez la référence du billet. Elle se trouve soit dans le corps du mail ou dans l'espace administrateur. N'utilisez cette fonctionnalité que si vous êtes sûr que le billet correspond à l'événement, à la date et l'heure ainsi que le nombre de places.",
+    "manual_label": "Référence du billet",
+    "validate_button": "Valider le billet",
+    "validating": "Validation...",
+    "results_title": "Validation échouée",
+    "reset_button": "Retourner à la validation",
+    "not_good": "Le billet n'est pas valide. Veuillez vérifier les informations et réessayer."
   },
   "errors": {
     "genericErrorTitle": "Ouups, une erreur s'est produite !",

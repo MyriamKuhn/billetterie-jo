@@ -1,0 +1,57 @@
+{
+  "seo": {
+    "title": "Scan Tickets - Paris 2024 Olympic Ticketing",
+    "title_validate": "Validate a Ticket - Paris 2024 Olympic Ticketing",
+    "description": "Scan spectators' tickets to validate their entry to the Paris 2024 Olympic Games events. Ensure each ticket is valid and spectators can access the venues.",
+    "description_validate": "Manually validate spectators' tickets for the Paris 2024 Olympic Games events. Only use this if you are sure the ticket matches the event, date, time, and number of seats."
+  },
+  "scan": {
+    "title": "Scan Tickets",
+    "ticket_token": "Ticket code: {{token}}",
+    "token": "Ticket reference: {{token}}",
+    "event_date": "On {{date}} at {{time}} - {{location}}",
+    "event_places": "Number of seats: {{places}}",
+    "client": "Ticket owner:",
+    "status": {
+      "used": "Used",
+      "issued": "Issued",
+      "refunded": "Refunded",
+      "cancelled": "Cancelled"
+    },
+    "scan_instructions": "Scan the ticket’s QR code to verify it matches the event, date, time, and number of seats.",
+    "instructions_manual": "If scanning fails, you can manually enter the ticket code found below the QR code on the ticket:",
+    "manual_label": "Ticket code",
+    "manual_button": "Validate code",
+    "verification_title": "Ticket verification",
+    "validating": "Validating",
+    "validate_button": "Validate ticket",
+    "already_used": "This ticket was already used on {{dt}}.",
+    "fetching": "Fetching ticket information...",
+    "validated_title": "Ticket validated",
+    "validated_message": "The ticket was successfully validated on {{dt}}.",
+    "verification_instructions": "Check the ticket information below to confirm its validity.",
+    "reset_button": "Next scan"
+  },
+  "validate": {
+    "title": "Validate a ticket manually",
+    "instructions_manual": "Enter the ticket reference. You can find it either in the email body or in the admin area. Use this feature only if you are certain the ticket matches the event, date, time, and number of seats.",
+    "manual_label": "Ticket reference",
+    "validate_button": "Validate ticket",
+    "validating": "Validating...",
+    "results_title": "Validation failed",
+    "reset_button": "Back to validation",
+    "not_good": "The ticket is not valid. Please check the information and try again."
+  },
+  "errors": {
+    "genericErrorTitle": "Oops, something went wrong!",
+    "retry": "Retry",
+    "home": "Home",
+    "notFound": "Page not found",
+    "notFoundMessage": "The page you are looking for does not exist or has been moved.",
+    "unauthorized": "Unauthorized access",
+    "unauthorizedMessage": "You do not have permission to access this page.",
+    "not_found": "Ticket not found. Please check the ticket code and try again.",
+    "fetch_error": "Error fetching ticket information. Please try again.",
+    "validate_error": "An error occurred while validating the ticket. Please try again."
+  }
+}
