@@ -39,6 +39,7 @@
     "unauthorized": "Accès non autorisé",
     "unauthorizedMessage": "Vous n'avez pas les permissions nécessaires pour accéder à cette page.",
     "not_found": "Billet non trouvé. Veuillez vérifier le code du billet et réessayer.",
-    "fetch_error": "Erreur lors de la récupération des informations du billet. Veuillez réessayer."
+    "fetch_error": "Erreur lors de la récupération des informations du billet. Veuillez réessayer.",
+    "validate_error": "Une erreur s'est produite lors de la validation du billet. Veuillez réessayer."
   }
 }

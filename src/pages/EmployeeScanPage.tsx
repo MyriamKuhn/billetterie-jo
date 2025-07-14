@@ -3,8 +3,7 @@ import Seo from "../components/Seo";
 import { PageWrapper } from "../components/PageWrapper";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useRef, useState } from "react";
-import { Html5Qrcode } from "html5-qrcode";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "@mui/material/Button";
 import { API_BASE_URL } from "../config";
@@ -36,7 +35,6 @@ export default function EmployeeScanPage() {
   const authToken = useAuthStore((state) => state.authToken);
   const lang = useLanguageStore(state => state.lang);
   const qrRegionId = "qr-reader";
-  const html5Qrcode = useRef<Html5Qrcode | null>(null);
 
   const [manualToken, setManualToken] = useState("");
   const [ticketInfo, setTicketInfo] = useState<TicketInfo | null>(null);
@@ -53,6 +51,13 @@ export default function EmployeeScanPage() {
     },
     () => setError(t("scan.camera_error"))
   );
+
+  // ➡️ STOPPE la caméra quand on quitte la page
+  useEffect(() => {
+    return () => {
+      stopScanner();
+    };
+  }, [stopScanner]);
 
   const fetchTicketInfo = (scannedToken: string) => {
     setFetching(true);
@@ -78,28 +83,22 @@ export default function EmployeeScanPage() {
 
   const handleManualSubmit = () => {
     if (manualToken.trim()) {
-      // stoppe temporairement le scanner s'il tourne
-      html5Qrcode.current?.stop().catch(() => {});
+      stopScanner();
       fetchTicketInfo(manualToken.trim());
     }
   };
 
   const validateTicket = () => {
-    if (!ticketInfo) return;
     setValidating(true);
     setValidated(false);
     axios
-      .post(`${API_BASE_URL}/api/tickets/scan/${ticketInfo.token}`, {}, { headers: { 'Authorization': `Bearer ${authToken}`, 'Accept-Language': lang } })
+      .post(`${API_BASE_URL}/api/tickets/scan/${ticketInfo!.token}`, {}, { headers: { 'Authorization': `Bearer ${authToken}`, 'Accept-Language': lang } })
       .then((res) => {
-        setTicketInfo((prev) => (prev ? { ...prev, ...res.data } : prev));
+        setTicketInfo((prev) => ({ ...prev!, ...res.data }));
         setValidated(true);
       })
-      .catch((e) => {
-        if (e.response?.status === 409) {
-          setTicketInfo((prev) => (prev ? { ...prev, ...e.response.data } : prev));
-        } else {
-          setError(t("scan.validate_error"));
-        }
+      .catch((_e) => {
+        setError(t("errors.validate_error"));
       })
       .finally(() => 
         setValidating(false));

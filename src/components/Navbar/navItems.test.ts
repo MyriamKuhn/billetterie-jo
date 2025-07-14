@@ -56,7 +56,7 @@ describe('navItems', () => {
   });
 
   it('décompte total correspond aux éléments déclarés', () => {
-    expect(navItems).toHaveLength(18);
+    expect(navItems).toHaveLength(19);
   });
 });
 
