@@ -24,7 +24,9 @@
     "manageOrders": "Manage orders",
     "reports": "Reports",
     "userOrders": "My orders",
-    "userTickets": "My tickets"
+    "userTickets": "My tickets",
+    "scanTickets": "Scan tickets",
+    "validateTickets": "Validate tickets"
   },
   "seo": {
     "title": "Reserve your tickets – Paris 2024 Olympic Ticketing",

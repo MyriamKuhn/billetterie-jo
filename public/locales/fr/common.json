@@ -24,7 +24,9 @@
     "manageOrders": "Gérer les commandes",
     "reports": "Rapports",
     "userOrders": "Mes commandes",
-    "userTickets": "Mes billets"
+    "userTickets": "Mes billets",
+    "scanTickets": "Scanner les billets",
+    "validateTickets": "Valider les billets"
   },
   "seo": {
     "title": "Réservez vos billets – Billetterie JO Paris 2024",

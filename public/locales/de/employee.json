@@ -1,0 +1,57 @@
+{
+  "seo": {
+    "title": "Tickets scannen – Olympischer Ticketverkauf Paris 2024",
+    "title_validate": "Ticket manuell validieren – Olympischer Ticketverkauf Paris 2024",
+    "description": "Scannen Sie die Tickets der Zuschauer, um ihren Einlass zu den Veranstaltungen der Olympischen Spiele Paris 2024 zu validieren. Stellen Sie sicher, dass jedes Ticket gültig ist und die Zuschauer Zugang zu den Veranstaltungsorten erhalten.",
+    "description_validate": "Validieren Sie die Zuschauer-Tickets für die Olympischen Spiele Paris 2024 manuell. Verwenden Sie diese Funktion nur, wenn Sie sicher sind, dass das Ticket zum Event, Datum, Uhrzeit und der Anzahl der Plätze passt."
+  },
+  "scan": {
+    "title": "Tickets scannen",
+    "ticket_token": "Ticketcode: {{token}}",
+    "token": "Ticket-Referenz: {{token}}",
+    "event_date": "Am {{date}} um {{time}} – {{location}}",
+    "event_places": "Anzahl der Plätze: {{places}}",
+    "client": "Ticketinhaber:",
+    "status": {
+      "used": "Genutzt",
+      "issued": "Ausgestellt",
+      "refunded": "Erstattet",
+      "cancelled": "Storniert"
+    },
+    "scan_instructions": "Scannen Sie den QR-Code des Tickets, um zu prüfen, ob es zum Event, Datum, Uhrzeit und der Anzahl der Plätze passt.",
+    "instructions_manual": "Wenn das Scannen fehlschlägt, können Sie den Ticketcode, der unter dem QR-Code auf dem Ticket steht, manuell eingeben:",
+    "manual_label": "Ticketcode",
+    "manual_button": "Code validieren",
+    "verification_title": "Ticketüberprüfung",
+    "validating": "Validierung",
+    "validate_button": "Ticket validieren",
+    "already_used": "Dieses Ticket wurde bereits am {{dt}} verwendet.",
+    "fetching": "Lade Ticketinformationen...",
+    "validated_title": "Ticket validiert",
+    "validated_message": "Das Ticket wurde erfolgreich am {{dt}} validiert.",
+    "verification_instructions": "Überprüfen Sie die Ticketinformationen unten, um die Gültigkeit zu bestätigen.",
+    "reset_button": "Nächster Scan"
+  },
+  "validate": {
+    "title": "Ticket manuell validieren",
+    "instructions_manual": "Geben Sie die Ticket-Referenz ein. Sie finden sie entweder im E-Mail-Text oder im Adminbereich. Verwenden Sie diese Funktion nur, wenn Sie sicher sind, dass das Ticket zum Event, Datum, Uhrzeit und der Anzahl der Plätze passt.",
+    "manual_label": "Ticket-Referenz",
+    "validate_button": "Ticket validieren",
+    "validating": "Validiere...",
+    "results_title": "Validierung fehlgeschlagen",
+    "reset_button": "Zurück zur Validierung",
+    "not_good": "Das Ticket ist nicht gültig. Bitte überprüfen Sie die Informationen und versuchen Sie es erneut."
+  },
+  "errors": {
+    "genericErrorTitle": "Ups, es ist ein Fehler aufgetreten!",
+    "retry": "Erneut versuchen",
+    "home": "Startseite",
+    "notFound": "Seite nicht gefunden",
+    "notFoundMessage": "Die von Ihnen gesuchte Seite existiert nicht oder wurde verschoben.",
+    "unauthorized": "Zugriff nicht erlaubt",
+    "unauthorizedMessage": "Sie haben keine Berechtigung, auf diese Seite zuzugreifen.",
+    "not_found": "Ticket nicht gefunden. Bitte überprüfen Sie den Ticketcode und versuchen Sie es erneut.",
+    "fetch_error": "Fehler beim Abrufen der Ticketinformationen. Bitte versuchen Sie es erneut.",
+    "validate_error": "Beim Validieren des Tickets ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
+  }
+}
