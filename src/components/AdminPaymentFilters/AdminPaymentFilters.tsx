@@ -18,12 +18,18 @@ interface Props {
   onChange: (f: Partial<AdminPaymentFilters>) => void
 }
 
+/**
+ * Sidebar and mobile drawer for payment list filters.
+ *
+ * - Provides search, status, method, and pagination filters.
+ * - Calls onChange with updated filter and resets page to 1.
+ */
 export function AdminPaymentFilters({ filters, onChange }: Props) {
   const { t } = useTranslation('payments')
   const theme = useTheme()
   const [open, setOpen] = useState(false)
 
-  // Status options
+  // Map internal status keys to translated labels
   const statusMap: Record<string, string> = {
     '': t('filters.status_all'),
     pending: t('filters.status_pending'),
@@ -32,12 +38,13 @@ export function AdminPaymentFilters({ filters, onChange }: Props) {
     refunded: t('filters.status_refunded'),
   }
   const statusOptions = Object.values(statusMap)
+  // Reverse lookup from label back to status key
   const labelToStatus = Object.fromEntries(
     Object.entries(statusMap).map(([k, v]) => [v, k])
   ) as Record<string, AdminPaymentsStatus>
   const currentStatusLabel = statusMap[filters.status]
 
-  // Payment method options
+  // Prepare payment method select options and reverse map
   const paymentMethods = ['', 'paypal', 'stripe', 'free']
   const paymentMethodOptions = paymentMethods.map(method => t(`filters.payment_method_${method}`))
   const currentPaymentMethod = paymentMethods.includes(filters.payment_method)
@@ -47,20 +54,21 @@ export function AdminPaymentFilters({ filters, onChange }: Props) {
     paymentMethods.map(method => [t(`filters.payment_method_${method}`), method])
   ) as Record<string, '' | 'paypal' | 'stripe' | 'free'>
 
+  // Shared content for both desktop sidebar and mobile drawer
   const content = (
     <Box sx={{ width: 260, py: 2, px: 1 }}>
       <Typography variant="h6" gutterBottom>
         {t('filters.title')}
         </Typography>
       <Stack spacing={2} sx={{ mx: 1 }}>
-        {/* Filtre par recherche */}
+        {/* Free-text search filter */}
         <FilterField
           label={t('filters.name')}
           value={filters.q}
           onChange={v => onChange({ q:v, page:1 })}
         />
 
-        {/* Filtre par statut */}
+        {/* Status dropdown */}
         <FilterSelect<string>
           label={t('filters.status_label')}
           value={currentStatusLabel}
@@ -68,7 +76,7 @@ export function AdminPaymentFilters({ filters, onChange }: Props) {
           onChange={label => onChange({ status: labelToStatus[label], page: 1 })}
         />
 
-        {/* Filtre par méthode de paiement */}
+        {/* Payment method dropdown */}
         <FilterSelect<string>
           label={t('filters.payment_method_label')}
           value={currentPaymentMethod}
@@ -76,7 +84,7 @@ export function AdminPaymentFilters({ filters, onChange }: Props) {
           onChange={label => onChange({ payment_method: labelToPaymentMethod[label], page: 1 })}
         />
 
-        {/* Par page */}
+        {/* Items per page dropdown */}
         <FilterSelect<string>
           label={t('filters.per_page')}
           value={String(filters.per_page)}
@@ -87,7 +95,7 @@ export function AdminPaymentFilters({ filters, onChange }: Props) {
           }}
         />
 
-        {/* Réinitialiser */}
+        {/* Reset all filters */}
         <Button
           variant="outlined"
           fullWidth
@@ -109,13 +117,13 @@ export function AdminPaymentFilters({ filters, onChange }: Props) {
 
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop sidebar: visible on md+ */}
       <Box
         component="aside"
         sx={{
           display: { xs: 'none', md: 'block' },
           position: 'sticky',
-          top: theme.mixins.toolbar.minHeight,
+          top: theme.mixins.toolbar.minHeight,  // stick below app bar
           bgcolor: 'background.paper',
           border: `1px solid ${theme.palette.divider}`,
           borderRadius: 1,
@@ -125,13 +133,14 @@ export function AdminPaymentFilters({ filters, onChange }: Props) {
         {content}
       </Box>
 
-      {/* Mobile */}
+      {/* Mobile view: menu button toggles drawer */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 2 }}>
         <IconButton onClick={() => setOpen(true)} aria-label={t('filters.title')}>
           <MenuIcon />
         </IconButton>
         <Drawer open={open} onClose={() => setOpen(false)} keepMounted>
           <Box sx={{ position: 'relative' }}>
+            {/* Close icon inside drawer */}
             <IconButton
               onClick={() => setOpen(false)}
               size="small"

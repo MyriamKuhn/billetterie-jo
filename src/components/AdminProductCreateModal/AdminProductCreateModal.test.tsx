@@ -3,29 +3,29 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import { AdminProductCreateModal } from './AdminProductCreateModal'
 
-// 1) mock useTranslation
+// Mock translation hook to return keys directly
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key
   })
 }))
 
-// 2) mock useCustomSnackbar
+// Mock snackbar notify
 const notifyMock = vi.fn()
 vi.mock('../../hooks/useCustomSnackbar', () => ({
   useCustomSnackbar: () => ({ notify: notifyMock })
 }))
 
-// 3) mock useCreateProduct
+// Mock createProduct hook with controllable resolved value
 let createProductResult = true
 const createProductMock = vi.fn<(data: FormData) => Promise<boolean>>(async () => createProductResult)
 vi.mock('../../hooks/useCreateProduct', () => ({
   useCreateProduct: () => createProductMock
 }))
 
+// Mock ProductForm to emit onSubmit/onCancel calls with fake data
 vi.mock('../ProductForm', () => {
   const testFile = new File(['dummy'], 'test.png', { type: 'image/png' });
-  // Valeurs factices complètes
   const fakeTranslations = {
     fr: {
       name: 'NomFR',
@@ -59,7 +59,7 @@ vi.mock('../ProductForm', () => {
   return {
     ProductForm: (props: any) => (
       <div>
-        {/* Submit sans image */}
+        {/* Trigger submit without an image */}
         <button onClick={() => props.onSubmit({
           price: 10,
           sale: 0.1,
@@ -70,7 +70,7 @@ vi.mock('../ProductForm', () => {
           Submit
         </button>
 
-        {/* Submit avec image */}
+        {/* Trigger submit including an image file */}
         <button onClick={() => props.onSubmit({
           price: 10,
           sale: 0.1,
@@ -81,7 +81,7 @@ vi.mock('../ProductForm', () => {
           SubmitWithImage
         </button>
 
-        {/* Cancel */}
+        {/* Trigger cancel */}
         <button onClick={props.onCancel}>Cancel</button>
       </div>
     )
@@ -96,39 +96,40 @@ describe('<AdminProductCreateModal/>', () => {
     vi.clearAllMocks()
   })
 
-  it('n’affiche rien si open=false', () => {
+  it('renders nothing when open=false', () => {
     render(<AdminProductCreateModal open={false} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     expect(screen.queryByText('products.create_new')).toBeNull()
   })
 
-  it('affiche le titre et ProductForm si open=true', () => {
+  it('shows title and form when open=true', () => {
     render(<AdminProductCreateModal open={true} onClose={onClose} onRefresh={onRefresh} lang="en" />)
+    // Title key should be displayed
     expect(screen.getByText('products.create_new')).toBeInTheDocument()
-    // notre mock ProductForm affiche un bouton Submit
+    // Our mock ProductForm renders these buttons
     expect(screen.getByText('Submit')).toBeInTheDocument()
     expect(screen.getByText('Cancel')).toBeInTheDocument()
   })
 
-  it('ferme la modal quand onCancel est appelé', () => {
+  it('calls onClose when cancel is clicked', () => {
     render(<AdminProductCreateModal open={true} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     fireEvent.click(screen.getByText('Cancel'))
     expect(onClose).toHaveBeenCalledOnce()
   })
 
-  it('sur succès de createProduct : notifie success et appelle onRefresh', async () => {
+  it('on successful create: notifies success and refreshes', async () => {
     createProductResult = true
     render(<AdminProductCreateModal open={true} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     await userEvent.click(screen.getByText('Submit'))
 
-    // createProduct a reçu un FormData avec tous les champs
+    // createProduct should be called once with a FormData instance
     expect(createProductMock).toHaveBeenCalledOnce()
-    // notification de succès
+    // Expect success notification
     expect(notifyMock).toHaveBeenCalledWith('products.success', 'success')
-    // rafraîchissement
+    // Expect list refresh
     expect(onRefresh).toHaveBeenCalledOnce()
   })
 
-  it('sur échec de createProduct : notifie error et ne rafraîchit pas', async () => {
+  it('on failure: notifies error and does not refresh', async () => {
     createProductResult = false
     render(<AdminProductCreateModal open={true} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     await userEvent.click(screen.getByText('Submit'))
@@ -138,8 +139,7 @@ describe('<AdminProductCreateModal/>', () => {
     expect(onRefresh).not.toHaveBeenCalled()
   })
 
-  it('appelle body.append("image", ...) quand data.imageFile est présent', async () => {
-    // on rend la modal ouverte
+  it('appends image file to FormData when provided', async () => {
     render(
       <AdminProductCreateModal
         open={true}
@@ -149,15 +149,13 @@ describe('<AdminProductCreateModal/>', () => {
       />
     );
 
-    // clique sur le bouton SubmitWithImage
     await userEvent.click(screen.getByText('SubmitWithImage'));
 
-    // on récupère le premier argument du premier appel
-    // grâce au typage explicite du mock (voir plus bas)
+    // Extract FormData passed to createProduct
     const formData = createProductMock.mock.calls[0][0] as FormData;
 
-    // on vérifie que la clé "image" existe bien et contient notre File
     const file = formData.get('image');
+    // Ensure the file is correctly appended
     expect(file).toBeInstanceOf(File);
     expect((file as File).name).toBe('test.png');
   });

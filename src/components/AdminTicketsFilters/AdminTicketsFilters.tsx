@@ -23,14 +23,22 @@ interface Props {
   onChange: (f: Partial<AdminTicketFilters>) => void
 }
 
+/**
+ * AdminTicketsFilters
+ *
+ * Renders filtering controls for the admin ticket list,
+ * including status select, user autocomplete, pagination size,
+ * and supports both desktop (sidebar) and mobile (drawer) layouts.
+ */
 export function AdminTicketsFilters({ filters, onChange }: Props) {
   const { t } = useTranslation('orders')
   const theme = useTheme()
   const [open, setOpen] = useState(false)
 
+  // Retrieve auth token for API calls
   const token = useAuthStore((state) => state.authToken)
 
-  // Fetch all users once
+  // Fetch all users once, for the user filter autocomplete.
   const userFetchParams = useMemo(
     () => ({ firstname: '', lastname: '', email: '', perPage: 1000000000, page: 1 }),
     [filters.per_page]
@@ -41,14 +49,16 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
     'user'
   )
 
-  // Prepare options: include "All users" at top
+  // Prepare the options array for the Autocomplete:
+  // - First entry: "All users"
+  // - Then each user formatted as "Firstname Lastname (email)"
   const allOption = useMemo(() => ({ label: t('filters.user_all'), id: undefined }), [t])
   const allOptions = useMemo(
     () => [allOption, ...users.map(u => ({ label: `${u.firstname} ${u.lastname} (${u.email})`, id: u.id }))],
     [users, allOption]
   )
 
-  // Status options
+  // Status filter: map status code to translated label
   const statusMap: Record<string, string> = {
     '': t('filters.status_all'),
     issued: t('filters.status_issued'),
@@ -62,6 +72,7 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
   ) as Record<string, TicketStatus>
   const currentStatusLabel = statusMap[filters.status]
 
+  // Handler for user selection changes.
   const handleUserChange = useCallback(
     (_: any, option: { label: string; id?: number } | null, reason?: string) => {
       if (reason === 'clear') {
@@ -73,13 +84,14 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
     [onChange]
   )
 
+  // The main filter content shared by both desktop and mobile layouts.
   const content = (
     <Box sx={{ width: 260, py: 2, px: 1 }}>
       <Typography variant="h6" gutterBottom>
         {t('filters.title')}
         </Typography>
       <Stack spacing={2} sx={{ mx: 1 }}>
-        {/* Filtre par statut */}
+        {/* Status filter dropdown */}
         <FilterSelect<string>
           label={t('filters.status_label')}
           value={currentStatusLabel}
@@ -87,7 +99,7 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
           onChange={label => onChange({ status: labelToStatus[label], page: 1 })}
         />
 
-        {/* Filtre par utilisateur */}
+        {/* User filter autocomplete */}
         <Autocomplete
           clearText={t('filters.clear_user')}
           size="small"
@@ -119,7 +131,7 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
           )}
         />
 
-        {/* Par page */}
+        {/* Items per page selector */}
         <FilterSelect<string>
           label={t('filters.per_page')}
           value={String(filters.per_page)}
@@ -130,7 +142,7 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
           }}
         />
 
-        {/* Réinitialiser */}
+        {/* Reset all filters button */}
         <Button
           variant="outlined"
           fullWidth
@@ -151,7 +163,7 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
 
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop layout: fixed sidebar */}
       <Box
         component="aside"
         sx={{
@@ -167,7 +179,7 @@ export function AdminTicketsFilters({ filters, onChange }: Props) {
         {content}
       </Box>
 
-      {/* Mobile */}
+      {/* Mobile layout: drawer toggled by menu icon */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 2 }}>
         <IconButton onClick={() => setOpen(true)} aria-label={t('filters.title')}>
           <MenuIcon />

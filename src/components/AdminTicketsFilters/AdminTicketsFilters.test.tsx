@@ -1,4 +1,3 @@
-// src/components/AdminTicketsFilters/AdminTicketsFilters.test.tsx
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
@@ -7,6 +6,7 @@ import { useUsers } from '../../hooks/useUsers'
 import { useAuthStore } from '../../stores/useAuthStore'
 
 // --- Mocks ------------------------------------------------
+// Mock the translation hook to return the key directly
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (s: string) => s })
 }))
@@ -29,6 +29,7 @@ describe('AdminTicketsFilters', () => {
   const mockOnChange = vi.fn()
 
   beforeEach(() => {
+    // Clear previous mocks and set up default returns
     vi.clearAllMocks()
     ;(useAuthStore as any).mockReturnValue('tok-123')
     ;(useUsers as any).mockReturnValue({
@@ -47,9 +48,11 @@ describe('AdminTicketsFilters', () => {
     page: 2
   }
 
-  it('injecte token et params dans useUsers', () => {
+  it('passes correct params and token to useUsers', () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
+    // Expect auth store selector to be called
     expect(useAuthStore).toHaveBeenCalled()
+    // Expect useUsers hook to receive empty search fields, huge perPage, reset to page 1, and the token
     expect(useUsers).toHaveBeenCalledWith(
       { firstname: '', lastname: '', email: '', perPage: 1000000000, page: 1 },
       'tok-123',
@@ -57,26 +60,33 @@ describe('AdminTicketsFilters', () => {
     )
   })
 
-  it('gère le changement de statut via FilterSelect', () => {
+  it('handles status change via FilterSelect', () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
     const [statusSelect] = screen.getAllByTestId('filters.status_label') as HTMLSelectElement[]
+    // Initially shows the translated "issued" label
     expect(statusSelect.value).toBe('filters.status_issued')
+    // Change to "used"
     fireEvent.change(statusSelect, { target: { value: 'filters.status_used' } })
+    // Expect onChange called with new status and page reset to 1
     expect(mockOnChange).toHaveBeenCalledWith({ status: 'used', page: 1 })
   })
 
-  it('gère le changement de per_page via FilterSelect', () => {
+  it('handles per_page change via FilterSelect', () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
     const [, perPageSelect] = screen.getAllByTestId('filters.per_page') as HTMLSelectElement[]
+    // Initially 10 items per page
     expect(perPageSelect.value).toBe('10')
+    // Change to 25 items
     fireEvent.change(perPageSelect, { target: { value: '25' } })
+    // Expect onChange called with new per_page and page reset
     expect(mockOnChange).toHaveBeenCalledWith({ per_page: 25, page: 1 })
   })
 
-  it('réinitialise tous les filtres avec le bouton Reset', () => {
+  it('resets all filters when Reset button is clicked', () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
     const [resetBtn] = screen.getAllByText('filters.reset')
     fireEvent.click(resetBtn)
+    // Expect all filters go back to defaults
     expect(mockOnChange).toHaveBeenCalledWith({
       status: '',
       user_id: undefined,
@@ -85,34 +95,39 @@ describe('AdminTicketsFilters', () => {
     })
   })
 
-  it('clear Autocomplete déclenche branch `reason === "clear"`', () => {
+  it('clear button in Autocomplete triggers clear branch', () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
     const [clearBtn] = screen.getAllByLabelText('filters.clear_user')
     fireEvent.click(clearBtn)
+    // Expect onChange with undefined user_id and reset page
     expect(mockOnChange).toHaveBeenCalledWith({ user_id: undefined, page: 1 })
   })
 
-  it('isOptionEqualToValue renvoie vrai quand id identique', async () => {
+  it('isOptionEqualToValue returns true when ids match', async () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
+    // Open the Autocomplete dropdown
     const [openBtn] = screen.getAllByRole('button', { name: 'Open', hidden: false })
     fireEvent.click(openBtn)
+    // Select the option for John Doe
     const option = await screen.findByText('John Doe (john@x)')
     fireEvent.click(option)
+    // Expect onChange called with that user id
     expect(mockOnChange).toHaveBeenCalledWith({ user_id: 5, page: 1 })
   })
 
-  it('gère proprement la sélection et le filtrage dans l’Autocomplete', async () => {
+  it('filters and displays options correctly in Autocomplete', async () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
 
-    // taper "jane" dans l'input de l'Autocomplete
+    // Type "jane" into the combobox
     const userInput = screen.getByRole('combobox', { name: 'filters.user' }) as HTMLInputElement
     fireEvent.change(userInput, { target: { value: 'jane' } })
 
-    // attendre que le listbox lié soit rendu
+    // Wait for the filtered options to render
     await waitFor(() => {
       const listbox = screen.getByRole('listbox', { name: 'filters.user' })
       const options = within(listbox).getAllByRole('option')
       expect(options).toHaveLength(3)
+      // The options should include "All", John, and Jane
       expect(options.map(o => o.textContent)).toEqual([
         'filters.user_all',
         'John Doe (john@x)',
@@ -121,95 +136,94 @@ describe('AdminTicketsFilters', () => {
     })
   })
 
-  it('garde le Drawer monté dans le DOM même lorsqu’il est fermé (keepMounted)', () => {
+  it('keeps the Drawer mounted in the DOM even when closed', () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
 
-    // Le Drawer doit exister dans le DOM global dès le rendu, même fermé
+    // The Drawer root should exist even if not visible
     const drawerRoot = document.querySelector('.MuiDrawer-root')
     expect(drawerRoot).not.toBeNull()
   })
 
-  it('ouvre et ferme le Drawer mobile via Drawer open/onClose', async () => {
+  it('opens and closes mobile Drawer via open/onClose', async () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
     const menuBtn = screen.getByLabelText('filters.title')
     fireEvent.click(menuBtn)
+    // Find the close button inside the opened Drawer
     const drawerClose = screen
       .getAllByLabelText('filters.close')
       .find(el => el.closest('.MuiDrawer-root'))
     expect(drawerClose).toBeTruthy()
     fireEvent.click(drawerClose!)
+    // Wait for it to become hidden
     await waitFor(() => {
       expect(drawerClose).not.toBeVisible()
     })
   })
 
-  it('ouvre le Drawer mobile quand open passe à true (et reste monté grâce à keepMounted)', () => {
+  it('opens mobile Drawer when “open” flag becomes true (keepMounted)', () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
 
-    // 1) il existe dans le DOM même fermé
     const drawerRoot = document.querySelector('.MuiDrawer-root')
     expect(drawerRoot).not.toBeNull()
 
     const paper = drawerRoot!.querySelector('.MuiDrawer-paper')
     expect(paper).not.toBeVisible()
 
-    // 2) clic sur le menu ouvre le Drawer
+    // Click menu to open
     const menuBtn = screen.getByLabelText('filters.title')
     fireEvent.click(menuBtn)
 
-    // now it's opened
     expect(paper).toBeVisible()
   })
 
-  it('ferme le Drawer quand on clique sur le backdrop', async () => {
+  it('closes the Drawer when clicking on the backdrop', async () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
-    // Ouvrir le drawer
+    // Open Drawer
     const menuBtn = screen.getByLabelText('filters.title')
     fireEvent.click(menuBtn)
-    // S'assurer que le backdrop apparaît
+    // Ensure backdrop is present
     let backdrop = document.querySelector('.MuiBackdrop-root')
     expect(backdrop).toBeInTheDocument()
 
-    // Cliquer sur le backdrop pour fermer
+    // Click backdrop to close
     fireEvent.click(backdrop!)
-    // Attendre que le Drawer soit caché (le backdrop devient invisible)
     await waitFor(() => {
       expect(backdrop).toHaveStyle('visibility: hidden')
     })
   })
 
-  it('affiche un spinner de chargement quand usersLoading est vrai', () => {
-    // Mock pour forcer loading=true
+  it('shows a loading spinner when usersLoading is true', () => {
+    // Force the hook to return loading
     ;(useUsers as any).mockReturnValue({ users: [], loading: true })
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
-    // Le spinner MUI a le rôle "progressbar"
+    // The MUI spinner has role "progressbar"
     const spinner = screen.getByRole('progressbar')
     expect(spinner).toBeInTheDocument()
   })
 
-  it('utilise allOption quand filters.user_id n’est pas dans les options', () => {
-    // Aucun user n'a l'ID 999, on doit retomber sur allOption
+  it('uses allOption when filters.user_id is not in user list', () => {
+    // Provide a user_id not present in users[]
     const badFilters = { ...defaultFilters, user_id: 999 }
     render(<AdminTicketsFilters filters={badFilters} onChange={mockOnChange} />)
-    // Le combobox doit afficher le label "filters.user_all"
+    // The combobox should show the "all" label
     const userInput = screen.getByRole('combobox', { name: 'filters.user' }) as HTMLInputElement
     expect(userInput.value).toBe('filters.user_all')
   })
 
-  it('affiche bien l’utilisateur correspondant quand filters.user_id est dans la liste', () => {
-    // L’ID 6 correspond à Jane Roe
+  it('displays the matching user when filters.user_id is present', () => {
+    // Use Jane Roe's ID
     const goodFilters = { ...defaultFilters, user_id: 6 }
     render(<AdminTicketsFilters filters={goodFilters} onChange={mockOnChange} />)
     const userInput = screen.getByRole('combobox', { name: 'filters.user' }) as HTMLInputElement
     expect(userInput.value).toBe('Jane Roe (jane@x)')
   })
 
-  it('utilise le sélecteur useAuthStore pour récupérer authToken', () => {
+  it('uses the selector passed to useAuthStore to get authToken', () => {
     render(<AdminTicketsFilters filters={defaultFilters} onChange={mockOnChange} />)
-    // le premier appel à useAuthStore reçoit un sélecteur
+    // Grab the selector function passed to useAuthStore
     const selector = (useAuthStore as unknown as jest.Mock).mock.calls[0][0]
     expect(typeof selector).toBe('function')
-    // et ce sélecteur renvoie bien state.authToken
+    // Check that selector extracts state.authToken
     expect(selector({ authToken: 'mon-token', autre: 42 })).toBe('mon-token')
   })
 })

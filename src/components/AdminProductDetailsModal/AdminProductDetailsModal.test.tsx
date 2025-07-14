@@ -3,10 +3,10 @@ import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import { AdminProductDetailsModal } from './AdminProductDetailsModal'
 
-// 1) mock useTranslation
+// Mock translation hook to return keys or interpolated title
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string, opts?: any) => {
-    // pour le titre qu'on injecte : products.modification, { id }
+    // Return title with ID when appropriate
     if (key === 'products.modification' && opts?.id != null) {
       return `products.modification:${opts.id}`
     }
@@ -14,13 +14,13 @@ vi.mock('react-i18next', () => ({
   }})
 }))
 
-// 2) mock useCustomSnackbar
+// Mock snackbar notify
 const notifyMock = vi.fn()
 vi.mock('../../hooks/useCustomSnackbar', () => ({
   useCustomSnackbar: () => ({ notify: notifyMock })
 }))
 
-// 3) mock useProductDetailsMultiLang
+// Mock data hook for multi-language product details
 let pdLoading = false
 let pdError = false
 let pdData: any = null
@@ -32,18 +32,18 @@ vi.mock('../../hooks/useProductDetailsMultiLang', () => ({
   })
 }))
 
-// 4) mock useUpdateProductDetails
+// Mock update hook
 let updateResult = true
 const updateMock = vi.fn< (id:number, body:FormData)=>Promise<boolean> >(async () => updateResult)
 vi.mock('../../hooks/useUpdateProductDetails', () => ({
   useUpdateProductDetails: () => updateMock
 }))
 
-// 5) mock OlympicLoader & ErrorDisplay
+// Mock loader and error display components
 vi.mock('../OlympicLoader', () => ({ default: () => <div>Loader</div> }))
 vi.mock('../ErrorDisplay', () => ({ ErrorDisplay: (props:any) => <div>Error:{props.message}</div> }))
 
-// 6) mock ProductForm
+// Mock ProductForm to trigger onSubmit/onCancel
 const testFile = new File(['dummy'], 'test.png', { type: 'image/png' })
 const fakeTrans = {
   fr: { name:'N-FR', product_details:{ places:1,description:'D-FR',date:'2025-01-01',time:'10:00',location:'L-FR',category:'C-FR',image:'',imageFile:undefined } },
@@ -53,14 +53,17 @@ const fakeTrans = {
 vi.mock('../ProductForm', () => ({
   ProductForm: (props:any) => (
     <div>
+      {/* Trigger submit without image */}
       <button onClick={() => props.onSubmit({ 
         price: 42, sale: 0.2, stock_quantity: 7, imageFile: undefined,
         translations: fakeTrans
       })}>Submit</button>
+      {/* Trigger submit with image */}
       <button onClick={() => props.onSubmit({ 
         price: 42, sale: 0.2, stock_quantity: 7, imageFile: testFile,
         translations: fakeTrans
       })}>SubmitWithImage</button>
+      {/* Trigger cancel */}
       <button onClick={props.onCancel}>Cancel</button>
     </div>
   )
@@ -78,70 +81,69 @@ describe('<AdminProductDetailsModal />', () => {
     updateResult = true
   })
 
-  it('n’affiche rien si open=false', () => {
+  it('renders nothing when open=false', () => {
     render(<AdminProductDetailsModal open={false} productId={123} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     expect(screen.queryByText('products.modification:123')).toBeNull()
   })
 
-  it('affiche loader quand loading=true', () => {
+  it('shows loader while data is loading', () => {
     pdLoading = true
     render(<AdminProductDetailsModal open={true} productId={5} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     expect(screen.getByText('Loader')).toBeInTheDocument()
   })
 
-  it('affiche error quand error=true', () => {
+  it('shows error display when fetch fails', () => {
     pdError = true
     render(<AdminProductDetailsModal open={true} productId={77} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     expect(screen.getByText('Error:errors.not_found')).toBeInTheDocument()
   })
 
-  it('affiche le form quand data disponible', () => {
-    // on fournit pdData avec la structure attendue
+  it('renders form when data is available', () => {
     pdData = {
       fr: { ...fakeTrans.fr, price: 1, sale: 0, stock_quantity: 1 },
       en: { ...fakeTrans.en, price: 2, sale: 0.1, stock_quantity: 2 },
       de: { ...fakeTrans.de, price: 3, sale: 0.2, stock_quantity: 3 }
     }
     render(<AdminProductDetailsModal open={true} productId={9} onClose={onClose} onRefresh={onRefresh} lang="en" />)
-    // Titre avec id interpolé
+    // Title includes interpolated ID
     expect(screen.getByText('products.modification:9')).toBeInTheDocument()
-    // Mock ProductForm boutons
+    // Form buttons from our mock
     expect(screen.getByText('Submit')).toBeInTheDocument()
     expect(screen.getByText('Cancel')).toBeInTheDocument()
   })
 
-  it('ferme la modal via Cancel', () => {
+  it('calls onClose when cancel is clicked', () => {
     pdData = { fr:{...fakeTrans.fr, price:0,sale:0,stock_quantity:0}, en:{...fakeTrans.en, price:0,sale:0,stock_quantity:0}, de:{...fakeTrans.de, price:0,sale:0,stock_quantity:0} }
     render(<AdminProductDetailsModal open={true} productId={55} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     fireEvent.click(screen.getByText('Cancel'))
     expect(onClose).toHaveBeenCalledOnce()
   })
 
-  it('soumission réussie : notifie & refresh', async () => {
+  it('on successful submit: notifies success and refreshes', async () => {
     pdData = { fr:{...fakeTrans.fr, price:0,sale:0,stock_quantity:0}, en:{...fakeTrans.en, price:0,sale:0,stock_quantity:0}, de:{...fakeTrans.de, price:0,sale:0,stock_quantity:0} }
     render(<AdminProductDetailsModal open={true} productId={42} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     await userEvent.click(screen.getByText('Submit'))
 
-    // vérifie l'appel
+    // Verify updateProduct call
     expect(updateMock).toHaveBeenCalledOnce()
-    // notify success
+    // Expect success notification and refresh
     expect(notifyMock).toHaveBeenCalledWith('products.success', 'success')
     expect(onRefresh).toHaveBeenCalledOnce()
   })
 
-  it('branche image : body.append("image",...)', async () => {
+  it('appends image file when provided', async () => {
     pdData = { fr:{...fakeTrans.fr, price:0,sale:0,stock_quantity:0}, en:{...fakeTrans.en, price:0,sale:0,stock_quantity:0}, de:{...fakeTrans.de, price:0,sale:0,stock_quantity:0} }
     render(<AdminProductDetailsModal open={true} productId={88} onClose={onClose} onRefresh={onRefresh} lang="en" />)
     await userEvent.click(screen.getByText('SubmitWithImage'))
 
-    // extrait le FormData
+    // Extract FormData from update call args
     const formData = updateMock.mock.calls[0][1] as FormData
     const file = formData.get('image')
     expect(file).toBeInstanceOf(File)
     expect((file as File).name).toBe('test.png')
   })
 
-  it('échec de soumission : notifie erreur', async () => {
+  it('shows error notification on failed submit', async () => {
     pdData = { fr:{...fakeTrans.fr, price:0,sale:0,stock_quantity:0}, en:{...fakeTrans.en, price:0,sale:0,stock_quantity:0}, de:{...fakeTrans.de, price:0,sale:0,stock_quantity:0} }
     updateResult = false
     render(<AdminProductDetailsModal open={true} productId={7} onClose={onClose} onRefresh={onRefresh} lang="en" />)

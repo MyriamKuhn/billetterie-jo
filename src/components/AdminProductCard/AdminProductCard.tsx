@@ -25,19 +25,29 @@ interface Props {
   onDuplicate: (id: number) => void;
 }
 
+/**
+ * Card component for managing a single product in the admin UI.
+ *
+ * - Displays product info (ID, name, date/time, location, places).
+ * - Allows editing price, sale percentage, and stock quantity.
+ * - Calculates and displays current vs. new prices with discount chips.
+ * - Provides buttons to view details, duplicate, and save changes.
+ */
 export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRefresh, onDuplicate }: Props) {
   const { t } = useTranslation('adminProducts');
   const { notify } = useCustomSnackbar();
-  // états locaux pour les champs modifiables
+
+  // Local state for editable fields
   const [price, setPrice] = useState(p.price);
   const [sale, setSale] = useState(p.sale);
   const [salePercent, setSalePercent] = useState(p.sale * 100);
   const [stock, setStock] = useState(p.stock_quantity);
   const [saving, setSaving] = useState(false);
 
+  // Compute the final price after discount
   const finalPrice = price * (1 - sale);
 
-  // flag dirty si au moins un champ modifié
+  // Determine if any field differs from its original value
   const isDirty = useMemo(() => {
     return (
       price !== p.price ||
@@ -46,6 +56,13 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
     );
   }, [price, sale, stock, p]);
 
+  /**
+   * Save handler:
+   * - Sets loading state
+   * - Calls onSave with updated values
+   * - On success, shows success snackbar and refreshes
+   * - On failure, shows error snackbar
+   */
   const handleSave = async () => {
     setSaving(true);
     const ok = await onSave(p.id, { price, sale, stock_quantity: stock });
@@ -61,15 +78,19 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
   return (
     <Card sx={{ p:2, display: 'flex', flexDirection: 'column', gap: 1 }}>
       <CardContent>
+        {/* Product title and ID */}
         <Typography variant="h6">ID {p.id} - {p.name}</Typography>
+        {/* Event date and time */}
         <Typography variant="body2">
           {formatDate(p.product_details.date, lang)}{p.product_details.time && ` – ${p.product_details.time}`}
         </Typography>
+        {/* Location and places available */}
         <Typography variant="body2" color="text.secondary">
           {p.product_details.location} - {t('products.places', { count: p.product_details.places })}
         </Typography>
       </CardContent>
 
+      {/* Editable fields for price, sale %, and stock */}
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', px:2 }}>
         <TextField
           label={t('products.price')}
@@ -111,12 +132,15 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
           size="small"
         />
       </Box>
-
+      
+      {/* Display current vs. new price with discount chips */}
       <Box sx={{ px:2, display:'flex', alignItems:'baseline', justifyContent: { xs: 'flex-start', md: 'space-between' }, flexDirection: { xs: 'column', md: 'row'}, gap:1 }}>
+        {/* Current price section */}
         <Box sx={{ display: 'flex', alignItems: 'start', flexDirection: 'column' }}>
           <Typography variant="body2">
             {t('products.currentPrice')} :
           </Typography>
+          {/* Strike through if there is an existing sale */}
           <Typography variant="body2" sx={{ textDecoration: p.sale>0 ? 'line-through' : 'none' }}>
             {formatCurrency(p.price, lang, 'EUR')}
           </Typography>
@@ -125,14 +149,17 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
               <Typography variant="body2" fontWeight="bold">
                 {formatCurrency(p.price * (1 - p.sale), lang, 'EUR')}
               </Typography>
+              {/* Existing sale percentage */}
               <Chip label={`–${Math.round(p.sale * 100)}%`} size="small" />
             </Box>
           )}
         </Box>
+        {/* New price section */}
         <Box sx={{ display: 'flex', alignItems: 'start', flexDirection: 'column' }}>
           <Typography variant="subtitle1" fontWeight="bold">
             {t('products.newPrice')} :
           </Typography>
+          {/* Strike through if new sale is applied */}
           <Typography variant="body2" sx={{ textDecoration: sale>0 ? 'line-through' : 'none' }}>
             {formatCurrency(price, lang, 'EUR')}
           </Typography>
@@ -141,12 +168,14 @@ export function AdminProductCard({ product: p, lang, onViewDetails, onSave, onRe
               <Typography variant="subtitle1" fontWeight="bold">
                 {formatCurrency(finalPrice, lang, 'EUR')}
               </Typography>
+              {/* New sale percentage */}
               <Chip label={`–${Math.round(sale * 100)}%`} size="small" />
             </Box>
           )}
         </Box>
       </Box>
 
+      {/* Action buttons: view details, duplicate, save */}    
       <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: { xs: 'column', md: 'row'}, gap: 1, mt: 2 }}>
         <Button size="small" variant="outlined" onClick={() => onViewDetails(p.id)}>
           {t('products.updateDetails')}
