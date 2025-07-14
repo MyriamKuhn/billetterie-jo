@@ -38,6 +38,8 @@ const AdminOrdersPage = lazy(() => import('./pages/AdminOrdersPage'));
 const AdminPaymentsPage = lazy(() => import('./pages/AdminPaymentsPage'));
 const AdminReportsPage = lazy(() => import('./pages/AdminReportsPage'));
 const EmployeeDashboardPage = lazy(() => import('./pages/EmployeeDashboardPage'));
+const EmployeeScanPage = lazy(() => import('./pages/EmployeeScanPage'));
+
 
 interface AppProps {
   mode: 'light' | 'dark';
@@ -105,6 +107,8 @@ export default function App({ mode, toggleMode }: AppProps) {
                 
                 {/* Employee routes */}
                 <Route path="/employee/dashboard" element={<RequireAuth requiredRole="employee"><EmployeeDashboardPage /></RequireAuth>} />
+                <Route path="/employee/scan" element={<RequireAuth requiredRole="employee"><EmployeeScanPage /></RequireAuth>} />
+
               </Routes>
             </Suspense>
           </ErrorBoundary>

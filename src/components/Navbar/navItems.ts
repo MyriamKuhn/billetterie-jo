@@ -10,6 +10,8 @@ import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import LogoutIcon from '@mui/icons-material/Logout';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import QrCodeScannerIcon from '@mui/icons-material/QrCodeScanner';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import type { SvgIconProps } from '@mui/material/SvgIcon';
 
 interface NavItem { 
@@ -36,7 +38,8 @@ export const navItems: NavItem[] = [
 
   // Employé
   { key: 'employeeDashboard', href: '/employee/dashboard', icon: DashboardIcon, auth: true, role: 'employee', group: 'dashboard' },
-  { key: 'manageTickets',     href: '/employee/tickets',   icon: TicketIcon,    auth: true, role: 'employee', group: 'auth' },
+  { key: 'scanTickets',     href: '/employee/scan',    icon: QrCodeScannerIcon,    auth: true, role: 'employee', group: 'auth' },
+  { key: 'validateTickets', href: '/employee/validate', icon: CheckCircleIcon, auth: true, role: 'employee', group: 'auth' },
 
   // Admin
   { key: 'adminDashboard',  href: '/admin/dashboard',  icon: DashboardIcon, auth: true, role: 'admin', group: 'dashboard' },
