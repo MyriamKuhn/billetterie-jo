@@ -24,12 +24,16 @@ import { CartSummary } from '../components/CartSummary';
 import { useNavigate } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
 
+/**
+ * CartPage component displays the user's shopping cart.
+ * It allows users to view, update quantities, and proceed to checkout.
+ */
 export default function CartPage() {
   const { t } = useTranslation(['cart', 'common']);
   const lang = useLanguageStore((s) => s.lang);
   const navigate = useNavigate();
 
-  // ── Hooks / Store / Snackbar ─────────────────────────────────────────────
+  // ── Hooks / store / snackbar setup ─────────────────────────────────────────
   const { loading, hasError, reload } = useReloadCart();
   const items = useCartStore((s) => s.items);
   const addItem = useCartStore.getState().addItem;
@@ -37,32 +41,32 @@ export default function CartPage() {
   const { notify } = useCustomSnackbar();
   const token = useAuthStore(s => s.authToken);
 
-  // CGV
+  // Terms acceptance state
   const [acceptedCGV, setAcceptedCGV] = useState(false);
 
-  // Calcul du total global et mémorisation
-  // Utilisation de useMemo pour éviter les recalculs inutiles
+  // Compute total amount, memoized to avoid unnecessary recalculation
   const total = useMemo(
     () => items.reduce((sum, i) => sum + i.quantity * i.price, 0),
     [items]
   );
 
-  // Recharger le panier au montage et quand la langue change
+  // Reload cart on mount and when language changes
   useEffect(() => {
     reload();
   }, [reload, lang]);
 
-  // Pour détecter l’écran « mobile » (< 600px)
+  // Detect mobile layout (<600px)
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // Ajustement de la quantité d’un article
+  // Adjust quantity of an item
   const adjustQty = useCallback(
     async (item: CartItem, newQty: number) => {
       if (isLocked) {
         notify(t('cart:errors.cart_locked'), 'warning');
         return;
       }
+      // Clamp to valid range
       if (newQty < 0) newQty = 0;
       if (newQty > item.availableQuantity) {
         notify(t('cart:cart.not_enough_stock', { count: item.availableQuantity }), 'warning');
@@ -88,7 +92,7 @@ export default function CartPage() {
     [addItem, notify, t, isLocked]
   );
 
-  // Clic “Payer”
+  // Handle "Pay" button click
   const handlePay = () => {
     if (isLocked) {
       notify(t('cart:errors.cart_locked'), 'warning');
@@ -99,15 +103,14 @@ export default function CartPage() {
       return;
     }
     if (!token) {
-      // on redirige vers login avec next vers le panier
+      // Redirect to login with return to cart
       navigate('/login?next=/cart');
       return;
     }
-    // déjà connecté
     navigate('/checkout');
   };
 
-  // ── ÉTAT DE CHARGEMENT / ERREUR / PANIER VIDE ────────────────────────────────
+  // ── Loading / error / empty cart states ────────────────────────────────────
   if (loading) {
     return (
       <>
@@ -149,6 +152,7 @@ export default function CartPage() {
     );
   }
 
+  // Banner displayed when cart is locked (payment in progress)
   const renderLockBanner = () => (
     isLocked ? (
       <Box sx={{ mb: 2 }}>
@@ -159,9 +163,7 @@ export default function CartPage() {
     ) : null
   );
 
-  // ── RENDER DES ÉLÉMENTS ──────────────────────────────────────────────────────
-
-  // 1) Version “Table” (desktop / tablette)
+  // ── Desktop/tablet view: table layout ─────────────────────────────────────
   const renderTable = () => (
     <TableContainer
       component={Paper}
@@ -200,7 +202,7 @@ export default function CartPage() {
   );
 
 
-  // 2) Version “Carte” (mobile)
+  // ── Mobile view: card layout ───────────────────────────────────────────────
   const renderCards = () => (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
       {items.map((item) => (
@@ -216,7 +218,7 @@ export default function CartPage() {
     </Box>
   );
 
-  // ── RENDER FINAL ─────────────────────────────────────────────────────────────
+  // ── Final render ───────────────────────────────────────────────────────────
   return (
     <>
       <Seo title={t('cart:seo.title')} description={t('cart:seo.description')} />

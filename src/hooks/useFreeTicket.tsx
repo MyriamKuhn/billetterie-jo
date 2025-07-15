@@ -10,6 +10,12 @@ export interface freeTicket {
   locale: string;
 }
 
+/**
+ * Custom hook to create a free ticket via POST /api/tickets.
+ *
+ * Returns a function that accepts a payload and returns a Promise<boolean>
+ * indicating success (true) or failure (false).
+ */
 export function useFreeTicket() {
   const token = useAuthStore(s => s.authToken);
 
@@ -29,6 +35,7 @@ export function useFreeTicket() {
       );
       return true;
     } catch (err) {
+      // Log the error and return failure
       logError('useFreeTicket', err);
       return false;
     }

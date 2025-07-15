@@ -13,12 +13,16 @@ import { useLanguageStore } from '../stores/useLanguageStore'
 import { useAdminReports, type Filters } from '../hooks/useAdminReports'
 import { AdminReportsFilter } from '../components/AdminReportsFilter'
 
+/**
+ * AdminReportsPage component displays a list of reports with filtering and pagination.
+ * It fetches data from the server based on user-selected filters and handles errors gracefully.
+ */
 export default function AdminReportsPage() {
   const { t } = useTranslation('reports');
   const token = useAuthStore((state) => state.authToken);
   const lang = useLanguageStore((state) => state.lang);
 
-  // État des filtres initiaux
+  // Initial filters state
   const [filters, setFilters] = useState<Filters>({
     sort_by: 'sales_count',
     sort_order: 'desc',
@@ -26,8 +30,10 @@ export default function AdminReportsPage() {
     page: 1,
   })
 
+  // Fetch reports whenever filters, token, or language change
   const { reports, total, loading, error, validationErrors } = useAdminReports(filters, token!, lang)
 
+  // If server-side validation errors, reset invalid filter fields
   useEffect(() => {
     if (validationErrors) {
       const cleanup: Partial<Filters> = {};
@@ -41,6 +47,7 @@ export default function AdminReportsPage() {
     }
   }, [validationErrors]);
 
+  // Display error page if fetching failed
   if (error) {
     return (
       <PageWrapper>
@@ -59,16 +66,18 @@ export default function AdminReportsPage() {
 
   return (
     <>
+      {/* SEO metadata */}
       <Seo title={t('seo.title')} description={t('seo.description')} />
+      {/* Main layout without card wrapper */}
       <PageWrapper disableCard>
         <Typography variant="h4" sx={{ px:2 }}>
           {t('reports.title')}
         </Typography>
         <Box sx={{ display:'flex', flexDirection:{ xs:'column', md:'row' }, gap:2, p:2 }}>
-          {/* Sidebar filtres */}
+          {/* Sidebar filters */}
           <AdminReportsFilter filters={filters} onChange={upd=>setFilters(f=>({...f,...upd}))}/>
 
-          {/* Contenu principal */}
+          {/* Main content */}
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
@@ -76,6 +85,8 @@ export default function AdminReportsPage() {
                   reports={reports}
                 />
               }
+
+            {/* Pagination controls */}  
             {!loading && reports.length>0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination

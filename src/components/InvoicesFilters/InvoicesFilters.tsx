@@ -20,12 +20,20 @@ interface Props {
   onChange: (f: Partial<InvoiceFilters>) => void
 }
 
+/**
+ * A responsive filter sidebar/drawer for invoices, supporting status, date range, sort, and pagination filters.
+ * This component adapts to both desktop and mobile views, providing a consistent user experience.
+ * It includes:
+ * - Status filter with options for all, pending, paid, failed, and refunded invoices.
+ * - Date range filters for "From" and "To" dates.
+ * - Sort control for sorting by date, amount, or UUID. 
+ */
 export function InvoicesFilters({ filters, onChange }: Props) {
   const { t } = useTranslation('invoices');
   const theme = useTheme();
   const [open, setOpen] = useState(false)
 
-  // 1) Mapping code → label pour le statut
+  // 1) Map status codes to localized labels
   const statusToLabel: Record<InvoiceStatus, string> = {
     '': t('filters.status_all'),    
     pending: t('filters.status_pending'),
@@ -34,7 +42,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
     refunded: t('filters.status_refunded'),
   }
   
-  // Inverse : label -> code
+   // Reverse map from label back to status code
   const labelToStatus: Record<string, InvoiceStatus> = Object.entries(statusToLabel).reduce(
     (acc, [code, label]) => {
       acc[label] = code as InvoiceStatus
@@ -42,34 +50,34 @@ export function InvoicesFilters({ filters, onChange }: Props) {
     },
     {} as Record<string, InvoiceStatus>
   )
-  const statusOptionsLabels = Object.values(statusToLabel)
-  const currentStatusLabel = statusToLabel[filters.status]
+  const statusOptionsLabels = Object.values(statusToLabel)  // Array of status labels
+  const currentStatusLabel = statusToLabel[filters.status]  // Currently selected status label
 
 
-  // 2) Mapping code → label pour sort_by (champ de tri)
-  // On passe les clés de tri attendues par l'API : 'created_at' | 'amount' | 'uuid'
+  // 2) Map sort_by codes to localized labels and prepare fields array for SortControl
   const sortByToLabel: Record<InvoiceFilters['sort_by'], string> = {
     created_at: t('filters.sort_by_date'),
     amount:     t('filters.sort_by_amount'),
     uuid:       t('filters.sort_by_uuid'),
   }
-  // Transformer en tableau d’objets { value, label } pour SortControl
   const sortFields: Array<{ value: InvoiceFilters['sort_by']; label: React.ReactNode }> =
     (Object.entries(sortByToLabel) as Array<[InvoiceFilters['sort_by'], string]>).map(
       ([value, label]) => ({ value, label })
     )
   
-  // 3) Pour per_page on garde un FilterSelect (ou autre UI), on peut laisser tel quel
+  // 3) Pagination options as strings
   const perPageOptionsLabels = [5, 10, 15, 25, 50, 100].map(n => String(n))
   const currentPerPageLabel = String(filters.per_page)
 
+  // Shared filter content used in sidebar and drawer
   const content = (
     <Box sx={{ width: 260, py: 2, px: 1 }}>
+      {/* Title */}
       <Typography variant="h6" gutterBottom>
         {t('filters.title')}
       </Typography>
       <Stack spacing={2} sx={{ mx: 1 }}>
-        {/* Statut */}
+        {/* Status filter */}
         <FilterSelect<string>
           label={t('filters.status_label')}
           value={currentStatusLabel}
@@ -80,7 +88,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
           }}
         />
 
-        {/* Date “Du” */}
+        {/* Date-from filter */}
         <DatePicker
           label={t('filters.date_from_label')}
           value={filters.date_from ? dayjs(filters.date_from) : null}
@@ -90,7 +98,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
           slotProps={{ textField: { size: 'small', fullWidth: true } }}
         />
 
-        {/* Date “Au” */}
+        {/* Date-to filter */}
         <DatePicker
           label={t('filters.date_to_label')}
           value={filters.date_to ? dayjs(filters.date_to) : null}
@@ -100,7 +108,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
           slotProps={{ textField: { size: 'small', fullWidth: true } }}
         />
 
-        {/* Tri (SortControl) */}
+        {/* Sort-by control */}
         <SortControl<InvoiceFilters['sort_by']>
           fields={sortFields}
           sortBy={filters.sort_by}
@@ -111,7 +119,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
           label={t('filters.sort_by_label')}
         />
 
-        {/* Par page */}
+        {/* Per-page filter */}
         <FilterSelect<string>
           label={t('filters.per_page_label')}
           value={currentPerPageLabel}
@@ -122,7 +130,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
           }}
         />
 
-        {/* Réinitialiser */}
+        {/* Reset button */}
         <Button
           variant="outlined"
           fullWidth
@@ -146,7 +154,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
 
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop sidebar: visible on md+ */}
       <Box
         component="aside"
         sx={{
@@ -162,7 +170,7 @@ export function InvoicesFilters({ filters, onChange }: Props) {
         {content}
       </Box>
 
-      {/* Mobile */}
+      {/* Mobile filter drawer: visible on xs */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 2 }}>
         <IconButton onClick={() => setOpen(true)} aria-label={t('filters.title')}>
           <MenuIcon />

@@ -8,6 +8,11 @@ interface FilterFieldProps {
   type?: React.InputHTMLAttributes<unknown>['type'];
 }
 
+/**
+ * 
+ * A simple, reusable text input field for filtering data, wrapping MUI’s TextField with controlled value and change handler.
+ * 
+ */
 export function FilterField({ label, value, onChange, type }: FilterFieldProps) {
   return (
     <TextField

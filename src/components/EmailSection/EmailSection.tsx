@@ -24,28 +24,41 @@ interface EmailSectionProps {
   onUpdate: (newEmail: string) => void;
 }
 
+/**
+ * 
+ * This component allows users to view and update their email address within an accordion panel.
+ * It provides validation for the email format and ensures that the new email is different from the current one.
+ * The component handles loading states, error messages, and success notifications.
+ * It handles form state, validation, API submission, and displays success/error messages.
+ * 
+ */
 export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX.Element {
   const { t } = useTranslation('userDashboard');
   const token = useAuthStore((state) => state.authToken);
   const navigate = useNavigate();
   const lang = useLanguageStore(state => state.lang);
 
+  // Accordion open/closed state
   const [expanded, setExpanded] = useState<boolean>(false);
+  // Email input state and touched flag for validation
   const [newEmail, setNewEmail] = useState<string>(currentEmail);
   const [newEmailTouched, setNewEmailTouched] = useState(false);
-  
+  // Loading and feedback messages
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  // Determine if current input is invalid (only after user has blurred the field)
   const emailError = newEmailTouched && !isEmailValid(newEmail);
 
+  // Reset input and errors whenever the currentEmail prop changes
   useEffect(() => {
     setNewEmail(currentEmail);
     setNewEmailTouched(false);
     setErrorMsg(null);
   }, [currentEmail]);
 
+  // Toggle accordion; if closing, clear messages and reset input
   const handleAccordionChange = () => {
     if (expanded) {
       setErrorMsg(null);
@@ -56,21 +69,23 @@ export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX
     setExpanded(prev => !prev);
   };
 
+  // Form submission handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
 
+    // Validate email format
     if (!isEmailValid(newEmail)) {
       setErrorMsg(t('errors.emailRequired'));
       return;
     }
-
+    // Prevent updating to the same email
     if (newEmail === currentEmail) {
       setErrorMsg(t('errors.emailUnchanged'));
       return;
     }
-
+    // Ensure user is authenticated
     if (!token) {
       navigate('/login', { replace: true });
       return;
@@ -78,6 +93,7 @@ export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX
 
     setLoading(true);
     try {
+      // Call API to update email
       const { status } = await updateUserEmail(token, newEmail, lang);
 
       if (status === 204 || status === 200) {
@@ -87,6 +103,7 @@ export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX
         setErrorMsg(t('errors.emailUpdate'));
       }
     } catch (err: any) {
+      // Handle axios errors with error codes or network failures
       if (axios.isAxiosError(err) && err.response) {
         const { data } = err.response;
         if (data.code) {
@@ -104,6 +121,7 @@ export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX
 
   return (
     <Accordion expanded={expanded} onChange={handleAccordionChange}>
+      {/* Header showing section title and current email */}
       <AccordionSummary expandIcon={<ExpandMoreIcon />}> 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: { xs: 1, sm: 0 } }}>
           <Typography sx={{ fontSize: { xs: '0.85rem', sm: '1.2rem' } }}>
@@ -114,10 +132,15 @@ export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX
           </Typography>
         </Box>
       </AccordionSummary>
+
+      {/* Details area with form */}
       <AccordionDetails>
         <Stack component="form" onSubmit={handleSubmit} spacing={2} sx={{ width: '100%' }}>
+          {/* Display error or success messages */}
           {errorMsg && <AlertMessage message={errorMsg} severity="error" />}
           {successMsg && <AlertMessage message={successMsg} severity="success" />}
+
+          {/* Email input field */}
           <TextField
             required
             fullWidth
@@ -131,6 +154,8 @@ export function EmailSection({ currentEmail, onUpdate }: EmailSectionProps): JSX
             error={emailError}
             helperText={emailError ? t('errors.emailInvalid') : ''}
           />
+
+          {/* Action buttons: Cancel and Save */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
             <Button 
               onClick={() => { 

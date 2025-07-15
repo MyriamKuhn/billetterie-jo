@@ -2,6 +2,14 @@ import axios from 'axios';
 import { API_BASE_URL } from '../config';
 import type { ApiResponse, ResendResponse, TwoFAResponse, TwoFAResendResponse, ConfirmTwoFAResponse } from '../types/apiResponse';
 
+/**
+ * Fetches the current user's profile.
+ *
+ * @param token   Bearer token for authentication.
+ * @param config  Optional Axios config (supports AbortSignal for cancellation).
+ * @returns       An object containing HTTP status and the API response data.
+ * @throws        On network failure or non‑2xx HTTP status.
+ */
 export async function fetchUser(
   token: string,
   config?: { signal?: AbortSignal }
@@ -25,6 +33,14 @@ export async function fetchUser(
   };
 }
 
+/**
+ * Updates the current user's firstname and lastname.
+ *
+ * @param token         Bearer token for authentication.
+ * @param profileData   Object with `firstname` and `lastname`.
+ * @returns             An object containing HTTP status and the API response.
+ * @throws              On network failure or non‑2xx HTTP status.
+ */
 export async function updateUserProfile(
   token: string,
   profileData: {
@@ -49,6 +65,14 @@ export async function updateUserProfile(
   };
 }
 
+/**
+ * Updates the current user's email address.
+ *
+ * @param token  Bearer token for authentication.
+ * @param email  New email address.
+ * @param lang   Language code for the Accept-Language header.
+ * @returns      An object containing HTTP status and the API response.
+ */
 export async function updateUserEmail(
   token: string,
   email: string,
@@ -72,6 +96,15 @@ export async function updateUserEmail(
   };
 }
 
+/**
+ * Changes the current user's password.
+ *
+ * @param token                  Bearer token for authentication.
+ * @param current_password       User's current password.
+ * @param password               New password.
+ * @param password_confirmation  Confirmation of the new password.
+ * @returns                      An object containing HTTP status and the API response.
+ */
 export async function updateUserPassword(
   token: string,
   current_password: string,
@@ -95,6 +128,12 @@ export async function updateUserPassword(
   };
 }
 
+/**
+ * Initiates enabling two‑factor authentication (2FA).
+ *
+ * @param token  Bearer token for authentication.
+ * @returns      An object containing HTTP status and the response data with QR code URL & secret.
+ */
 export async function enableTwoFA(
   token: string
 ): Promise<TwoFAResendResponse> {
@@ -115,6 +154,13 @@ export async function enableTwoFA(
   };
 }
 
+/**
+ * Confirms two‑factor authentication by verifying the OTP.
+ *
+ * @param token  Bearer token for authentication.
+ * @param otp    One‑time password from the authenticator app.
+ * @returns      An object containing HTTP status and optionally the recovery codes.
+ */
 export async function confirmTwoFA(
   token: string,
   otp: string
@@ -136,6 +182,13 @@ export async function confirmTwoFA(
   };
 }
 
+/**
+ * Disables two‑factor authentication.
+ *
+ * @param token      Bearer token for authentication.
+ * @param twofa_code OTP or recovery code to authorize the disable.
+ * @returns          An object containing the HTTP status.
+ */
 export async function disableTwoFA(
   token: string, 
   twofa_code: string,

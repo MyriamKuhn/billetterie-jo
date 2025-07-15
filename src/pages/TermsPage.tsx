@@ -16,6 +16,11 @@ const sections: readonly [string, string][] = [
   ['subtitleUpdate', 'update'],
 ];
 
+/**
+ * Legal Mentions Page
+ * This page displays the legal mentions of the application.
+ * It uses the LegalPageLayout component to structure the content.
+ */
 export default function LegalMentionsPage() {
   return (
     <LegalPageLayout

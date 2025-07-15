@@ -17,23 +17,35 @@ import { AdminUserDetailsModal } from '../components/AdminUserDetailsModal';
 import { useLanguageStore } from '../stores/useLanguageStore';
 import { AdminEmployeeCreateModal } from '../components/AdminEmployeeCreateModal';
 
+/**
+ * AdminEmployeesPage component displays a list of employees with filtering, pagination,
+ * and modals for viewing details and creating new employees.
+ */
 export default function AdminEmployeesPage() {
   const { t } = useTranslation('users');
   const lang = useLanguageStore((state) => state.lang);
   const token = useAuthStore((state) => state.authToken);
   const updateUser = useUserUpdate();
 
-  // --- États ---
+  // ---------------------------------------------------------------------------
+  // Local UI state for filters, selected detail modal, and create modal
+  // ---------------------------------------------------------------------------
   type UIFilters = Omit<Filters, 'role'>;
   const [filters, setFilters] = useState<UIFilters>({
     firstname:'', lastname:'', email:'', perPage:10, page:1
   });
 
+  // ---------------------------------------------------------------------------
+  // Fetch users using our custom hook; re-fetches when filters, token, or role change
+  // ---------------------------------------------------------------------------
   const { users, total, loading, error, validationErrors } = useUsers(filters, token!, 'employee');
 
   const [detailsId, setDetailsId] = useState<number | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
+  // ---------------------------------------------------------------------------
+  // If backend validation errors arise, clear the corresponding filter fields
+  // ---------------------------------------------------------------------------
   useEffect(() => {
   if (validationErrors) {
     const cleanup: Partial<Filters> = {};
@@ -46,6 +58,9 @@ export default function AdminEmployeesPage() {
   }
 }, [validationErrors]);
 
+  // ---------------------------------------------------------------------------
+  // Error state: show full-page error with retry
+  // ---------------------------------------------------------------------------
   if (error) {
     return (
       <PageWrapper>
@@ -59,22 +74,25 @@ export default function AdminEmployeesPage() {
           homeButtonText={t('errors.home')}
         />
       </PageWrapper>
-  );
-}
+    );
+  }
   
-  // --- Rendu normal loader / grille / pagination ---
+  // ---------------------------------------------------------------------------
+  // Main render: SEO, filters sidebar, user grid, pagination, and modals
+  // ---------------------------------------------------------------------------
   return (
     <>
       <Seo title={t('seo.title_employee')} description={t('seo.description_employee')} />
+      {/* Disable card wrapper so we control the background fully */}
       <PageWrapper disableCard>
         <Typography variant="h4" sx={{ px:2 }}>
           {t('employees.title')}
         </Typography>
         <Box sx={{ display:'flex', flexDirection:{ xs:'column', md:'row' }, gap:2, p:2 }}>
-          {/* Sidebar filtres */}
+          {/* Filters sidebar */}
           <UsersFilters role='employee' filters={filters} onChange={upd=>setFilters(f=>({...f,...upd}))}/>
 
-          {/* Contenu principal */}
+          {/* Main content area */}
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
@@ -99,6 +117,8 @@ export default function AdminEmployeesPage() {
                   onCreate={() => setCreateOpen(true)}
                 />
               }
+            
+            {/* Pagination controls, shown only when not loading and there are users */}
             {!loading && users.length>0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination
@@ -112,6 +132,7 @@ export default function AdminEmployeesPage() {
         </Box>
       </PageWrapper>
 
+      {/* User details modal */}
       <AdminUserDetailsModal
         open={detailsId !== null}
         userId={detailsId}
@@ -120,6 +141,8 @@ export default function AdminEmployeesPage() {
         lang={lang}
         isEmployee={true}
       />
+
+      {/* Create new employee modal */}
       <AdminEmployeeCreateModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}

@@ -11,12 +11,21 @@ import Drawer from '@mui/material/Drawer';
 import MenuIcon from '@mui/icons-material/Menu';
 
 interface TocProps {
-  sections: readonly [string, string][];  // [subKey, textKey]
+  /** Array of sections defined as [subKey, textKey] tuples */
+  sections: readonly [string, string][]; 
+  /** Function to generate an anchor ID from a section key */ 
   makeId: (key: string) => string;
-  titleKey: string;                       // ex. 'legal.subtitleTableOfContents'
-  namespace: string;                      // ex. 'legal'
+  /** i18n key for the TOC title (e.g. 'legal.subtitleTableOfContents') */
+  titleKey: string; 
+  /** i18n namespace for translating section titles */                     
+  namespace: string;                     
 }
 
+/**
+ * TableOfContents:
+ * - On desktop: renders a sticky sidebar with links to each section anchor.
+ * - On mobile: shows a menu icon that opens a Drawer containing the same list.
+ */
 export function TableOfContents({
   sections,
   makeId,
@@ -27,6 +36,7 @@ export function TableOfContents({
   const { t } = useTranslation(namespace);
   const [open, setOpen] = useState(false);
 
+  // Shared list of links to section anchors
   const TocList = (
     <List disablePadding>
       {sections.map(([subKey]) => {
@@ -39,7 +49,6 @@ export function TableOfContents({
             sx={{ pl: 2 }}
             onClick={() => setOpen(false)}
           >
-            {/* on traduit la clé du titre de section */}
             <ListItemText primary={t(`${namespace}.${subKey}`)} />
           </ListItemButton>
         );
@@ -49,7 +58,7 @@ export function TableOfContents({
 
   return (
     <>
-      {/* Sidebar desktop */}
+      {/* Desktop sidebar (hidden on xs) */}
       <Box
         component="nav"
         sx={{
@@ -67,13 +76,14 @@ export function TableOfContents({
           overscrollBehaviorY: 'contain',
         }}
       >
+        {/* TOC title */}
         <Typography variant="h6" gutterBottom>
           {t(titleKey)}
         </Typography>
         {TocList}
       </Box>
 
-      {/* Drawer mobile */}
+      {/* Mobile drawer (hidden on md+) */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 2 }}>
         <IconButton
           onClick={() => setOpen(true)}
@@ -85,7 +95,7 @@ export function TableOfContents({
           anchor="left"
           open={open}
           onClose={() => setOpen(false)}
-          ModalProps={{ keepMounted: true }}
+          ModalProps={{ keepMounted: true }}  // Improve performance on mobile
         >
           <Box
             role="presentation"
@@ -99,6 +109,7 @@ export function TableOfContents({
               overscrollBehaviorY: 'contain',
             }}
           >
+            {/* TOC title inside drawer */}
             <Typography variant="h6" gutterBottom>
               {t(titleKey)}
             </Typography>

@@ -30,34 +30,44 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { useCustomSnackbar } from '../hooks/useCustomSnackbar';
 import type { ApiResponse } from '../types/apiResponse';
 
+/**
+ * LoginPage component
+ * This component handles user login, including email/password authentication,
+ * two-factor authentication (2FA), and email verification.
+ * It provides a user-friendly interface for logging in,
+ * resending verification emails, and handling errors.
+ */
 export default function LoginPage() {
   const { t } = useTranslation('login');
   const navigate = useNavigate();
   const location = useLocation();
   const { notify } = useCustomSnackbar();
 
+  // Form state
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [show2FA, setShow2FA] = useState<boolean>(false);
   const [twoFACode, setTwoFACode] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Email verification resend
   const [emailNotVerified, setEmailNotVerified] = useState(false);
   const [resendLoading, setResendLoading] = useState<boolean>(false);
   const [resendSuccess, setResendSuccess] = useState<boolean>(false);
-
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  // Toggle password visibility
   const toggleShowPassword = () => setShowPassword((prev) => !prev);
 
-  // Hooks Zustand
+  // Store actions
   const setAuthToken = useAuthStore((s) => s.setToken);
   const clearAuthToken = useAuthStore((s) => s.clearToken);
   const clearGuestCartIdInStore = useCartStore((s) => s.setGuestCartId);
   const guestCartId = useCartStore((s) => s.guestCartId);
   const loadCart = useCartStore((s) => s.loadCart);
 
+  // Handle login (credentials or 2FA)
   const handleSubmit = async (e: React.FormEvent, is2FA: boolean) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -76,11 +86,9 @@ export default function LoginPage() {
         guestCartId
       );
     
-      // Si token renvoyé, on gère la réussite (2FA ou pas)
+      // On success, set token and redirect
       if (data.token && data.user) {
-        // Afficher le snackbar de bienvenue
         notify(t('login.welcomeUser', { name: data.user.firstname }), 'success');
-        // extraire le next paramètre de l'URL
         const params = new URLSearchParams(location.search);
         const next = params.get('next') ?? undefined;
 
@@ -101,27 +109,25 @@ export default function LoginPage() {
         const status = err.response?.status;
         const data = err.response?.data as ApiResponse | undefined;
 
-        // ─── Cas 2FA requise ───────────────────────────────────────────────────
+        // 2FA required
         if (status === 400 && data?.code === 'twofa_required') {
           setShow2FA(true);
           setLoading(false);
           return;
         }
 
-        // ─── Cas email non vérifiée ───────────────────────────────────────────
+        // Email not verified
         if (status === 400 && data?.code === 'email_not_verified') {
           setErrorMsg(t('errors.emailNotVerifiedSent'));
           setEmailNotVerified(true);
           setLoading(false);
           return;
         }
-
-        // ─── Autres erreurs ───────────────────────────────────────────
         if (status === 404 || data?.code) {
           setErrorMsg(getErrorMessage(t, data?.code));
         }
         else {
-          // par défaut, on affiche le message générique
+          // Other API errors
           setErrorMsg(getErrorMessage(t, 'generic_error'));
         }
       } else {
@@ -133,6 +139,7 @@ export default function LoginPage() {
     }
   };
 
+  // Resend verification email
   const handleResendVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     setResendLoading(true);
@@ -166,6 +173,7 @@ export default function LoginPage() {
     }
   };
 
+  // Cancel 2FA flow
   const handleCancelLogin = async () => {
     setShow2FA(false);
     await logout(
@@ -209,13 +217,11 @@ export default function LoginPage() {
             {t('login.pageTitle')}
           </Typography>
 
-          {/* Message d’erreur ou d’information */}
+          {/* Error or success messages */}
           {errorMsg && <AlertMessage message={errorMsg} severity="error" />}
-
-          {/* Confirmation d’envoi manuel */}
           {resendSuccess && <AlertMessage message={t('login.verificationEmailResent')} severity="success" />}
 
-          {/* Étape 1 : Email + Mot de passe */}
+          {/* Step 1: Credentials */}
           {!show2FA && (
             <Stack spacing={2}>
               <TextField
@@ -259,7 +265,6 @@ export default function LoginPage() {
                 }}
               />
 
-              {/* “Se souvenir de moi” aligné à droite */}
               <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <FormControlLabel
                   control={
@@ -288,7 +293,6 @@ export default function LoginPage() {
                 {loading ? `${t('login.loginButtonLoad')}…` : t('login.loginButton')}
               </Button>
 
-              {/* Liens “Mot de passe oublié ?” et “S’inscrire” */}
               <Box sx={{ mt: 1, textAlign: 'center' }}>
                 <Stack direction="row" spacing={1} justifyContent="center">
                   <Link
@@ -313,7 +317,7 @@ export default function LoginPage() {
                 </Stack>
               </Box>   
 
-              {/* Lien de secours si l’e-mail de vérification n’est pas reçu */}
+              {/* Resend verification link */}
               {emailNotVerified && (
                 <Box sx={{ mt: 2, textAlign: 'center' }}>
                   <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
@@ -342,7 +346,7 @@ export default function LoginPage() {
             </Stack>
           )}
 
-          {/* Étape 2 : Code 2FA */}
+          {/* Step 2: 2FA */}
           {show2FA && (
             <Box>
               <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>

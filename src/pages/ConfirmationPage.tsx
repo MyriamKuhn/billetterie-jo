@@ -23,6 +23,12 @@ interface PaymentDetails {
   paid_at: string;
 }
 
+/**
+ * ConfirmationPage
+ * Shows the confirmation of a payment after successful checkout.
+ * Fetches payment details using the payment UUID from location state or query params.
+ * Handles loading state, errors, and displays payment information.
+ */
 export default function ConfirmationPage() {
   const { t } = useTranslation('checkout');
   const location = useLocation();
@@ -37,42 +43,40 @@ export default function ConfirmationPage() {
   const [paymentInfo, setPaymentInfo] = useState<PaymentDetails | null>(null);
 
   useEffect(() => {
-    // Dès l'arrivée sur cette page, on s'assure que le panier est déverrouillé
+    // Ensure cart is unlocked once on page load
     unlockCart();
 
+    // Try to get paymentUuid from location state or query params
     const state = location.state as LocationState;
     let paymentUuid = state?.paymentUuid;
-    // Optionnel: lire depuis query param si besoin
     const params = new URLSearchParams(location.search);
     if (!paymentUuid && params.get('paymentUuid')) {
       paymentUuid = params.get('paymentUuid')!;
     }
 
+    // If missing UUID, show error
     if (!paymentUuid) {
       setError(t('errors.no_uuid'));
       setLoading(false);
       return;
     }
+    // If not authenticated, redirect to login
     if (!token) {
-      // Si pas de token, rediriger vers login ou afficher message
       setError(t('errors.not_authenticated'));
       setLoading(false);
       navigate(`/login?next=${encodeURIComponent(location.pathname + location.search)}`);
       return;
     }
 
+    // Fetch payment status from the backend
     const fetchInfo = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Ici on utilise getPaymentStatus pour récupérer le statut / détails
         const { status, data } = await getPaymentStatus(paymentUuid, token);
         if (status === 200 && data) {
-          // data correspond à PaymentStatusResponse, éventuellement wrapper selon votre service
-          // Si getPaymentStatus renvoie { data: PaymentStatusResponse }, c’est correct.
           setPaymentInfo(data as PaymentDetails);
         } else {
-          // statut inattendu
           logWarn('Unexpected status getPaymentStatus:', data);
           setError(t('errors.fetch_error'));
         }
@@ -86,6 +90,7 @@ export default function ConfirmationPage() {
     fetchInfo();
   }, [location, token, lang, navigate, t, unlockCart]);
 
+  // Format paid_at timestamp for display
   const formattedDate = paymentInfo?.paid_at
     ? new Date(paymentInfo.paid_at).toLocaleString(lang, {
         year: 'numeric',
@@ -96,6 +101,7 @@ export default function ConfirmationPage() {
       })
     : '-';
 
+  // Loading state
   if (loading) {
     return (
       <>
@@ -106,6 +112,8 @@ export default function ConfirmationPage() {
       </>
     );
   }
+
+  // Error state
   if (error) {
     return (
       <PageWrapper>
@@ -120,6 +128,7 @@ export default function ConfirmationPage() {
     );
   }
 
+  // Success state
   return (
     <>
       <Seo title={t('seo.confirmation_title')} description={t('seo.confirmation_description')} />

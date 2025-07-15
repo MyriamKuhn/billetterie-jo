@@ -19,38 +19,49 @@ import { logError } from '../utils/logger';
 import { isEmailValid } from '../utils/validation';
 import type { ApiResponse } from '../types/apiResponse';
 
+/**
+ * ForgotPasswordPage component
+ * This page allows users to request a password reset by entering their email address.
+ * It handles form submission, validation, and displays success or error messages.
+ * It uses the `passwordForgottenDemand` service to send the request.
+ */
 export default function ForgotPasswordPage() {
   const { t } = useTranslation('forgotPassword');
   const navigate = useNavigate();
   const lang = useLanguageStore.getState().lang;
 
+  // Local form state
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
+  // Validate email format
   const validEmail = isEmailValid(email.trim());
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validEmail) return;
+    if (!validEmail) return;  // prevent if invalid
     setLoading(true);
     setStatus('idle');
     setMessage('');
 
     try {
+      // Send password-reset request
       const { status } = await passwordForgottenDemand(
         email.trim(),
         lang
       );
 
       if (status >= 200 && status < 300) {
-        setStatus('success');
+        setStatus('success'); // show success message
         setMessage(t('forgotPassword.successMessage'));
       } else {
         throw new Error('Unexpected status');
       }
     } catch (err) {
+      // Extract API error code or fallback
       if (axios.isAxiosError(err)) {
         const data = err.response?.data as ApiResponse | undefined;
         if (data?.code) {
@@ -70,7 +81,9 @@ export default function ForgotPasswordPage() {
 
   return (
     <>
+      {/* SEO tags */}
       <Seo title={t('seo.title')} description={t('seo.description')} />
+      {/* Page container */}
       <PageWrapper disableCard>
         <Box
           component="form"
@@ -86,6 +99,7 @@ export default function ForgotPasswordPage() {
             border: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
+          {/* Page title and description */}
           <Typography variant="h4" gutterBottom align="center">
             {t('forgotPassword.title')}
           </Typography>
@@ -93,6 +107,7 @@ export default function ForgotPasswordPage() {
             {t('forgotPassword.description')}
           </Typography>
 
+          {/* Feedback message */}
           {(status === 'error' || status === 'success') && (
             <AlertMessage
               message={message}
@@ -101,6 +116,7 @@ export default function ForgotPasswordPage() {
           )}
 
           <Stack spacing={2} sx={{ mt: 2 }}>
+            {/* Email input */}
             <TextField
               required
               fullWidth
@@ -118,6 +134,7 @@ export default function ForgotPasswordPage() {
               }
             />
 
+            {/* Submit button */}
             <Button
               type="submit"
               variant="contained"
@@ -132,6 +149,7 @@ export default function ForgotPasswordPage() {
                 : t('forgotPassword.button')}
             </Button>
 
+            {/* Back to login link */}
             <Box sx={{ textAlign: 'center', mt: 1 }}>
               <Link
                 component="button"

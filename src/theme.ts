@@ -27,12 +27,19 @@ const customShadows: Partial<Record<number, string>> = {
   4: '0px 2px 4px rgba(0,0,0,0.12)',
 };
 
+/**
+ * getAppTheme
+ * Generates a Material-UI theme based on the provided mode.
+ * This theme includes custom colors, typography, and component styles.
+ */
 export const getAppTheme = (mode: PaletteMode): Theme => {
   const isLight = mode === 'light';
 
+  // Create a default theme to extract its shadows array
   const defaultTheme = createTheme();
   const defaultShadows: Shadows = defaultTheme.shadows;
 
+  // Override the first few shadow levels, leave the rest as default
   const shadows: Shadows = defaultShadows.map((sh, idx) =>
     customShadows[idx] ?? sh
   ) as Shadows;
@@ -79,6 +86,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiButton: {
         styleOverrides: {
           text: ({ theme, ownerState }) => {
+            // If in light mode and not an inheritance color, use info color for text buttons
             if (
               theme.palette.mode === 'light' &&
               ownerState.color !== 'inherit'
@@ -93,6 +101,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
             return {}; // sinon, pas de changement
           },
           containedPrimary: ({ theme }) => ({
+            // Primary contained buttons use info palette
             backgroundColor:
               theme.palette.mode === 'dark'
                 ? theme.palette.primary.dark
@@ -110,6 +119,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
           }),
           ...(isLight && {
             outlinedPrimary: {
+              // In light mode, primary outlined buttons use secondary color
               borderColor:     brandColors.secondary,
               color:           brandColors.secondary,
               '&:hover': {
@@ -123,6 +133,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiIconButton: {
         styleOverrides: {
           root: ({ theme }) => ({
+            // Icon buttons match info/main in light, or text primary in dark
             color: isLight ? theme.palette.info.main : theme.palette.text.primary,
           }),
         },
@@ -130,6 +141,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiListItemIcon: {
         styleOverrides: {
           root: ({ theme }) => ({
+            // List item icons follow same coloring as icon buttons
             color: isLight ? theme.palette.info.main : theme.palette.text.primary,
           }),
         },
@@ -137,6 +149,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiBadge: {
         styleOverrides: {
           badge: ({ theme }) => ({
+            // Custom badge style
             backgroundColor: isLight ? theme.palette.text.primary : theme.palette.info.main,
             color:           '#fff',
             minWidth:        16,
@@ -150,6 +163,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiLink: {
         styleOverrides: {
           root: ({ theme }) => ({
+            // Underlined links with hover color change
             color: theme.palette.mode === 'light'
               ? theme.palette.primary.dark
               : theme.palette.primary.light,
@@ -163,6 +177,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiRadio: {
         styleOverrides: {
           root: ({ theme }) => ({
+            // Radio buttons coloring
             color: theme.palette.text.secondary,
             '&.Mui-checked': {
               color: theme.palette.mode === 'dark'
@@ -175,7 +190,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiPagination: {
         styleOverrides: {
           root: {
-            // Centrage et marge
+            // Center and add vertical spacing
             display: 'flex',
             justifyContent: 'center',
             padding: '1rem 0',
@@ -185,6 +200,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiPaginationItem: {
         styleOverrides: {
           root: ({ theme }) => ({
+            // Page item sizing and selected styling
             minWidth: 32,
             height:    32,
             margin:   '0 4px',
@@ -207,6 +223,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiAccordion: {
         styleOverrides: {
           root: ({ theme }) => ({
+            // Accordion panel base styling
             backgroundColor: theme.palette.background.paper,
             borderRadius: theme.shape.borderRadius,
             border: `1px solid ${theme.palette.divider}`,
@@ -217,6 +234,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiAccordionSummary: {
         styleOverrides: {
           root: ({ theme }) => ({
+            // Accordion header styling
             backgroundColor: theme.palette.background.paper,
             borderRadius: theme.shape.borderRadius,
             '&.Mui-expanded': {
@@ -225,6 +243,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
             },
           }),
           expandIconWrapper: ({ theme }) => {
+            // Expand icon circle styling
             const iconColor = theme.palette.mode === 'dark'
               ? theme.palette.text.primary
               : theme.palette.info.main;
@@ -242,6 +261,7 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiAccordionDetails: {
         styleOverrides: {
           root: ({ theme }) => ({
+            // Accordion details styling
             backgroundColor: theme.palette.background.paper,
             borderBottomLeftRadius: theme.shape.borderRadius,
             borderBottomRightRadius: theme.shape.borderRadius,
@@ -255,11 +275,13 @@ export const getAppTheme = (mode: PaletteMode): Theme => {
       MuiSwitch: {
         styleOverrides: {
           switchBase: ({ theme }) => ({
+            // Switch thumb base color
             color: theme.palette.mode === 'dark'
                 ? theme.palette.primary.dark
                 : theme.palette.info.main,
           }),
           root: ({ theme }) => ({
+            // Switch track and checked thumb styling
             '& .MuiSwitch-switchBase.Mui-checked .MuiSwitch-thumb': {
               color: theme.palette.mode === 'dark'
                 ? theme.palette.primary.dark

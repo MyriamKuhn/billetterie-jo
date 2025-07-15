@@ -8,9 +8,14 @@ interface TicketGridProps {
   tickets: Ticket[]
 }
 
+/**
+ * Renders a responsive grid of TicketCard components, or a "no tickets" message when the list is empty.
+ * This component is used to display a collection of tickets in a visually appealing manner.
+ */
 export function TicketGrid({ tickets }: TicketGridProps) {
   const { t } = useTranslation('tickets')
 
+  // If there are no tickets, show a centered message with some top margin
   if (tickets.length === 0) {
     return (
       <Typography variant="h6" align="center" sx={{ mt: 4 }}>
@@ -19,6 +24,7 @@ export function TicketGrid({ tickets }: TicketGridProps) {
     )
   }
 
+  // Otherwise, render each TicketCard in a flex-wrapped container
   return (
     <Box
       sx={{

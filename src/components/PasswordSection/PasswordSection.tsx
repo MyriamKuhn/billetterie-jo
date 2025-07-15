@@ -23,27 +23,39 @@ import IconButton from "@mui/material/IconButton";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Visibility from "@mui/icons-material/Visibility";
 
+/**
+ * PasswordSection component allows users to update their password.
+ * It includes fields for current password, new password, and confirmation,
+ * with validation and feedback messages.
+ */
 export function PasswordSection(): JSX.Element {
   const { t } = useTranslation('userDashboard');
   const token = useAuthStore((state) => state.authToken);
   const navigate = useNavigate();
   
+  // Accordion open/closed state
   const [expanded, setExpanded] = useState<boolean>(false);
+  // Form fields
   const [currentPassword, setCurrentPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  // Touch flags for validation feedback
   const [currentPwdTouched, setCurrentPwdTouched] = useState(false);
   const [newPwdTouched, setNewPwdTouched] = useState(false);
+  // Visibility toggle for current password
   const [showCurrent, setShowCurrent] = useState(false);
 
+  // Loading and feedback messages
   const [loading, setLoading] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  // Validation flags
   const currentPasswordError = currentPwdTouched && !currentPassword.trim();
   const pwStrong = isStrongPassword(newPassword);
   const pwsMatch = newPassword === confirmPassword;
 
+  // Toggle accordion and reset fields on collapse
   const handleAccordionChange = () => {
     if (expanded) {
       setErrorMsg(null);
@@ -54,16 +66,18 @@ export function PasswordSection(): JSX.Element {
     setExpanded(prev => !prev);
   };
 
+  // Form submission handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
 
+    // Validate current password
     if (currentPasswordError) {
       setErrorMsg(t('errors.currentPasswordRequired'));
       return;
     }
-
+    // Validate strength and match of new passwords
     if (!pwStrong) {
       setErrorMsg(t('errors.passwordNotStrong')); 
       return;
@@ -73,7 +87,7 @@ export function PasswordSection(): JSX.Element {
       setErrorMsg(t('errors.passwordsDontMatch'));
       return;
     }
-    
+    // Ensure user is authenticated
     if (!token) {
       navigate('/login', { replace: true });
       return;
@@ -82,6 +96,7 @@ export function PasswordSection(): JSX.Element {
     setLoading(true);
 
     try {
+      // Call API to update password
       const { status } = await updateUserPassword(token, currentPassword, newPassword, confirmPassword);
 
       if (status === 200) {
@@ -90,6 +105,7 @@ export function PasswordSection(): JSX.Element {
         setErrorMsg(t('errors.passwordUpdate'));
       }
     } catch (err: any) {
+      // Handle axios errors with code mapping or network fallback
       if (axios.isAxiosError(err) && err.response) {
         const { data } = err.response;
         if (data.code) {
@@ -107,6 +123,7 @@ export function PasswordSection(): JSX.Element {
 
   return (
     <Accordion expanded={expanded} onChange={handleAccordionChange}>
+      {/* Header showing label */}
       <AccordionSummary expandIcon={<ExpandMoreIcon />}> 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: { xs: 1, sm: 0 } }}>
           <Typography sx={{ fontSize: { xs: '0.85rem', sm: '1.2rem' } }}>
@@ -114,10 +131,15 @@ export function PasswordSection(): JSX.Element {
           </Typography>
         </Box>
       </AccordionSummary>
+
+      {/* Expandable form */}
       <AccordionDetails>
         <Stack component="form" onSubmit={handleSubmit} spacing={2} sx={{ width: '100%' }}>
+          {/* Inline error or success alerts */}
           {errorMsg && <AlertMessage message={errorMsg} severity="error" />}
           {successMsg && <AlertMessage message={successMsg} severity="success" />}
+
+          {/* Current password field with visibility toggle */}
           <TextField
             required
             fullWidth
@@ -146,6 +168,8 @@ export function PasswordSection(): JSX.Element {
               },
             }}
           />
+
+          {/* New password + confirmation fields */}
           <PasswordWithConfirmation
             password={newPassword}
             onPasswordChange={setNewPassword}
@@ -154,7 +178,10 @@ export function PasswordSection(): JSX.Element {
             touched={newPwdTouched}
             onBlur={() => setNewPwdTouched(true)}
           />
+
+          {/* Action buttons */}
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+            {/* Cancel resets fields and messages */}
             <Button 
               onClick={() => { 
                 setCurrentPassword('');
@@ -169,6 +196,7 @@ export function PasswordSection(): JSX.Element {
             >
               {t('dashboard.cancel')}
             </Button>
+            {/* Save submits the form */}
             <Button
               type="submit"
               variant="contained"

@@ -12,6 +12,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { RequireAuth } from './components/RequireAuth';
 
+// Lazy‑load all page components to split code and speed up initial load
 const HomePage    = lazy(() => import('./pages/HomePage'));
 const ProductsPage = lazy(() => import('./pages/ProductsPage'));
 const AdminProductsPage = lazy(() => import('./pages/AdminProductsPage'));
@@ -47,13 +48,23 @@ interface AppProps {
   toggleMode: () => void;
 }
 
+/**
+ * App component that serves as the main entry point for the application.
+ * It sets up the router, handles language changes, and renders the main layout
+ * including the navbar, footer, and main content area.
+ * It also includes error boundaries for better error handling
+ * and lazy loading for performance optimization.
+ */
 export default function App({ mode, toggleMode }: AppProps) {
+  // Read the current language from our Zustand store
   const lang = useLanguageStore(state => state.lang);
 
+  // Whenever the language changes, update the <html> lang attribute
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
 
+  // Ensure i18next uses our store’s language
   useEffect(() => {
     const base = i18n.language.split('-')[0];
     if (base !== lang) i18n.changeLanguage(lang);
@@ -61,19 +72,30 @@ export default function App({ mode, toggleMode }: AppProps) {
 
   return (
     <BrowserRouter>
+      {/* Scroll restoration on navigation */}
       <ScrollToTop />
+
+      {/* Layout container */}
       <Box sx={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
+        {/* Main navigation bar */}
         <Navbar mode={mode} toggleMode={toggleMode} />
+
+        {/* Toolbar anchor for “back to top” button */}
         <Toolbar id="back-to-top-anchor" variant="dense" />
 
+        {/* Main content area grows to fill available space */}
         <Box sx={{ flex: 1 }}>
+          {/* Catches rendering errors in child components */}
           <ErrorBoundary>
+            {/* Show loader while lazy‑loaded pages are being fetched */}
             <Suspense fallback={
               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', py: 4 }}>
                 <OlympicLoader />
               </Box>
             }>
+              {/* Route definitions */}
               <Routes>
+                {/* Public routes */}
                 <Route path="/" element={<HomePage />} />
                 <Route path="/tickets" element={<ProductsPage />} />
                 <Route path="/contact" element={<ContactPage />} />
@@ -87,17 +109,17 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/password-reset" element={<PasswordResetPage />} />
                 <Route path="/cart" element={<CartPage />} />
 
-                {/* Unauthorized route */}
+                {/* Unauthorized notice page */}
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 
-                {/* Protected routes */}
+                {/* User‑protected routes */}
                 <Route path="/user/dashboard" element={<RequireAuth requiredRole="user"><UserDashboardPage /></RequireAuth>}/>
                 <Route path="/checkout" element={<RequireAuth requiredRole="user"><CheckoutPage /></RequireAuth>} />
                 <Route path="/confirmation" element={<RequireAuth requiredRole="user"><ConfirmationPage /></RequireAuth>} />
                 <Route path="/user/orders" element={<RequireAuth requiredRole="user"><InvoicesPage /></RequireAuth>} />
                 <Route path="/user/tickets" element={<RequireAuth requiredRole="user"><UserTicketsPage /></RequireAuth>} />
 
-                {/* Admin routes */}
+                {/* Admin‑protected routes */}
                 <Route path="/admin/dashboard" element={<RequireAuth requiredRole="admin"><AdminDashboardPage /></RequireAuth>} />
                 <Route path="/admin/tickets" element={<RequireAuth requiredRole="admin"><AdminProductsPage /></RequireAuth>} />
                 <Route path="/admin/users" element={<RequireAuth requiredRole="admin"><AdminUsersPage /></RequireAuth>} />
@@ -106,7 +128,7 @@ export default function App({ mode, toggleMode }: AppProps) {
                 <Route path="/admin/payments" element={<RequireAuth requiredRole="admin"><AdminPaymentsPage /></RequireAuth>} />
                 <Route path="/admin/reports" element={<RequireAuth requiredRole="admin"><AdminReportsPage /></RequireAuth>} />
                 
-                {/* Employee routes */}
+                {/* Employee‑protected routes */}
                 <Route path="/employee/dashboard" element={<RequireAuth requiredRole="employee"><EmployeeDashboardPage /></RequireAuth>} />
                 <Route path="/employee/scan" element={<RequireAuth requiredRole="employee"><EmployeeScanPage /></RequireAuth>} />
                 <Route path="/employee/validate" element={<RequireAuth requiredRole="employee"><EmployeeValidatePage /></RequireAuth>} />
@@ -116,8 +138,10 @@ export default function App({ mode, toggleMode }: AppProps) {
           </ErrorBoundary>
         </Box>
 
+        {/* “Back to top” floating button */}
         <BackToTop />
-
+        
+        {/* Footer at the bottom of every page */}
         <Footer />
       </Box>
     </BrowserRouter>

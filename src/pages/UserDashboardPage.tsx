@@ -24,17 +24,23 @@ export interface UserProfile {
   twoFAEnabled: boolean;
 }
 
+/**
+ * UserDashboardPage
+ * Page for managing user profile settings.
+ * It allows users to view and update their name, email, password, and two-factor authentication
+ * settings.
+ */
 export default function UserDashboardPage(): JSX.Element {
   const { t } = useTranslation('userDashboard');
   const token = useAuthStore((state) => state.authToken);
 
-  // États initiaux: charger les données utilisateur existantes
+  // Local state for user data, loading status, and any error message
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    // Si pas de token, on réinitialise et on stoppe le chargement
+    // If no token, skip fetch and mark as not loading
     if (!token) {
       setUser(null);
       setLoadingUser(false);
@@ -48,11 +54,12 @@ export default function UserDashboardPage(): JSX.Element {
       setLoadingUser(true);
       setErrorMsg(null);
       try {
-        // Passer le signal à fetchUser afin que la requête puisse être annulée
+        // Fetch user profile, passing abort signal
         const response = await fetchUser(token, { signal });
         if (signal.aborted) return;
         const { status, data } = response;
         if (status === 200 && data.user) {
+          // Populate local user state
           setUser({
             firstname: data.user.firstname,
             lastname: data.user.lastname,
@@ -60,10 +67,12 @@ export default function UserDashboardPage(): JSX.Element {
             twoFAEnabled: data.user.twofa_enabled,
           });
         } else {
+          // Unexpected response
           setErrorMsg(t('errors.fetchProfile'));
         }
       } catch (err: any) {
         if (signal.aborted) return;
+        // Show translated error based on code or network
         if (axios.isAxiosError(err) && err.response) {
           const respData = err.response.data;
           const code = respData?.code;
@@ -79,10 +88,12 @@ export default function UserDashboardPage(): JSX.Element {
     };
     loadUser();
     return () => {
+      // Cleanup on unmount or token change
       controller.abort();
     };
   }, [token, t]);
 
+  // While fetching, show loader
   if (loadingUser) {
     return (
       <>
@@ -94,6 +105,7 @@ export default function UserDashboardPage(): JSX.Element {
     );
   }
 
+  // On error, display retryable error screen
   if (errorMsg) {
     return (
       <PageWrapper>
@@ -112,10 +124,12 @@ export default function UserDashboardPage(): JSX.Element {
     );
   }
 
+  // If not authenticated, redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // Main dashboard view
   return (
     <>
       <Seo title={t('seo.title')} description={t('seo.description')} />

@@ -26,6 +26,12 @@ interface EmployeeFormData {
   password_confirmation: string;
 }
 
+/**
+ * Modal for creating a new employee.
+ *
+ * Resets its form state when opened, validates inputs, and
+ * calls the `createEmployee` hook to submit new user data.
+ */
 export function AdminEmployeeCreateModal({ open, onClose, onRefresh }: Props) {
   const { t } = useTranslation('users');
   const { notify } = useCustomSnackbar();
@@ -34,7 +40,7 @@ export function AdminEmployeeCreateModal({ open, onClose, onRefresh }: Props) {
   const [pwdTouched, setPwdTouched] = useState(false);
   const [emailTouched, setEmailTouched] = useState(false);
 
-  // initial blank form
+  // Initial form values (memoized so it's stable across renders)
   const initialValues = useMemo<EmployeeFormData>(() => ({
     firstname: '',
     lastname: '',
@@ -45,6 +51,9 @@ export function AdminEmployeeCreateModal({ open, onClose, onRefresh }: Props) {
 
   const [formData, setFormData] = useState<EmployeeFormData>(initialValues);
 
+  /**
+   * Reset form and touched flags whenever modal is (re)opened.
+   */
   useEffect(() => {
     if (open) {
       setFormData(initialValues);
@@ -53,13 +62,22 @@ export function AdminEmployeeCreateModal({ open, onClose, onRefresh }: Props) {
     }
   }, [open, initialValues]);
 
-  // Email format validation
+  /**
+   * Validate email format against a simple regex.
+   *
+   * @returns {boolean} true if `formData.email` matches the pattern.
+   */
   const emailValid = useMemo(() => {
     const re = /^\S+@\S+\.\S+$/;
     return re.test(formData.email);
   }, [formData.email]);
 
-  // detect filled
+  /**
+   * Check that all fields are non-empty, email is valid,
+   * and password matches confirmation.
+   *
+   * @returns {boolean} true if the form is ready to submit.
+   */
   const allFilled = useMemo(() => {
     return (
       formData.firstname.trim() !== '' &&
@@ -71,6 +89,13 @@ export function AdminEmployeeCreateModal({ open, onClose, onRefresh }: Props) {
     );
   }, [formData, emailValid]);
 
+  /**
+   * Handle the Create button click:
+   * 1. Show spinner
+   * 2. Call createEmployee hook
+   * 3. Notify success or error
+   * 4. Refresh list and close on success
+   */
   const handleSubmit = async () => {
     setSaving(true);
     const body = {
@@ -81,6 +106,7 @@ export function AdminEmployeeCreateModal({ open, onClose, onRefresh }: Props) {
       password_confirmation: formData.password_confirmation
     };
 
+    // Await API call result
     const ok = await createEmployee(body);
     setSaving(false);
     if (ok) {
@@ -120,6 +146,7 @@ export function AdminEmployeeCreateModal({ open, onClose, onRefresh }: Props) {
             helperText={emailTouched && !emailValid ? t('employee.invalid_email') : ''}
             fullWidth
           />
+          {/* Password inputs with confirmation and inline mismatch indicator */}
           <PasswordWithConfirmation
             password={formData.password}
             onPasswordChange={pw => setFormData(fd => ({ ...fd, password: pw }))}

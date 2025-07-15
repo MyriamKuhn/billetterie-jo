@@ -161,6 +161,8 @@ Planned improvements:
 - Additional languages (ES / PT…)
 - PWA (Progressive Web App) for an app-like experience and web installation without an app store
 - Employe dedicated App to install on mobile
+- Cookie analytics after consent
+- Add DSN Sentry as example for error logging
 
 ---
 

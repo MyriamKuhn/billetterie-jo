@@ -1,3 +1,6 @@
+/**
+ * Representation of a user in the system.
+ */
 export interface User {
   id: number;
   firstname: string;

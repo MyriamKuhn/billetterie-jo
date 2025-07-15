@@ -15,6 +15,19 @@ export interface Filters {
   page: number;
 }
 
+/**
+ * Custom hook to fetch and manage a paginated, filtered list of products for admin.
+ *
+ * @param filters Query filters including search, pagination, and sorting.
+ * @param lang    Language code for the Accept-Language header.
+ * @param token   Bearer token for API authentication.
+ * @returns An object containing:
+ *  - products: array of fetched products
+ *  - total: total number of matching products
+ *  - loading: whether the request is in progress
+ *  - error: error code for network or unexpected errors
+ *  - validationErrors: server-side validation errors (422)
+ */
 export function useAdminProducts(filters: Filters, lang: string, token: string) {
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
@@ -27,7 +40,7 @@ export function useAdminProducts(filters: Filters, lang: string, token: string) 
     setError(null);
     setValidationErrors(null);
 
-    // Mapping interne entre notre enum "sortBy" et la clé API
+    // Map our internal sort field to the API's expected parameter
     const sortMap: Record<Filters['sortBy'], string> = {
       name:  'name',
       price: 'price',
@@ -36,6 +49,7 @@ export function useAdminProducts(filters: Filters, lang: string, token: string) 
 
     const apiSort = sortMap[filters.sortBy];
 
+    // Build query parameters, only including non-empty filters
     const params: Record<string, any> = {
       per_page: Math.max(1, filters.perPage),
       page: filters.page,
@@ -50,6 +64,7 @@ export function useAdminProducts(filters: Filters, lang: string, token: string) 
 
     axios.get(`${API_BASE_URL}/api/products/all`, { params, headers: { 'Authorization': `Bearer ${token}`, 'Accept-Language': lang } })
       .then(res => {
+        // Success: update product list and total count
         setProducts(res.data.data);
         setTotal(res.data.pagination.total);
       })
@@ -57,16 +72,19 @@ export function useAdminProducts(filters: Filters, lang: string, token: string) 
         if (axios.isAxiosError(err)) {
           const status = err.response?.status;
           if (status === 422) {
-          setValidationErrors(err.response!.data.errors as Record<string,string[]>);
-          return;
+            // Validation errors returned by the API
+            setValidationErrors(err.response!.data.errors as Record<string,string[]>);
+            return;
+          }
+          if (status === 404) {
+            // No products found for the given filters
+            setProducts([]);
+            setTotal(0);
+            return;
+          }
         }
-        if (status === 404) {
-          setProducts([]);
-          setTotal(0);
-          return;
-        }
-      }
-      setError(err.code);
+        // Other errors: store the error code
+        setError(err.code);
     })
     .finally(() => setLoading(false));
   }, [filters, lang]);

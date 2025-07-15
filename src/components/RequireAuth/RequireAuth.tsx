@@ -9,6 +9,12 @@ interface RequireAuthProps {
   unauthorizedPath?: string;
 }
 
+/**
+ * RequireAuth:
+ * - If the user is not authenticated (no authToken), redirect to the login page.
+ * - If a requiredRole is specified and the user's role does not match, redirect to unauthorizedPath.
+ * - Otherwise, render the children (protected content).
+ */
 export function RequireAuth({
   children,
   requiredRole,
@@ -19,18 +25,16 @@ export function RequireAuth({
   const role = useAuthStore(state => state.role);
   const location = useLocation();
 
-  // 1) Vérifier si authentifié
+  // 1) Not authenticated: redirect to login with the original location in state
   if (!authToken) {
-    // Redirige vers login, on peut passer l’URL d’origine dans state
     return <Navigate to={loginPath} state={{ from: location }} replace />;
   }
 
-  // 2) Si un rôle est requis, vérifier
+  // 2) Authenticated but wrong role: redirect to unauthorized page
   if (requiredRole && role !== requiredRole) {
-    // Authentifié mais pas le bon rôle
     return <Navigate to={unauthorizedPath} replace />;
   }
 
-  // 3) Tout est ok
+  // 3) Authorized: render the protected children components
   return children;
 }

@@ -24,6 +24,10 @@ export interface UsersFiltersProps {
   onChange: (newFilters: Partial<UsersFiltersProps['filters']>) => void;
 }
 
+/**
+ * A responsive filter sidebar/drawer for user and employee lists, supporting first name, last name, email filters,
+ * items per page selection, and reset functionality. 
+ */
 export function UsersFilters({
   role,
   filters,
@@ -34,34 +38,36 @@ export function UsersFilters({
   const theme = useTheme();
   const [open, setOpen] = useState(false);
 
+  // Shared filter content used in sidebar (desktop) and drawer (mobile)
   const content = (
     <Box sx={{ width: 260, py: 2, px: 1 }}>
+      {/* Section title */}
       <Typography variant="h6" gutterBottom>
         {t('filters.title')}
       </Typography>
       <Stack spacing={2} sx={{ mx: 1 }}>
-        {/* Nom */}
+        {/* First name text filter */}
         <FilterField
           label={t('filters.firstname')}
           value={filters.firstname}
           onChange={v => onChange({ firstname:v, page:1 })}
         />
 
-        {/* Catégorie */}
+        {/* Last name text filter */}
         <FilterField
           label={t('filters.lastname')}
           value={filters.lastname}
           onChange={v => onChange({ lastname:v, page:1})}
         />
 
-        {/* Lieu */}
+        {/* Email text filter */}
         <FilterField
           label={t('filters.email')}
           value={filters.email}
           onChange={v => onChange({ email:v, page:1})}
         />
 
-        {/* User par page */}
+        {/* Items per page dropdown */}
         <FilterSelect
           label={t(filterKey)}
           value={filters.perPage}
@@ -69,7 +75,7 @@ export function UsersFilters({
           onChange={v=>onChange({ perPage:v, page:1 })}
         />
 
-        {/* Réinitialiser */}
+        {/* Reset button to clear all filters */}
         <Button
           variant="outlined"
           fullWidth
@@ -91,7 +97,7 @@ export function UsersFilters({
 
   return (
     <>
-      {/* Sidebar desktop */}
+      {/* Desktop sidebar (hidden on xs screens) */}
       <Box
         component="aside"
         sx={{
@@ -107,13 +113,16 @@ export function UsersFilters({
         {content}
       </Box>
 
-      {/* Drawer mobile */}
+      {/* Mobile drawer (visible only on xs screens) */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 2 }}>
+        {/* Button to open the filter drawer */}
         <IconButton onClick={() => setOpen(true)} aria-label={t('filters.title')}>
           <MenuIcon />
         </IconButton>
+        {/* Drawer containing the same filter content */}
         <Drawer open={open} onClose={() => setOpen(false)} keepMounted>
           <Box sx={{ position: 'relative' }}>
+            {/* Close button inside drawer */}
             <IconButton
               onClick={() => setOpen(false)}
               size="small"

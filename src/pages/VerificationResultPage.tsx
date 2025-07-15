@@ -6,11 +6,17 @@ import Box from '@mui/material/Box';
 import { PageWrapper } from '../components/PageWrapper';
 import Seo from '../components/Seo';
 
+/**
+ * VerificationResultPage component displays the result of a verification process.
+ * It shows different messages based on the verification status passed in the URL.
+ * It provides a button to navigate to the login page or home page based on the status.
+ */
 export default function VerificationResultPage() {
-  const { status } = useParams<'status'>();
+  const { status } = useParams<'status'>(); // URL param: verification status
   const navigate = useNavigate();
   const { t } = useTranslation(['verification']);
 
+  // Define title, message, and button action per status
   const config = {
     success: {
       title: t('success.title'),
@@ -46,15 +52,21 @@ export default function VerificationResultPage() {
     }
   };
 
+  // Fallback to error config if status is unrecognized
   const ctx = config[status as keyof typeof config] || config.error;
 
   return (
     <>
+      {/* SEO metadata */}
       <Seo title={t('seo.title')} description={t('seo.description')} />
       <PageWrapper>
+        {/* Centered content */}
         <Box textAlign="center" mt={2}>
+          {/* Title */}
           <Typography variant="h4" gutterBottom>{ctx.title}</Typography>
+          {/* Message */}
           <Typography variant="body1" sx={{ mb: 4 }}>{ctx.message}</Typography>
+          {/* Action button */}
           <Button variant="contained" onClick={ctx.action.onClick}>
             {ctx.action.label}
           </Button>

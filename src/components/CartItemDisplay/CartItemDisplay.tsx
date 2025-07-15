@@ -18,14 +18,22 @@ interface CartItemDisplayProps {
   disabled?: boolean;
 }
 
+/**
+ * 
+ * This component renders a cart item, adapting its layout for mobile (Paper card) or desktop (TableRow).
+ * It displays the item's name, date, time, location, price, quantity input, and total price.
+ * It also handles discounts and remaining quantity.
+ */
 export function CartItemDisplay({ item, lang, adjustQty, isMobile, disabled = false }: CartItemDisplayProps) {
   const { t } = useTranslation('cart');
   const discountPct = Math.round((item.discountRate ?? 0) * 100)
+
+  // MOBILE LAYOUT: Paper card stacked vertically
   if (isMobile) {
     return (
       <Paper key={item.id} sx={{ p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 1 }}>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-          {/* Nom et badges */}
+          {/* Item name and badges for date, time, location, availability */}
           <Box>
             <Typography
               variant="subtitle1"
@@ -55,9 +63,9 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile, disabled = fa
             />
           </Box>
 
-          {/* Bloc Prix unitaire, Quantité et Total */}
+          {/* Price, Qty input, and total */}
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {/* Prix unitaire centré */}
+            {/* Unit price with discount display if applicable */}
             <Box sx={{ textAlign: 'center' }}>
               {(item.discountRate ?? 0) > 0 ? (
                 <Box>
@@ -91,10 +99,10 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile, disabled = fa
               )}
             </Box>
 
-            {/* Quantité (boutons + TextField) centré */}
+            {/* Quantity input controls */}
             <QuantityInput item={item} adjustQty={adjustQty} />
 
-            {/* Total aligné à droite, avec “Total : ” */}
+            {/* Total price aligned right */}
             <Box sx={{ textAlign: 'right' }}>
               <Typography variant="body1">
                 {t('table.total_price', {total:formatCurrency(item.quantity * item.price, lang, 'EUR')})}
@@ -105,17 +113,18 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile, disabled = fa
       </Paper>
     );
   }
+
+  // DESKTOP LAYOUT: Table row with columns
   return (
     <TableRow
       key={item.id}
       sx={{
-        // Si c'est la dernière rangée, on supprime la bordure du bas sur tous les <td>
         '&:last-child td': {
-          borderBottom: 'none',
+          borderBottom: 'none', // Remove bottom border on last row
         },
       }}
     >
-      {/* Colonne “Produit” */}
+      {/* PRODUCT column */}
       <TableCell sx={{ minWidth: 200 }}>
         <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
           <Box sx={{ flexGrow: 1 }}>
@@ -151,7 +160,7 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile, disabled = fa
         </Box>
       </TableCell>
 
-      {/* Colonne “Prix unitaire” */}
+      {/* UNIT PRICE column */}
       <TableCell align="right" sx={{ minWidth: 120 }}>
         {(item.discountRate ?? 0) > 0 ? (
           <Box sx={{ textAlign: 'right' }}>
@@ -181,12 +190,12 @@ export function CartItemDisplay({ item, lang, adjustQty, isMobile, disabled = fa
         )}
       </TableCell>
 
-      {/* Colonne “Quantité” (boutons + TextField) */}
+      {/* QUANTITY column */}
       <TableCell align="center" sx={{ minWidth: 160 }}>
         <QuantityInput item={item} adjustQty={adjustQty} disabled={disabled} />
       </TableCell>
 
-      {/* Colonne “Total” */}
+      {/* TOTAL column */}
       <TableCell align="right" sx={{ minWidth: 120 }}>
         <Typography variant="body1">
           {formatCurrency(item.quantity * item.price, lang, 'EUR')}
