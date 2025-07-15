@@ -15,7 +15,7 @@ import logoParis from '../../assets/logos/logo_paris.png';
 import LanguageSwitcher from '../LanguageSwitcher';
 import ThemeToggle from '../ThemeToggle';
 import AuthMenu from '../AuthMenu/AuthMenu';
-
+// Lazy-loaded cart preview
 const CartPreview = React.lazy(() => import('../CartPreview/CartPreview'));
 
 interface NavbarProps {
@@ -23,23 +23,27 @@ interface NavbarProps {
   toggleMode: () => void;
 }
 
+/**
+ * The main navigation bar, responsive for mobile and desktop, with logo, menu drawer, links, and utilities (theme toggle, language switcher, auth menu, cart preview).
+ */
 function Navbar({ mode, toggleMode }: NavbarProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // ─── État du drawer mobile ───────────────────────────────────────────────
+  // State for controlling mobile drawer open/close
   const [open, setOpen] = React.useState(false);
   const toggleDrawer = () => setOpen(o => !o);
 
   return (
     <>
+      {/* Fixed AppBar with bottom border */}
       <AppBar position="fixed" color="inherit" elevation={0}
         sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
         <Toolbar variant="dense" sx={{ justifyContent: 'space-between' }}>
 
           {isMobile ? (
-            // ────────── BARRE MOBILE ──────────
+            /* ────────── MOBILE VIEW ────────── */
             <>
               {/* menu burger */}
               <IconButton edge="start" onClick={toggleDrawer} aria-label={t('navbar.menu')}>
@@ -52,14 +56,15 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
                 <Box component="img" src={logoParis} alt={t('navbar.logoParis')} sx={{ height: 32 }} />
               </Box>
 
+              {/* Cart preview, lazy-loaded with a spinner fallback */}
               <Suspense fallback={<CircularProgress size={24} />}>
                 <CartPreview />
               </Suspense>
             </>
           ) : (
-            // ────────── BARRE DESKTOP ──────────
+            /* ────────── DESKTOP VIEW ────────── */
             <>
-              {/* logos + nav principale */}
+              {/* Logos and main navigation links */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 1 }}>
                   <Box component="img" src={logoSrc} alt={t('navbar.logoJO')} sx={{ height: 32 }} />
@@ -68,7 +73,7 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
                 <NavLinkList isMobile={false} />
               </Box>
 
-              {/* utilitaires */}
+              {/* Utility actions: theme toggle, language, auth menu, cart */}
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <ThemeToggle
                   mode={mode}
@@ -86,20 +91,20 @@ function Navbar({ mode, toggleMode }: NavbarProps) {
         </Toolbar>
       </AppBar>
 
-      {/* ────────── DRAWER MOBILE ────────── */}
+      {/* ────────── MOBILE DRAWER MENU ────────── */}
       <Drawer anchor="left" open={open} onClose={toggleDrawer}>
         <Box sx={{ width: 250, height: '100%', display: 'flex', flexDirection: 'column' }}>
 
-          {/* En-tête logos centré */}
+          {/* Drawer header with logos */}
           <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, p: 2 }}>
             <Box component="img" src={logoSrc} alt={t('navbar.logoJO')} sx={{ height: 32 }} />
             <Box component="img" src={logoParis} alt={t('navbar.logoParis')} sx={{ height: 32 }} />
           </Box>
 
-          {/* Liens principaux */}
+          {/* Navigation links for mobile, closing drawer on selection */}
           <NavLinkList isMobile toggleDrawer={toggleDrawer} />
 
-          {/* Pied de drawer : langue + thème */}
+          {/* Drawer footer with language and theme toggles */}
           <Box sx={{ mt: 'auto', p: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <LanguageSwitcher />
               <ThemeToggle

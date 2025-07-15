@@ -7,12 +7,18 @@ interface PageWrapperProps {
   disableCard?: boolean;
 }
 
+/**
+ * Wraps page content in a responsive Container, optionally inside a Card for framed layout.
+ * This component is useful for maintaining consistent padding and layout across different pages.
+ */
 export function PageWrapper({ children, disableCard = false }: PropsWithChildren<PageWrapperProps>) {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {disableCard ? (
+        // When disableCard is true, render children directly
         children
       ) : (
+        // Otherwise, wrap children in a Card for visual grouping
         <Card>
           {children}
         </Card>

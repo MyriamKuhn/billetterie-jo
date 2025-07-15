@@ -1,17 +1,23 @@
-// Statut possible d'une invoice
+/**
+ * Possible statuses for an invoice.
+ */
 export type InvoiceStatus = '' | 'pending' | 'paid' | 'failed' | 'refunded'
 
-// Représentation d'une facture (invoice)
+/**
+ * Represents a single invoice.
+ */
 export interface Invoice {
   uuid: string;
   amount: number;
   status: InvoiceStatus;
-  created_at: string;       // ISO 8601
-  invoice_link: string;    // Nom du fichier PDF
-  download_url: string;     // URL de téléchargement
+  created_at: string;       
+  invoice_link: string;    
+  download_url: string;     
 }
 
-// Filtrage, tri et pagination des invoices
+/**
+ * Filters, sorting, and pagination options when querying invoices.
+ */
 export interface InvoiceFilters {
   status: InvoiceStatus;
   date_from: string
@@ -22,11 +28,17 @@ export interface InvoiceFilters {
   page: number
 }
 
+/**
+ * Standard wrapper for responses from the invoices API.
+ */
 export interface InvoiceApiResponse {
   status: number;
   data: InvoiceResponse;
 }
 
+/**
+ * Shape of the data returned when querying invoices.
+ */
 export interface InvoiceResponse {
   data: Invoice[]
   meta: {

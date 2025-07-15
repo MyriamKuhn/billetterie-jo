@@ -10,8 +10,8 @@ export interface PricingUpdate {
 }
 
 /**
- * Retourne une fonction updatePricing(productId, updates)
- * qui renvoie true si le patch s'est bien passé (204), false sinon.
+ * Hook returning a function to update product pricing.
+ * The returned function sends a PATCH request and returns true on success, false on error.
  */
 export function useUpdateProductPricing() {
   const token = useAuthStore(s => s.authToken);

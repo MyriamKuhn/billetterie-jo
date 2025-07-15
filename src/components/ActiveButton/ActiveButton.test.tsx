@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ThemeProvider, createTheme } from '@mui/material';
 
-// 1) Mock d’ActiveLink : un simple <a> avec href et toutes les props
+// Mock ActiveLink as a plain <a> element for routing
 vi.mock('../ActiveLink', () => ({
   __esModule: true,
   default: ({ to, children, ...props }: any) => (
@@ -15,43 +15,40 @@ vi.mock('../ActiveLink', () => ({
 
 import ActiveButton from './ActiveButton';
 
+// Wrap UI in MUI ThemeProvider to apply styles/classes
 const renderWithTheme = (ui: React.ReactElement) =>
   render(<ThemeProvider theme={createTheme()}>{ui}</ThemeProvider>);
 
 describe('<ActiveButton />', () => {
-  it('rend un lien actif avec la bonne URL et les bons enfants', () => {
+  it('renders a link with correct href and children', () => {
     renderWithTheme(
       <ActiveButton to="/mon-chemin">Clique ici</ActiveButton>
     );
 
-    // on récupère l'<a> par son rôle et son libellé
     const link = screen.getByRole('link', { name: 'Clique ici' });
     expect(link).toHaveAttribute('href', '/mon-chemin');
     expect(link).toHaveTextContent('Clique ici');
   });
 
-  it('transmet les props MUI (disabled, data-testid)', () => {
+  it('forwards MUI props (disabled, data-testid)', () => {
     renderWithTheme(
       <ActiveButton to="/x" disabled data-testid="btn">
         Test
       </ActiveButton>
     );
 
-    // on récupère le lien par texte
     const link = screen.getByRole('link', { name: 'Test' });
-    // MUI Button sur un <a> injecte aria-disabled="true"
+    // MUI Button adds aria-disabled on a link when disabled
     expect(link).toHaveAttribute('aria-disabled', 'true');
-    // et on a bien passé data-testid
     expect(link).toHaveAttribute('data-testid', 'btn');
   });
 
-  it('garde variant="outlined" et color="primary"', () => {
+  it('applies variant="outlined" and color="primary" classes', () => {
     renderWithTheme(
       <ActiveButton to="/y">Hello</ActiveButton>
     );
 
     const link = screen.getByRole('link', { name: 'Hello' });
-    // classes MUI pour outlined + primary
     expect(link.className).toMatch(/MuiButton-outlined/);
     expect(link.className).toMatch(/MuiButton-colorPrimary/);
   });

@@ -17,15 +17,25 @@ interface CartSummaryProps {
   disabled?: boolean;
 }
 
+/**
+ * 
+ * This component displays the cart total, a checkbox for terms acceptance (CGV), a pay button, and a continue-shopping link.
+ * It also handles the state of the CGV acceptance and payment process.
+ * 
+ */
 export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMobile, disabled = false }: CartSummaryProps ) {
   const { t } = useTranslation('cart');
+
   return (
     <Box sx={{ mb:3 }}>
+      {/* Display the total price, right-aligned */}
       <Box sx={{ textAlign: 'right', mb: 2 }}>
         <Typography variant="h6">
           {t('table.total_price', { total: formatCurrency(total, lang, 'EUR') })}
         </Typography>
       </Box>
+
+      {/* Checkout button and CGV (terms) acceptance */}
       <Box sx={{
         display: 'flex',
         flexDirection: 'column',
@@ -34,9 +44,12 @@ export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMo
         gap: 0,
         mb:3
       }}>
+        {/* Pay button is disabled until CGV accepted or if disabled prop is true */}
         <Button variant="contained" color="primary" disabled={!acceptedCGV || disabled} onClick={onPay}>
           {t('checkout.checkout')}
         </Button>
+
+        {/* CGV acceptance checkbox with link to terms */}
         <Box sx={{ display:'flex', alignItems:'center', gap: 0, mt: 0 }}>
           <Checkbox checked={acceptedCGV} onChange={e => onCgvChange(e.target.checked)} disabled={disabled} size="small" />
           <Typography variant={isMobile ? 'caption' : 'body2'}>
@@ -53,7 +66,7 @@ export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMo
           </Typography>
         </Box>
 
-        {/* Si disabled, on peut afficher un petit message d'info */}
+        {/* If disabled (e.g., payment in progress), show a warning message */}
         {disabled && (
           <Box sx={{ mt: 1 }}>
             <Typography variant="caption" color="warning.main">
@@ -63,7 +76,7 @@ export function CartSummary({ total, acceptedCGV, onCgvChange, onPay, lang, isMo
         )}
       </Box>
 
-      {/* Bouton “Continuer shopping” toujours actif */}
+      {/* "Continue Shopping" link always enabled, right-aligned */}
       <Box sx={{ textAlign: 'right', mt: isMobile ? 6 : 10 }}>
         <Button component={Link} to="/tickets" variant="outlined" size="small">
           {t('checkout.continue_shopping')}

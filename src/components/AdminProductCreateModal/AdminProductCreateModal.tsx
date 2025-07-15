@@ -14,19 +14,27 @@ interface Props {
   onRefresh: () => void;
 }
 
+/**
+ * Modal dialog for creating a new product.
+ *
+ * - Displays a ProductForm with initial blank values.
+ * - Submits form data as FormData, including translations and optional image.
+ * - Shows snackbar notifications on success or failure.
+ */
 export function AdminProductCreateModal({ open, onClose, onRefresh }: Props) {
   const { t } = useTranslation('adminProducts');
   const { notify } = useCustomSnackbar();
   const createProduct = useCreateProduct();
   const [saving, setSaving] = useState(false);
 
-  // Valeurs initiales "vierges"
+  // Memoize initial blank form values to provide stable reference
   const initialValues = useMemo<ProductFormData>(() => ({
     price: 0,
     sale: 0,
     stock_quantity: 0,
     imageFile: undefined,
     translations: {
+      // French translation fields
       fr: {
         name: '',
         product_details: {
@@ -41,6 +49,7 @@ export function AdminProductCreateModal({ open, onClose, onRefresh }: Props) {
         },
       },
       en: {
+        // English translation fields
         name: '',
         product_details: {
           places: 0,
@@ -54,6 +63,7 @@ export function AdminProductCreateModal({ open, onClose, onRefresh }: Props) {
         },
       },
       de: {
+        // German translation fields
         name: '',
         product_details: {
           places: 0,
@@ -71,6 +81,7 @@ export function AdminProductCreateModal({ open, onClose, onRefresh }: Props) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      {/* Modal title */}
       <DialogTitle>
         {t('products.create_new')}
       </DialogTitle>
@@ -78,13 +89,21 @@ export function AdminProductCreateModal({ open, onClose, onRefresh }: Props) {
       <ProductForm
         initialValues={initialValues}
         saving={saving}
+        /**
+         * Handle form submission:
+         * - Build FormData payload including translations and optional image
+         * - Call createProduct hook
+         * - Notify user and refresh list on success or failure
+         */
         onSubmit={async data => {
           setSaving(true);
 
           const body = new FormData();
+          // Append basic product fields
           body.append('price', data.price.toString());
           body.append('sale', data.sale.toString());
           body.append('stock_quantity', data.stock_quantity.toString());
+          // Append translation fields for each language
           (['fr','en','de'] as const).forEach(code => {
             const tr = data.translations[code];
             body.append(`translations[${code}][name]`, tr.name);
@@ -113,20 +132,21 @@ export function AdminProductCreateModal({ open, onClose, onRefresh }: Props) {
               tr.product_details.category
             );
           });
+          // Include image file if provided
           if (data.imageFile) {
             body.append('image', data.imageFile, data.imageFile.name);
           }
-
+          // Call API and handle result
           const ok = await createProduct(body);
           setSaving(false);
 
           if (ok) {
             notify(t('products.success'), 'success');
             onRefresh();
-            return true;
+            return true;  // signal success to ProductForm
           } else {
             notify(t('errors.save_failed'), 'error');
-            return false;
+            return false; // signal failure to ProductForm
           }
         }}
         onCancel={onClose}

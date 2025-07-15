@@ -18,14 +18,22 @@ interface Props {
   onBuy: () => void;
 }
 
+/**
+ * Renders a product/ticket card with image, details (date, time, location, availability), pricing (with sale badge), and action buttons.
+ */
 export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails, onBuy }: Props) {
   const { t } = useTranslation(['common', 'ticket']);
+
+  // Determine if the product is sold out
   const soldOut = p.stock_quantity === 0;
+  // Compute final price after sale discount
   const finalPrice = p.price * (1 - p.sale);
 
   return (
     <Box sx={{ flex: { xs: '1 1 calc(33% - 32px)', md: '1 1 100%' }, minWidth: { xs: 280, md: 'auto' }, maxWidth: { xs: 320, md: '100%' } }}>
       <Card sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { xs: 'stretch', md: 'center' }, p: 2, gap: 1 }}>
+
+        {/* Product image or placeholder */}
         <CardMedia 
           component="img" 
           image={
@@ -37,17 +45,24 @@ export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails, onBuy 
           loading="lazy" 
           sx={{ width: { xs: '100%' , md: 320 }, height: 180, objectFit: 'cover', alignSelf: { xs: 'auto', md: 'center' } }} 
         />
+
+        {/* Textual details */}
         <CardContent sx={{ flexGrow: 1 }}>
+          {/* Product name */}
           <Typography variant="h6">{p.name}</Typography>
+          {/* Date and optional time */}
           <Typography variant="body2">
             {fmtDate(p.product_details.date)}{p.product_details.time && ` – ${p.product_details.time}`}
           </Typography>
+          {/* Location */}
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
             {p.product_details.location}
           </Typography>
+          {/* Available places */}
           <Typography variant="body2" color="text.secondary">
             {t('ticket:tickets.places', { count: p.product_details.places })}
           </Typography>
+          {/* Pricing: original price strikethrough if on sale, final price, sale badge */}
           <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 , mt: 1 }}>
             {p.sale > 0 && (
               <Typography variant="body2" sx={{ textDecoration: 'line-through' }}>
@@ -59,10 +74,13 @@ export function ProductCard({ product: p, fmtCur, fmtDate, onViewDetails, onBuy 
             </Typography>
             {p.sale > 0 && <Chip label={`–${Math.round(p.sale*100)}%`} size="small" />}
           </Box>
+          {/* Stock availability text & styling */}
           <Typography variant="body2" color={soldOut ? 'error.main' : 'text.secondary'} sx={{ mt:1 }}>
             { soldOut ? t('ticket:tickets.out_of_stock') : t('ticket:tickets.available', {count: p.stock_quantity}) }
           </Typography>
         </CardContent>
+
+        {/* Action buttons: More info and Buy */}
         <Box
           sx={{
             display: 'flex',

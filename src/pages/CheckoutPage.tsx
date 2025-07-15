@@ -26,21 +26,28 @@ import { logError, logWarn } from '../utils/logger';
 import { getErrorMessage } from '../utils/errorUtils';
 import axios from 'axios';
 
-// Wrapper pour charger Stripe
+// Load Stripe with your publishable key
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
+/**
+ * CheckoutPage component handles the payment process using Stripe Elements.
+ * It initializes the payment, handles form submission, and manages payment status polling.
+ */
 export default function CheckoutPage() {
   const { t } = useTranslation('checkout');
   const lang = useLanguageStore(s => s.lang);
+
+  // State to hold client secret and payment UUID
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [paymentUuid, setPaymentUuid] = useState<string | null>(null);
 
+  // Re-render Elements when language or clientSecret changes
   const elementsKey = `stripe-elements-${lang}-${clientSecret ? 'ready' : 'no-secret'}`;
   const elementsOptions: StripeElementsOptions = {
     locale: lang,
     ...(clientSecret ? { clientSecret } : {}),
   };
-  // On enveloppe notre formulaire dans Elements
+
   return (
     <>
       <Seo title={t('seo.title')} description={t('seo.description')} />
@@ -60,6 +67,11 @@ interface Props {
   paymentUuid: string | null;
 }
 
+/**
+ * CheckoutPageMain component handles the main logic of the checkout process.
+ * It initializes the payment, handles form submission, and manages payment status polling.
+ * It also manages local UI state such as loading, errors, and processing status.
+ */
 function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, paymentUuid }: Props) {
   const hasInitializedRef = useRef(false);
   const POLLING_DELAY_MS =
@@ -72,6 +84,7 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
   const stripe = useStripe();
   const elements = useElements();
 
+  // Local UI state
   const [loadingInit, setLoadingInit] = useState<boolean>(true);
   const [errorInit, setErrorInit] = useState<string | null>(null);
   const [processing, setProcessing] = useState<boolean>(false);
@@ -79,6 +92,7 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
   const [pollingStatus, setPollingStatus] = useState<boolean>(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
+  // Cart store actions
   const clearCart = useCartStore((s) => s.clearCart);
   const lockCart = useCartStore((s) => s.lockCart);
   const unlockCart = useCartStore((s) => s.unlockCart);
@@ -88,14 +102,14 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
 
   const loadCart = useCartStore((s) => s.loadCart);
 
-  // 1. Charger le panier si token et cartId non présent
+  // 1) Load cart if user is authenticated but cart not yet loaded
   useEffect(() => {
     if (token && !cartId) {
       loadCart().catch(err => logWarn('Checkout:load cart', err));
     }
   }, [token, cartId, loadCart]);
 
-  // 2. Initialiser le paiement quand token + cartId disponibles
+  // 2) Initialize payment once we have token & cartId
   useEffect(() => {
     if (!token) {
       setErrorInit(t('errors.not_authenticated'));
@@ -105,11 +119,12 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
     }
 
     if (!cartId) {
-      // Affiche loader panier dans le rendu
+      // Still waiting for cart
       setLoadingInit(true);
       return;
     }
 
+    // Prevent double initialization
     // istanbul ignore if
     if (hasInitializedRef.current) return;
     hasInitializedRef.current = true;
@@ -143,32 +158,29 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
     })();
   }, [token, cartId, lang, navigate, t, setClientSecret, setPaymentUuid]);
 
-  // 2. Handler de soumission du formulaire
+  // Handle form submit: confirm card payment & poll for status
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setErrorPayment(null);
 
-      // Verrouille le panier dès que l'utilisateur clique sur "Payer"
+      // Lock the cart immediately
       lockCart();
-
-      // Démarrage du process : on disable le bouton
       setProcessing(true);
       setStatusMessage(null);
       setPollingStatus(true);
 
-      // Récupérer CardElement
       const cardElement = elements!.getElement(CardElement);
       if (!cardElement) {
         setErrorPayment(t('errors.no_card_element'));
         setProcessing(false);
         setPollingStatus(false);
-        // Déverrouille si item manquant
         unlockCart();
         return;
       }
 
       try {
+        // Confirm payment with Stripe
         const { error } = await stripe!.confirmCardPayment(
           clientSecret!,
           { payment_method: { card: cardElement } }
@@ -183,12 +195,12 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
           return;
         }
 
-        // On attend la confirmation via polling
+        // Poll the backend until payment succeeds or fails
         setStatusMessage(t('checkout.waiting_confirmation'));
 
         let finalStatus: string | null = null;
         while (true) {
-          // Attendre 2 secondes
+          // Wait before next poll
           // eslint-disable-next-line no-await-in-loop
           await new Promise((r) => setTimeout(r, POLLING_DELAY_MS));
 
@@ -227,9 +239,9 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
           }
         }
 
+        // Handle final outcome
         if (finalStatus === 'paid') {
           setStatusMessage(t('checkout.payment_success'));
-          // Déverrouille avant de clearCart
           unlockCart();
           try {
             await clearCart();
@@ -242,7 +254,6 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
           setErrorPayment(t('errors.payment_failed'));
           setProcessing(false);
           setPollingStatus(false);
-          // Déverrouille pour que l'utilisateur puisse modifier ou retenter
           unlockCart();
           return;
         }
@@ -250,20 +261,20 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
         logError('Checkout:confirmCardPayment error', confirmErr);
         setProcessing(false);
         setPollingStatus(false);
-        // Déverrouille après exception
         unlockCart();
       }
     },
     [stripe, elements, clientSecret, paymentUuid, clearCart, navigate, t, token, lockCart, unlockCart],
   );
 
+  // Ensure cart is unlocked if user leaves the page
   useEffect(() => {
     return () => {
-      // Au démontage du composant checkout, s'assurer que le panier est déverrouillé
       unlockCart();
     };
   }, [unlockCart]);
 
+  // Show initialization errors
   if (errorInit) {
     return (
       <Box sx={{ p: 4 }}>
@@ -280,6 +291,7 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
     );
   }
 
+  // Show loader while initializing
   if (!cartId || loadingInit || !stripe || !elements) {
     return (
       <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -289,6 +301,7 @@ function CheckoutPageMain({ setClientSecret, setPaymentUuid, clientSecret, payme
     );
   }
 
+  // Render payment form
   return (
     <Card
       component="form"

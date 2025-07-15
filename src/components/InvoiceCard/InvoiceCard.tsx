@@ -13,7 +13,7 @@ import Tooltip from '@mui/material/Tooltip'
 import CircularProgress from '@mui/material/CircularProgress'
 import { useCustomSnackbar } from '../../hooks/useCustomSnackbar'
 
-// Définir le mapping statut → couleur du Chip MUI
+// Map invoice status to MUI Chip colors
 export function getStatusChipColor(status: Invoice['status']): 'success' | 'warning' | 'error' | 'default' | 'info' {
   switch (status) {
     case 'paid':
@@ -33,18 +33,23 @@ interface InvoiceCardProps {
   invoice: Invoice
 }
 
+/**
+ * Displays an invoice summary card with download icon, date, amount, status chip, and download handling.
+ * This component is responsive and adapts to different screen sizes.
+ */
 export function InvoiceCard({ invoice }: InvoiceCardProps) {
   const { t } = useTranslation('invoices')
   const lang = useLanguageStore(s => s.lang)
 
+  // Download hook and snackbars
   const { download, downloading } = useDownloadInvoice()
   const { notify } = useCustomSnackbar()
   
-  // Formattage date et montant
+  // Format date and amount strings
   const dateStr = formatDate(invoice.created_at, lang)
   const amountStr = formatCurrency(invoice.amount, lang, 'EUR')
 
-  // Texte pour le statut, on peut utiliser i18n ou fallback brut
+  // Determine status label (special case for free ticket)
   let statusLabel;
   if (invoice.status === 'paid' && invoice.amount === 0) {
     statusLabel = t('card.free_ticket')
@@ -53,10 +58,10 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
   }
   const chipColor = getStatusChipColor(invoice.status)
 
-  // Déterminer si on autorise le téléchargement
+  // Can download only if paid or refunded
   const canDownload = invoice.status === 'paid' || invoice.status === 'refunded'
 
-  // Tooltip explicatif
+  // Tooltip text varies by status
   let downloadTooltip = t('card.download_invoice')
   if (!canDownload) {
     if (invoice.status === 'pending') {
@@ -68,13 +73,12 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
     }
   }
 
-  // Handler clic sur l’icône
+  // Handle click on icon: either trigger download or show snackbar
   const handleIconClick = () => {
     if (canDownload) {
-      // Lance le téléchargement ; useDownloadInvoice appellera notify pour succès/erreur
       download(invoice.invoice_link)
     } else {
-      // Affiche un message via notify, apparaîtra en bas grâce au provider global
+      // Show context-specific message
       if (invoice.status === 'pending') {
         notify(t('snackbar.pending_message'), 'warning')
       } else if (invoice.status === 'failed') {
@@ -103,7 +107,7 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
             gap: 1,
           }}
         >
-          {/* Zone icône / téléchargement */}
+          {/* Icon area with tooltip and download spinner */}
           <Tooltip title={downloadTooltip}>
             <Box
               onClick={handleIconClick}
@@ -127,20 +131,21 @@ export function InvoiceCard({ invoice }: InvoiceCardProps) {
             </Box>
           </Tooltip>
 
+          {/* Invoice details */}
           <CardContent sx={{ flexGrow: 1 }}>
-            {/* Référence / UUID */}
+            {/* Invoice reference/UUID */}
             <Typography variant="h6">
               {t('card.reference', { reference: invoice.uuid })}
             </Typography>
-            {/* Date de création */}
+            {/* Creation date */}
             <Typography variant="body2" sx={{ mt: 0.5 }}>
               {t('card.date', { date: dateStr })}
             </Typography>
-            {/* Montant */}
+            {/* Amount */}
             <Typography variant="body2" sx={{ mt: 0.5 }}>
               {t('card.amount', { amount: amountStr })}
             </Typography>
-            {/* Statut avec Chip */}
+            {/* Status chip */}
             <Box sx={{ mt: 1 }}>
               <Chip
                 label={statusLabel}

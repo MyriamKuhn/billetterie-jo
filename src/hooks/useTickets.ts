@@ -9,13 +9,12 @@ interface UseTicketsResult {
   total: number;
   loading: boolean;
   error: Error | null;
-  validationErrors: any; // selon backend, si code 422 renvoie erreurs
+  validationErrors: any; 
 }
 
 /**
- * Hook pour charger les tickets de l’utilisateur selon des filtres.
+ * Hook to load user tickets based on provided filters.
  * @param filters TicketFilters
- * @param lang (optionnel) si tu veux envoyer Accept-Language ou rerender sur changement de langue
  */
 export function useTickets(filters: TicketFilters): UseTicketsResult {
   const token = useAuthStore(s => s.authToken)
@@ -43,9 +42,7 @@ export function useTickets(filters: TicketFilters): UseTicketsResult {
       try {
         const resp: TicketsApiResponse = await getUserTickets(filters, token)
         if (cancelled) return
-        // On suppose resp.data.meta.total existe
         setTickets(resp.data.data)
-        // Selon meta.total
         if (resp.data.meta && typeof resp.data.meta.total === 'number') {
           setTotal(resp.data.meta.total)
         } else {

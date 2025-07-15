@@ -1,11 +1,18 @@
 import type { TFunction } from "i18next";
 
+/**
+ * Returns a localized error message based on an error code.
+ *
+ * @param t    i18next translation function
+ * @param code Optional error code returned by the backend
+ * @returns    Translated, user‑friendly error message
+ */
 export function getErrorMessage(t: TFunction, code?: string) {
-  // 1) on monte un traducteur dédié au namespace "errors"
+  // Create a helper that always looks up keys in the "errors" namespace
   const te = (key: string) => t(key, { ns: 'errors' });
 
   switch (code) {
-    // Login / 2FA
+    // ─── Login / Two‑factor errors ────────────────────────────────────────────
     case 'invalid_credentials':      return te('invalidCredentials');
     case 'account_disabled':         return te('accountDisabled');
     case 'twofa_invalid':            return te('twofaInvalid');
@@ -15,7 +22,7 @@ export function getErrorMessage(t: TFunction, code?: string) {
     case 'email_not_verified':       return te('emailNotVerified');
     case 'too_many_requests':        return te('tooManyRequests');
 
-    // Registration
+    // ─── Registration errors ──────────────────────────────────────────────────
     case 'validation_error':         return te('validationError');
     case 'email_already_registered': return te('emailAlreadyRegistered');
     case 'password_too_weak':        return te('passwordTooWeak');
@@ -23,12 +30,12 @@ export function getErrorMessage(t: TFunction, code?: string) {
     case 'captcha_invalid':          return te('captchaInvalid');
     case 'terms_not_accepted':       return te('termsNotAccepted');
 
-    // Server / Network
+    // ─── Server / Network errors ─────────────────────────────────────────────
     case 'internal_error':           return te('internalError');
     case 'service_unavailable':      return te('serviceUnavailable');
     case 'network_error':            return te('networkError');
 
-    // Generic fallback
+    // ─── Fallback for any other or missing code ─────────────────────────────
     default:                         return te('genericError');
   }
 }

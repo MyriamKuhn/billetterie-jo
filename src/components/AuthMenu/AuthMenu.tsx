@@ -12,30 +12,31 @@ import { logout } from '../../utils/authHelper';
 import { navItems } from '../Navbar';
 
 /**
- * <AuthMenu variant="desktop" /> affichera un seul bouton (profile icon) ouvrant
- * un menu déroulant “Mon compte” ou “Connexion/Inscription”. 
- * 
- * <AuthMenu variant="mobile" /> affichera, pour un utilisateur non connecté, un bouton
- * “Compte” ouvrant un menu déroulant “Se connecter” + “S’inscrire” + “Mot de passe oublié”.
- * S’il est connecté, affichera directement un bouton “Se déconnecter”.
+ * Composant AuthMenu
+ * This component renders an authentication menu button and dropdown, 
+ * adapting options based on user login state and role.
+ * It includes options for login, registration,
+ * password recovery, dashboard access, and logout.
  */
 export default function AuthMenu() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // Récupération des informations d’authentification depuis le store
+  // Retrieve auth token and role from store
   const authToken = useAuthStore((s) => s.authToken);
   const role = useAuthStore((s) => s.role);
   const clearAuthToken = useAuthStore((s) => s.clearToken);
+
+  // Cart-related state to reset guest cart on logout
   const clearGuestCartIdInStore = useCartStore((s) => s.setGuestCartId);
   const loadCart = useCartStore((s) => s.loadCart);
 
-  // State pour ancrer le menu (desktop ou mobile)
+  // Anchor element for menu positioning (null = closed)
   const [anchor, setAnchor] = React.useState<null|HTMLElement>(null);
   const openMenu  = (e: React.MouseEvent<HTMLElement>) => setAnchor(e.currentTarget);
   const closeMenu = () => setAnchor(null);
 
-  // Quand l’utilisateur clique sur “Se déconnecter”
+  // Handle user logout: clear state, reset cart, navigate to login
   const handleLogout = async () => {
     closeMenu();
     await logout(
@@ -47,7 +48,7 @@ export default function AuthMenu() {
     );
   };
 
-  // Filtrer les items 
+  // Filter navigation items based on auth state and user role
   const loginItems = navItems.filter(i => i.group==='login' && !authToken);
   const forgotPasswordItem = navItems.find(i => i.group === 'password' && !authToken);
 
@@ -58,6 +59,7 @@ export default function AuthMenu() {
 
   return (
     <>
+      {/* Button that toggles the menu */}
       <Button
         onClick={openMenu}
         variant="outlined"
@@ -67,7 +69,8 @@ export default function AuthMenu() {
       >
         { authToken ? t('navbar.myAccount') : t('navbar.connection') }
       </Button>
-
+    
+      {/* Dropdown menu with conditional items */}
       <Menu
         anchorEl={anchor}
         open={Boolean(anchor)}
@@ -75,7 +78,7 @@ export default function AuthMenu() {
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
-        {/* 1) connexion / inscription */}
+        {/* Login / Register options when logged out */}
         {!authToken &&
           loginItems.map(item => {
             const Icon = item.icon;
@@ -94,7 +97,7 @@ export default function AuthMenu() {
           })
         }
 
-        {/* 2) Dashboard, User, Employee, Admin */}
+        {/* Dashboard links for logged-in users */}
         {authToken && dashboardItems.map(item => {
           const Icon = item.icon;
           return (
@@ -113,7 +116,7 @@ export default function AuthMenu() {
 
         <Divider sx={{ my: 1 }} />
 
-        {/* 2) mot de passe oublié */}
+        {/* Forgot password link when logged out */}
         {!authToken && forgotPasswordItem && (
           <MenuItem
             key={forgotPasswordItem.key}
@@ -127,7 +130,7 @@ export default function AuthMenu() {
           </MenuItem>
         )}
 
-        {/* 3) Auth */}
+        {/* Additional auth-related links for logged-in users */}
         {authToken && authItems.map(item => {
           const Icon = item.icon;
           return (
@@ -144,7 +147,7 @@ export default function AuthMenu() {
           );
         })}
 
-        {/* 3) Logout */}
+        {/* Logout option for logged-in users */}
         {authToken && logoutItem && [
           <Divider key="logout-divider" sx={{ my: 1 }} />,
 

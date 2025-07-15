@@ -1,14 +1,24 @@
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
 
+// Properties for the AlertMessage component
 interface AlertMessageProps {
   message: string;
   severity: 'error' | 'success' | 'info';
 }
 
+/**
+ * AlertMessage component displays a message with a specific severity level.
+ * It uses MUI's Typography for styling and theming.
+ *
+ * @param {AlertMessageProps} props - The properties for the AlertMessage component.
+ * @returns {JSX.Element} The rendered AlertMessage component.
+ */
 export default function AlertMessage({ message, severity }: AlertMessageProps) {
   const theme = useTheme();
   let colorValue: string;
+
+  // Choose color based on severity
   switch (severity) {
     case 'error':
       colorValue = theme.palette.error.main;
@@ -24,6 +34,7 @@ export default function AlertMessage({ message, severity }: AlertMessageProps) {
       break;
   }
 
+  // Use ARIA role 'alert' for errors, 'status' for others
   const roleValue = severity === 'error' ? 'alert' : 'status';
 
   return (

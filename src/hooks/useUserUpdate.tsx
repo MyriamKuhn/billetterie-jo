@@ -14,8 +14,8 @@ export interface UserUpdate {
 }
 
 /**
- * Retourne une fonction updatePricing(productId, updates)
- * qui renvoie true si le patch s'est bien passé (204), false sinon.
+ * Returns a function to update a user by ID.
+ * Resolves to true if the PATCH succeeds (2xx), false otherwise.
  */
 export function useUserUpdate() {
   const token = useAuthStore(s => s.authToken);
@@ -25,6 +25,7 @@ export function useUserUpdate() {
     updates: UserUpdate
   ): Promise<boolean> {
     try {
+      // Send PATCH request to update user details
       await axios.patch(
         `${API_BASE_URL}/api/users/${userId}`,
         updates,
@@ -37,6 +38,7 @@ export function useUserUpdate() {
       );
       return true;
     } catch (err) {
+      // Log and swallow errors
       logError('useUserUpdate', err);
       return false;
     }

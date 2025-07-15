@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // -----------------------------------------------------------------------------
-// Mocks globaux
+// Global mocks for i18n, formatting, and hooks
 // -----------------------------------------------------------------------------
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
@@ -41,7 +41,7 @@ vi.mock('../../hooks/useCustomSnackbar', () => ({
 }))
 
 // -----------------------------------------------------------------------------
-// Mocks MUI simplifiés – Propagation des props et testid
+// Simplified MUI component mocks (preserve props/testid)
 // -----------------------------------------------------------------------------
 vi.mock('@mui/material/Box',             () => ({ default: ({ children, ...rest }: any) => <div data-testid="Box" {...rest}>{children}</div> }))
 vi.mock('@mui/material/Card',            () => ({ default: ({ children }: any) => <div data-testid="Card">{children}</div> }))
@@ -60,7 +60,7 @@ import { AdminPaymentCard, getPaymentStatusChipColor } from './AdminPaymentCard'
 import type { AdminPayments, AdminPaymentsStatus } from '../../types/admin'
 
 // -----------------------------------------------------------------------------
-// Tests
+// Unit tests
 // -----------------------------------------------------------------------------
 describe('getPaymentStatusChipColor()', () => {
   it('maps known statuses correctly', () => {
@@ -107,6 +107,7 @@ describe('<AdminPaymentCard />', () => {
   let onRefresh: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
+    // reset mocks before each test
     mockDownload = vi.fn()
     mockDownloading = false
     mockNotify = vi.fn()
@@ -114,7 +115,7 @@ describe('<AdminPaymentCard />', () => {
     onRefresh = vi.fn()
   })
 
-  it('renders paid → download icon, paid date & refund UI', () => {
+  it('renders paid → shows download icon, dates, and refund UI', () => {
     render(<AdminPaymentCard payment={basePayment} onSave={onSave} onRefresh={onRefresh} />)
 
     // reference & uuid

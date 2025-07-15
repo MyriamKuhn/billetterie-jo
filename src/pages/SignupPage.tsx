@@ -24,48 +24,59 @@ import { useSignupValidation } from '../hooks/useSignupValidation';
 import PasswordWithConfirmation from '../components/PasswordWithConfirmation';
 import CircularProgress from '@mui/material/CircularProgress';
 
+/**
+ * SignupPage component
+ * This page handles user registration, including form validation,
+ * reCAPTCHA integration, and error handling.
+ * It provides a user-friendly interface for new users to create an account.
+ */
 export default function SignupPage() {
   const { t } = useTranslation('signup');
   const lang = useLanguageStore(state => state.lang);
   const theme = useTheme();
+
+  // Determine recaptcha widget variant
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isDarkMode = theme.palette.mode === 'dark';
   const widgetKey = `${lang}-${isDarkMode ? 'dark' : 'light'}-${isMobile ? 'compact' : 'normal'}`;
 
-  // états champs
+  // Form field states
   const [firstname, setFirstname] = useState('');
   const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
+
+  // Touched flags for inline validation
   const [firstnameTouched, setFirstnameTouched] = useState(false);
   const [lastnameTouched, setLastnameTouched]   = useState(false);
   const [emailTouched, setEmailTouched]         = useState(false);
   const [pwdTouched, setPwdTouched]      = useState(false);
 
-  // validation front
+  // Front‑end validation logic
   const {
     firstnameError, lastnameError, emailError,
     pwStrong, pwsMatch,
     isFirstnameValid, isLastnameValid, isEmailValid
   } = useSignupValidation({firstname, lastname, email, password, confirmPassword, firstnameTouched, lastnameTouched, emailTouched});
 
-  // état captcha
+  // Recaptcha token
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const captchaRef = useRef<ReCAPTCHA>(null);
 
-  // états UI
+  // UI state
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  // Form submission handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    // validations front
+    // Client‑side checks
     if (!pwStrong) {
       setErrorMsg(t('errors.passwordNotStrong')); 
       return;
@@ -85,6 +96,7 @@ export default function SignupPage() {
 
     setLoading(true);
     try {
+      // Call registration API
       const { status } = await registerUser(
         {
           firstname,
@@ -100,7 +112,7 @@ export default function SignupPage() {
 
       if (status === 201) {
         setSuccessMsg(t('signup.successMessage'));
-        // reset captcha pour éviter double envoi
+        // Reset captcha widget
         captchaRef.current?.reset();
       }
     } catch (err: any) {
@@ -111,18 +123,16 @@ export default function SignupPage() {
       if (axios.isAxiosError(err) && err.response) {
         const { status, data } = err.response;
 
-        // cas trop de requêtes
         if (status === 429) {
           setErrorMsg(getErrorMessage(t, 'too_many_requests'));
           return;
         }
-        // cas erreur serveur
         if (status === 500) {
           setErrorMsg(getErrorMessage(t, 'internal_error'));
           return;
         }
-        // cas validation back inattendu (shouldn’t arriver en normal)
         if (status === 422 && data.code === 'validation_error') {
+          // Handle unique‑email error specifically
           const emailErrors: string[] = data.errors?.email || [];
           setErrorMsg(getErrorMessage(t, data.code));
           if (emailErrors.includes('validation.unique')) {
@@ -132,8 +142,8 @@ export default function SignupPage() {
           }
           return;
         }
-        // toutes les autres erreurs métiers
         if (data.code) {
+          // Other business errors
           setErrorMsg(getErrorMessage(t, data.code));
         } else {
           setErrorMsg(getErrorMessage(t, 'generic_error'));
@@ -146,6 +156,7 @@ export default function SignupPage() {
 
   return (
     <>
+      {/* SEO metadata */}
       <Seo title={t('seo.title')} description={t('seo.description')} />
       <PageWrapper disableCard>
         <Box
@@ -172,11 +183,12 @@ export default function SignupPage() {
             />
           </Box>
 
+          {/* Title */}
           <Typography variant="h4" gutterBottom align="center">
             {t('signup.pageTitle')}
           </Typography>
 
-          {/* Messages */}
+          {/* Error or success message */}
           {errorMsg && <AlertMessage message={errorMsg} severity="error" />}
           {successMsg && (
             <>
@@ -189,6 +201,7 @@ export default function SignupPage() {
             </>
           )}
 
+          {/* Form fields */}
           <Stack spacing={2}>
             <TextField
               required
@@ -227,6 +240,7 @@ export default function SignupPage() {
               error={emailError}
               helperText={emailError ? t('errors.invalidEmail') : ''}
             />
+            {/* Password + confirmation */}
             <PasswordWithConfirmation
               password={password}
               onPasswordChange={setPassword}
@@ -236,7 +250,7 @@ export default function SignupPage() {
               onBlur={() => setPwdTouched(true)}
             />
 
-            {/* Accept Terms */}
+            {/* Terms checkbox */}
             <FormControlLabel
               control={
                 <Checkbox
@@ -254,7 +268,7 @@ export default function SignupPage() {
               }
             />
 
-            {/* ReCAPTCHA */}
+            {/* ReCAPTCHA widget */}
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
               <ReCAPTCHA
                 key={widgetKey}
@@ -269,6 +283,7 @@ export default function SignupPage() {
               />
             </Box>
 
+            {/* Submit button */}
             <Button
               type="submit"
               variant="contained"
@@ -286,6 +301,7 @@ export default function SignupPage() {
                 : t('signup.signupButton')}
             </Button>
 
+            {/* Hints for missing requirements */}
             {!loading && (!captchaToken || !acceptTerms) && (
               <Typography
                 variant="caption"
@@ -297,6 +313,7 @@ export default function SignupPage() {
               </Typography>
             )}
 
+            {/* Link to login */}
             <Box sx={{ mt: 1, textAlign: 'center' }}>
               <Typography variant="body2" sx={{ fontSize: '0.8rem' }}>
                 {t('signup.alreadyHaveAccount')}{' '}

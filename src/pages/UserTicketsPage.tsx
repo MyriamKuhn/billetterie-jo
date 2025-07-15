@@ -12,9 +12,15 @@ import { useTickets } from '../hooks/useTickets'
 import { useTranslation } from 'react-i18next'
 import OlympicLoader from '../components/OlympicLoader'
 
+/**
+ * UserTicketsPage - Page for displaying user tickets with filters and pagination.
+ * This page allows users to view their tickets, apply filters, and navigate through pages of tickets.
+ * It handles loading states, errors, and validation of filters.
+ */
 export default function UserTicketsPage() {
   const { t } = useTranslation('tickets')
-  // État des filtres initiaux
+  
+  // Initial filter state
   const [filters, setFilters] = useState<TicketFilters>({
     status: '',
     per_page: 5,
@@ -22,9 +28,11 @@ export default function UserTicketsPage() {
     event_date_from: '',
     event_date_to: '',
   })
+
+  // Fetch tickets based on filters
   const { tickets, total, loading, error, validationErrors } = useTickets(filters)
 
-  // Gérer les erreurs de validation en réinitialisant les filtres invalides si besoin
+  // Reset invalid filters on validation errors
   React.useEffect(() => {
     if (!validationErrors) return
     const newFilters: Partial<TicketFilters> = {}
@@ -36,6 +44,7 @@ export default function UserTicketsPage() {
     setFilters(f => ({ ...f, ...newFilters }))
   }, [validationErrors])
 
+  // Display error screen if fetch failed
   if (error) {
     return (
       <PageWrapper>
@@ -52,20 +61,28 @@ export default function UserTicketsPage() {
     )
   }
 
+  // Main render
   return (
     <>
+      {/* SEO metadata */}
       <Seo title={t('seo.title')} description={t('seo.description')} />
       <PageWrapper disableCard>
+        {/* Page heading */}
         <Typography variant="h4" sx={{ px: 2 }}>
           {t('tickets.title')}
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, p: 2 }}>
+          {/* Sidebar filters */}
           <TicketsFilters filters={filters} onChange={upd => setFilters(f => ({ ...f, ...upd }))} />
+
+          {/* Ticket list / loader / pagination */}
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
               : <TicketGrid tickets={tickets} />
             }
+
+            {/* Pagination controls */}
             {!loading && tickets.length > 0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination

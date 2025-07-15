@@ -17,7 +17,9 @@ import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import { CardActions, Divider } from '@mui/material'
 
-// Helper to map invoice status to MUI Chip color
+/**
+ * Map payment status to a MUI Chip color.
+ */
 export const getPaymentStatusChipColor = (status: AdminPaymentsStatus): 'success' | 'info' | 'warning' | 'error' | 'default' => {
   switch (status) {
     case 'paid': return 'success'
@@ -34,6 +36,13 @@ interface PaymentCardProps {
   onRefresh: () => void;
 }
 
+/**
+ * Displays a single payment entry with download and refund functionality.
+ *
+ * - Shows invoice download icon or spinner when downloading.
+ * - Formats dates, amounts, and client/cart info.
+ * - Allows issuing a partial refund when applicable.
+ */
 export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProps) {
   const { t } = useTranslation('payments')
   const lang = useLanguageStore(s => s.lang)
@@ -44,7 +53,7 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
   const [refundAmount, setRefundAmount] = useState<string>('')
   const [refunding, setRefunding]   = useState<boolean>(false)
 
-  // Texte pour le statut, on peut utiliser i18n ou fallback brut
+  // Determine display label for status or free ticket
   let statusLabel;
   if (payment.payment_method === 'free') {
     statusLabel = t('payments.free_ticket')
@@ -53,10 +62,10 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
   }
   const chipColor = getPaymentStatusChipColor(payment.status)
 
-  // Déterminer si on autorise le téléchargement
+  // Only allow invoice download when paid or already refunded
   const canDownload = payment.status === 'paid' || payment.status === 'refunded'
 
-  // Tooltip explicatif
+  // Tooltip text adapts based on download eligibility
   let downloadTooltip = t('payments.download_invoice')
   if (!canDownload) {
     if (payment.status === 'pending') {
@@ -68,13 +77,15 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
     }
   }
 
-  // Handler clic sur l’icône
+  /**
+   * Handle click on the receipt icon:
+   * - If allowed, trigger invoice download.
+   * - Otherwise, show appropriate snackbar message.
+   */
   const handleIconClick = () => {
     if (canDownload) {
-      // Lance le téléchargement ; useDownloadInvoice appellera notify pour succès/erreur
       download(payment.invoice_link)
     } else {
-      // Affiche un message via notify, apparaîtra en bas grâce au provider global
       if (payment.status === 'pending') {
         notify(t('snackbar.pending_message'), 'warning')
       } else if (payment.status === 'failed') {
@@ -85,6 +96,10 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
     }
   }
 
+  /**
+   * Issue a refund of the entered amount.
+   * Calls onSave, then notifies and refreshes on success.
+   */
   const handleRefund = async () => {
     const amount = parseFloat(refundAmount)
     setRefunding(true)
@@ -122,7 +137,7 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
             gap: 1,
           }}
         >
-          {/* Zone icône / téléchargement */}
+          {/* Invoice download area */}
           <Tooltip title={downloadTooltip}>
             <Box
               onClick={handleIconClick}
@@ -149,7 +164,7 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
           </Tooltip>
 
           <CardContent sx={{ flexGrow: 1 }}>
-            {/* Référence / UUID */}
+            {/* Reference and status */}
             <Typography variant="h6">
               {t('payments.reference')}: {payment.uuid}
             </Typography>
@@ -158,7 +173,7 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
               color={chipColor}
               size="small"
             />
-            {/* Date de création */}
+            {/* Display appropriate date section */}
             <Typography variant="body2" sx={{ mt: 0.5 }}>
               { payment.payment_method === 'free' || payment.status === 'pending' || payment.status === 'failed'
                 ? t('payments.created_at', { date: formatDate(payment.created_at, lang), time: formatTime(payment.created_at, lang) })
@@ -167,14 +182,14 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
                   : t('payments.paid_at', { date: formatDate(payment.paid_at!, lang), time: formatTime(payment.paid_at!, lang) })
               }
             </Typography>
-            {/* Montant */}
+            {/* Payment amount */}
             <Typography variant="h5" sx={{ mt: 2 }} >
               {t('payments.payment_info')}
             </Typography>
             <Typography variant="body1" color='text.secondary'>
               {t('payments.amount', {amount: formatCurrency(payment.amount, lang)})}  
             </Typography>
-            {/* Méthode de paiement */}
+            {/* Payment method */}
             <Typography variant="body1" color='text.secondary'> 
               {t('payments.method', { method: t(`payments.methods.${payment.payment_method}`) })}
             </Typography>
@@ -184,7 +199,7 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
                 {t('payments.transaction_id', { id: payment.transaction_id })}
               </Typography>
             )}
-            {/* Client */}
+            {/* Client info */}
             <Typography variant="h5" sx={{ mt: 2 }} >
               {t('payments.client_info')}
             </Typography>
@@ -205,7 +220,7 @@ export function AdminPaymentCard({ payment, onSave, onRefresh }: PaymentCardProp
             </Box>
           
 
-            {/* Montant à rembourser */}
+            {/* Refund section shown only for paid non-free payments */}
             { payment.payment_method !== 'free' && payment.status === 'paid' && (
               <>
                 <Divider />

@@ -20,35 +20,46 @@ import { logError } from '../../utils/logger';
 import type { Product } from '../../types/products';
 import { formatDate } from '../../utils/format';
 
-interface Props {
-  open: boolean;
-  onClose: () => void;
-  onRefresh: () => void;
+interface Props { 
+  open: boolean;  // whether the modal is open
+  onClose: () => void;  // callback to close the modal
+  onRefresh: () => void;  // callback to refresh parent list after creation
 }
 
+/**
+ * AdminTicketCreateModal component allows admins to create free tickets for users.
+ * It fetches user and product details based on provided IDs, validates them,
+ * and submits the ticket creation request.
+ */
 export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
+  // do not render anything if modal is closed
   if (!open) return null
   const { t } = useTranslation('orders');
   const token = useAuthStore((state) => state.authToken);
   const { notify } = useCustomSnackbar();
   const freeTicket = useFreeTicket();
 
-
+  // form state
   const [userId, setUserId] = useState<number | null>(null);
   const [productId, setProductId] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [locale, setLocale] = useState<'fr'|'en'|'de'>('fr');
   const [saving, setSaving] = useState(false);
 
+  // loading & error states for user & product lookups
   const [loadingUser, setLoadingUser] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
   const [errorUser, setErrorUser] = useState<string | null>(null);
   const [errorProduct, setErrorProduct] = useState<string | null>(null);
+
+  // fetched entities
   const [user, setUser] = useState<User | null>(null);
   const [product, setProduct] = useState<Product | null>(null);
 
+  // common headers for axios calls
   const headers = { Authorization: `Bearer ${token}`, 'Accept-Language': locale };
 
+  // Fetch user details when userId changes
   useEffect(() => {
     if (userId !== null && userId > 0) {
       setErrorUser(null);
@@ -65,12 +76,14 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
         setErrorUser(t('errors.user_not_found'));
       })
     } else {
+      // reset if no valid userId
       setUser(null);
       setErrorUser(null);
       setLoadingUser(false);
     }
   }, [userId]);
 
+  // Validate that fetched user has role 'user'
   useEffect(() => {
     if (!user?.email) return;
 
@@ -100,7 +113,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
     .finally(() => setLoadingUser(false));
   }, [user]);
 
-
+  // Fetch product details when productId or locale changes
   useEffect(() => {
     if (productId !== null && productId > 0) {
       setErrorProduct(null);
@@ -123,6 +136,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
     }
   }, [productId, locale]);
 
+  // Submit handler to create the free ticket
   const handleSubmit = async () => {
     setSaving(true)
     const payload = {
@@ -144,6 +158,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      {/* Modal Title */}
       <DialogTitle>
         {t('freeTicket.title')}
       </DialogTitle>
@@ -152,7 +167,6 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
 
       <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 
-  {/* === ton ancien form « FilterField / FilterRadios » */}
   <FilterField
     type="number"
     label={t('freeTicket.userId')}
@@ -196,7 +210,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
 
   <Divider />
 
-  {/* === Section Prévisualisation en Grid === */}
+  {/* Preview Section */}
   <Typography variant="body1">{t('freeTicket.previsualisation')}</Typography>
 
   <Box
@@ -207,12 +221,14 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
       pt: 1,
     }}
   >
+    {/* Loading indicator */}
     {(loadingUser || loadingProduct) && (
       <Box sx={{ gridColumn: '1 / -1', textAlign: 'center' }}>
         <OlympicLoader />
       </Box>
     )}
 
+    {/* Error messages */}  
     {errorUser && (
       <Box sx={{ gridColumn: '1 / -1' }} color="error.main">
         {errorUser}
@@ -224,6 +240,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
       </Box>
     )}
 
+    {/* User preview card */}
     {!loadingUser && !errorUser && user && (
       <Card variant="outlined">
         <CardContent>
@@ -238,6 +255,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
       </Card>
     )}
 
+    {/* Product preview card */}
     {!loadingProduct && !errorProduct && product && (
       <Card variant="outlined">
         <CardContent>
@@ -260,6 +278,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
       </Card>
     )}
 
+    {/* Fallback when no details */}
     {!loadingUser &&
       !loadingProduct &&
       !errorUser &&
@@ -274,7 +293,7 @@ export function AdminTicketCreateModal({ open, onClose, onRefresh }: Props) {
 </DialogContent>
 
       <Divider />
-
+      {/* Action buttons */}
       <DialogActions>
         <Button onClick={onClose}>{t('freeTicket.cancel')}</Button>
         <Button 

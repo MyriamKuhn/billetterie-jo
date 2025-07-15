@@ -30,7 +30,9 @@ interface TicketCardProps {
   invoiceLink: string 
 }
 
-// Mapping du statut Ticket → couleur Chip MUI
+/**
+ * Map a ticket status to an MUI Chip color.
+ */
 function getTicketStatusChipColor(status: TicketStatus): 'success' | 'warning' | 'error' | 'default' | 'info' {
   switch (status) {
     case 'used':
@@ -46,24 +48,27 @@ function getTicketStatusChipColor(status: TicketStatus): 'success' | 'warning' |
   }
 }
 
+/**
+ * Displays an individual ticket card with lazy-loaded QR code, product details, status chip, and download actions for the ticket PDF and invoice. 
+ */
 export function TicketCard({ ticket }: TicketCardProps) {
   const { t } = useTranslation('tickets')
   const lang = useLanguageStore(s => s.lang)
   const { notify } = useCustomSnackbar()
 
-  // Hooks de download
+  // Prepare download hooks for ticket PDF & invoice
   const { download: downloadTicket, downloading: downloadingTicket } = useDownloadTicket();
   const { download: downloadInvoice, downloading: downloadingInvoice } = useDownloadInvoice();
 
+  // Lazy-load QR code when the card scrolls into view
   const { ref, inView } = useInView({ triggerOnce: true, rootMargin: '200px' });
-  // Récupération du QR
   const { qrUrl, loading: loadingQr } = useFetchTicketQr(inView ? ticket.qr_filename : null);
-  // Récupérer l'ID du produit depuis le snapshot
+  
+  // Fetch product snapshot details
   const productId = ticket.product_snapshot?.product_id ?? null;
-  // Hook pour détails produit
   const { product, loading: loadingProduct, error: productError } = useProductDetails(productId, lang);
 
-  // Effet pour ne logger/qu’er notifier l’erreur que si on a quitté l’état loading ET qu’on a bien une erreur
+  // Notify/log if fetching product details fails (after loading completes)
   useEffect(() => {
     if (!loadingProduct && productError) {
       logError('Error by retrieving product details for the ticket', productError);
@@ -71,12 +76,12 @@ export function TicketCard({ ticket }: TicketCardProps) {
     }
   }, [loadingProduct, productError, ticket.id, notify, t]);
 
-  // 1) Si on est en train de charger le produit, on affiche skeleton complet
+  // While product is loading, show full-card skeleton
   if (loadingProduct) {
     return <TicketCardSkeleton />;
   }
 
-  // 2) Si échec de fetch produit, on affiche fallback minimal (pas skeleton complet)
+  // Prepare display values once product load either succeeds or fails
   let nameToShow = '';
   let dateStr = '';
   let timeStr = '';
@@ -94,11 +99,11 @@ export function TicketCard({ ticket }: TicketCardProps) {
     placesToShow = ticket.product_snapshot?.ticket_places ?? null;
   };
 
-  // Statut du ticket
+  // Prepare status chip
   const statusLabel = t(`tickets.status.${ticket.status}`, ticket.status);
   const chipColor = getTicketStatusChipColor(ticket.status);
 
-  // Handler téléchargement billet
+  // Handler to download ticket PDF
   const handleDownloadTicket = () => {
     if (ticket.pdf_filename) {
       downloadTicket(ticket.pdf_filename)
@@ -110,7 +115,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
     }
   };
 
-  // Handler téléchargement facture
+  // Handler to download invoice PDF
   const handleDownloadInvoice = () => {
     const link = `invoice_${ticket.payment_uuid}.pdf`;
     downloadInvoice(link).catch(_err => {
@@ -118,7 +123,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
     });
   };
 
-  // Zone QR code : si loadingQr, skeleton partiel ; sinon image ou icône
+  // QR code rendering: skeleton while loading, image if ready, fallback icon otherwise
   const qrMedia = loadingQr ? (
     <Skeleton
       variant="rectangular"
@@ -166,24 +171,21 @@ export function TicketCard({ ticket }: TicketCardProps) {
           gap: 1,
         }}
       >
-        {/* Zone QR code (CardMedia ou placeholder) */}
+        {/* QR code area */}
         {qrMedia}
 
-        {/* Contenu principal */}
+        {/* Main content */}
         <CardContent sx={{ flexGrow: 1 }}>
-          {/* Nom / événement */}
           <Typography variant="h6" gutterBottom>
             {nameToShow}
           </Typography>
 
-          {/* Token */}
           {!loadingProduct && ticket.token && (
             <Typography variant="body2" sx={{ mb: 3 }}>
               {t('tickets.token', { token: ticket.token })}
             </Typography>
           )}
 
-          {/* Date / lieu / places */}
           {!loadingProduct && dateStr && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {dateStr}{timeStr && ` – ${timeStr}`}
@@ -200,7 +202,6 @@ export function TicketCard({ ticket }: TicketCardProps) {
             </Typography>
           )}
 
-          {/* Chip statut */}
           {!loadingProduct && (
             <Box sx={{ mt: 1 }}>
               <Chip label={statusLabel} color={chipColor} size="small" />
@@ -208,7 +209,7 @@ export function TicketCard({ ticket }: TicketCardProps) {
           )}
         </CardContent>
 
-        {/* Actions : téléchargement billets et facture */}
+        {/* Action buttons */}
         <Box
           sx={{
             display: 'flex',

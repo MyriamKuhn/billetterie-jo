@@ -2,12 +2,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AdminEmployeeCreateModal } from './AdminEmployeeCreateModal';
 
-// on mocke les hooks externes
+// Mock external hooks and components
 vi.mock('../../hooks/useCreateEmployee');
 vi.mock('../../hooks/useCustomSnackbar');
 vi.mock('react-i18next');
-
-// on mocke PasswordWithConfirmation en export default
 vi.mock('../PasswordWithConfirmation', () => ({
   __esModule: true,
   default: ({
@@ -62,7 +60,7 @@ describe('AdminEmployeeCreateModal', () => {
     (useTranslation as Mock).mockReturnValue({ t: (key: string) => key });
   });
 
-  it('affiche tous les champs et le titre quand open=true', () => {
+  it('renders all fields and title when open=true', () => {
     render(<AdminEmployeeCreateModal open={true} onClose={onClose} onRefresh={onRefresh} />);
     expect(screen.getByText('employee.create_new')).toBeInTheDocument();
     expect(screen.getByLabelText('user.lastname')).toBeInTheDocument();
@@ -72,7 +70,7 @@ describe('AdminEmployeeCreateModal', () => {
     expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument();
   });
 
-  it('désactive le bouton Create tant que le formulaire n’est pas valide', async () => {
+  it('disables Create button until form is valid', async () => {
     render(<AdminEmployeeCreateModal open onClose={onClose} onRefresh={onRefresh} />);
     const createBtn = screen.getByRole('button', { name: 'employee.create' });
     expect(createBtn).toBeDisabled();
@@ -92,11 +90,11 @@ describe('AdminEmployeeCreateModal', () => {
     expect(createBtn).toBeEnabled();
   });
 
-  it('appelle createEmployee et traite le succès', async () => {
+  it('calls createEmployee and handles success', async () => {
     mockCreateEmployee.mockResolvedValue(true);
     render(<AdminEmployeeCreateModal open onClose={onClose} onRefresh={onRefresh} />);
 
-    // remplissage du formulaire
+    // Fill out form
     await userEvent.type(screen.getByLabelText('user.lastname'), 'Dupont');
     await userEvent.type(screen.getByLabelText('user.firstname'), 'Jean');
     await userEvent.type(screen.getByLabelText('user.email'), 'jean@exemple.com');
@@ -104,7 +102,7 @@ describe('AdminEmployeeCreateModal', () => {
     await userEvent.type(screen.getByLabelText('Confirm Password'), 'abcd1234');
 
     const createBtn = screen.getByRole('button', { name: 'employee.create' });
-    await userEvent.click(createBtn);    // on appelle createEmployee et on attend le résultat
+    await userEvent.click(createBtn);    
     await waitFor(() => {
       expect(mockCreateEmployee).toHaveBeenCalledWith({
         firstname: 'Jean',
@@ -132,7 +130,7 @@ describe('AdminEmployeeCreateModal', () => {
     });
   });
 
-  it('traite l’échec de createEmployee', async () => {
+  it('handles createEmployee failure', async () => {
     mockCreateEmployee.mockResolvedValue(false);
     render(<AdminEmployeeCreateModal open onClose={onClose} onRefresh={onRefresh} />);
 
@@ -152,7 +150,7 @@ describe('AdminEmployeeCreateModal', () => {
     });
   });
 
-  it('réinitialise le formulaire quand on rouvre le dialog', async () => {
+  it('resets form when dialog is reopened', async () => {
     const { rerender } = render(<AdminEmployeeCreateModal open onClose={onClose} onRefresh={onRefresh} />);
 
     await userEvent.type(screen.getByLabelText('user.firstname'), 'Marie');
@@ -164,7 +162,7 @@ describe('AdminEmployeeCreateModal', () => {
     expect(screen.getByLabelText('user.firstname')).toHaveValue('');
   });
 
-  it('le bouton Close déclenche onClose', async () => {
+  it('Close button triggers onClose', async () => {
     render(<AdminEmployeeCreateModal open onClose={onClose} onRefresh={onRefresh} />);
     const closeBtn = await screen.findByRole('button', { name: 'user.close' });
     await userEvent.click(closeBtn);

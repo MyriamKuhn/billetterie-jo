@@ -17,23 +17,29 @@ import { AdminUserDetailsModal } from '../components/AdminUserDetailsModal';
 import { useLanguageStore } from '../stores/useLanguageStore';
 import { AdminEmployeeCreateModal } from '../components/AdminEmployeeCreateModal';
 
+/**
+ * AdminUsersPage component displays a list of users with admin functionalities.
+ * It includes user filters, a grid view, and modals for user details and creation.
+ */
 export default function AdminUsersPage() {
   const { t } = useTranslation('users');
   const lang = useLanguageStore((state) => state.lang);
   const token = useAuthStore((state) => state.authToken);
   const updateUser = useUserUpdate();
 
-  // --- États ---
+  // State for filters (excluding role)
   type UIFilters = Omit<Filters, 'role'>;
   const [filters, setFilters] = useState<UIFilters>({
     firstname:'', lastname:'', email:'', perPage:10, page:1
   });
 
+  // Fetch users with 'user' role
   const { users, total, loading, error, validationErrors } = useUsers(filters, token!, 'user');
 
   const [detailsId, setDetailsId] = useState<number | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
+  // Reset invalid filter fields on validation errors
   useEffect(() => {
   if (validationErrors) {
     const cleanup: Partial<Filters> = {};
@@ -46,6 +52,7 @@ export default function AdminUsersPage() {
   }
 }, [validationErrors]);
 
+  // Show error fallback
   if (error) {
     return (
       <PageWrapper>
@@ -62,19 +69,21 @@ export default function AdminUsersPage() {
   );
 }
   
-  // --- Rendu normal loader / grille / pagination ---
+  // Render the page
   return (
     <>
+      {/* SEO tags */}
       <Seo title={t('seo.title')} description={t('seo.description')} />
+      {/* Main content (no card) */}
       <PageWrapper disableCard>
         <Typography variant="h4" sx={{ px:2 }}>
           {t('users.title')}
         </Typography>
         <Box sx={{ display:'flex', flexDirection:{ xs:'column', md:'row' }, gap:2, p:2 }}>
-          {/* Sidebar filtres */}
+          {/* Sidebar filters */}
           <UsersFilters role='user' filters={filters} onChange={upd=>setFilters(f=>({...f,...upd}))}/>
 
-          {/* Contenu principal */}
+          {/* User grid or loader */}
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
@@ -99,6 +108,8 @@ export default function AdminUsersPage() {
                   onCreate={() => setCreateOpen(true)}
                 />
               }
+
+            {/* Pagination */}  
             {!loading && users.length>0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination
@@ -112,6 +123,7 @@ export default function AdminUsersPage() {
         </Box>
       </PageWrapper>
 
+      {/* User details modal */}
       <AdminUserDetailsModal
         open={detailsId !== null}
         userId={detailsId}
@@ -120,6 +132,8 @@ export default function AdminUsersPage() {
         lang={lang}
         isEmployee={false}
       />
+
+      {/* Employee create modal */}
       <AdminEmployeeCreateModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}

@@ -12,6 +12,10 @@ export interface Filters {
   page: number;
 }
 
+/**
+ * Fetches a paginated list of users with the given role and filters.
+ * Returns the users array, total count, loading state, error code, and any validation errors.
+ */
 export function useUsers(
   filters: Omit<Filters, 'role'>,
   token: string,
@@ -28,6 +32,7 @@ export function useUsers(
     setError(null);
     setValidationErrors(null);
 
+    // Build query parameters
     const params: Record<string, any> = {
       per_page: Math.max(1, filters.perPage),
       page: filters.page,
@@ -46,18 +51,21 @@ export function useUsers(
         if (axios.isAxiosError(err)) {
           const status = err.response?.status;
           if (status === 422) {
-          setValidationErrors(err.response!.data.errors as Record<string,string[]>);
-          return;
+            // Validation error from server
+            setValidationErrors(err.response!.data.errors as Record<string,string[]>);
+            return;
+          }
+          if (status === 404) {
+            // No users found for these filters
+            setUsers([]);
+            setTotal(0);
+            return;
+          }
         }
-        if (status === 404) {
-          setUsers([]);
-          setTotal(0);
-          return;
-        }
-      }
-      setError(err.code);
-    })
-    .finally(() => setLoading(false));
+        // Generic error code
+        setError(err.code);
+      })
+      .finally(() => setLoading(false));
   }, [filters, token, forcedRole]);
 
   return { users, total, loading, error, validationErrors };

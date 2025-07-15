@@ -24,17 +24,22 @@ export interface UserProfile {
   twoFAEnabled: boolean;
 }
 
+/**
+ * Page for the employee dashboard, allowing users to view and update their profile information.
+ * It includes sections for name, email, password, and two-factor authentication settings.
+ * The page handles loading states, errors, and redirects if the user is not authenticated.
+ */
 export default function EmployeeDashboardPage(): JSX.Element {
   const { t } = useTranslation('userDashboard');
   const token = useAuthStore((state) => state.authToken);
 
-  // États initiaux: charger les données utilisateur existantes
+  // User state
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    // Si pas de token, on réinitialise et on stoppe le chargement
+    // If not authenticated, stop loading
     if (!token) {
       setUser(null);
       setLoadingUser(false);
@@ -48,7 +53,7 @@ export default function EmployeeDashboardPage(): JSX.Element {
       setLoadingUser(true);
       setErrorMsg(null);
       try {
-        // Passer le signal à fetchUser afin que la requête puisse être annulée
+        // Fetch current user profile
         const response = await fetchUser(token, { signal });
         if (signal.aborted) return;
         const { status, data } = response;
@@ -64,6 +69,7 @@ export default function EmployeeDashboardPage(): JSX.Element {
         }
       } catch (err: any) {
         if (signal.aborted) return;
+        // Handle Axios errors
         if (axios.isAxiosError(err) && err.response) {
           const respData = err.response.data;
           const code = respData?.code;
@@ -83,6 +89,7 @@ export default function EmployeeDashboardPage(): JSX.Element {
     };
   }, [token, t]);
 
+  // Show loader while fetching
   if (loadingUser) {
     return (
       <>
@@ -94,6 +101,7 @@ export default function EmployeeDashboardPage(): JSX.Element {
     );
   }
 
+  // Show error if fetch failed
   if (errorMsg) {
     return (
       <PageWrapper>
@@ -112,21 +120,25 @@ export default function EmployeeDashboardPage(): JSX.Element {
     );
   }
 
+  // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // Main dashboard content
   return (
     <>
       <Seo title={t('seo.title_employee')} description={t('seo.description_employee')} />
       <PageWrapper>
         <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4, mb: 4 }}>
+          {/* Page heading */}
           <Typography variant="h4" gutterBottom align="center">
             {t('dashboard.title_employee')}
           </Typography>
           <Typography variant="body1" gutterBottom align="center" sx={{ mb: 4 }}>
             {t('dashboard.subtitle_employee')}
           </Typography>
+          {/* Profile sections */}
           <Stack spacing={2}>
             <NameSection user={user} onUpdate={(vals) => setUser(prev => ({ ...prev!, ...vals }))}/>
             <EmailSection currentEmail={user.email} onUpdate={(newEmail) => setUser(prev => ({ ...prev!, email: newEmail }))}/>

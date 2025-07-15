@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { AdminPaymentFilters } from './AdminPaymentFilters'
 import type { AdminPaymentFilters as Filters } from '../../types/admin'
 
-// -- Mocks pour i18n et MUI ---------------------------------------------------
+// -- Mocks for i18n and MUI theme --------------------------------------------
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key
@@ -17,7 +17,7 @@ vi.mock('@mui/material/styles', () => ({
   })
 }))
 
-// -- Mocks simplifiés pour MUI ------------------------------------------------
+// -- Simplified MUI component mocks ------------------------------------------
 vi.mock('@mui/material/Box',             () => ({ default: ({ children, ...p }: any) => <div data-testid="Box" {...p}>{children}</div> }))
 vi.mock('@mui/material/Typography',      () => ({ default: ({ children }: any) => <p>{children}</p> }))
 vi.mock('@mui/material/Stack',           () => ({ default: ({ children }: any) => <div>{children}</div> }))
@@ -27,7 +27,7 @@ vi.mock('@mui/material/Drawer',          () => ({ default: ({ open, children, on
 vi.mock('@mui/icons-material/Menu',      () => ({ default: () => <span>☰</span> }))
 vi.mock('@mui/icons-material/Close',     () => ({ default: () => <span>×</span> }))
 
-// -- Mocks de nos composants de filtre ----------------------------------------
+// -- Mocks for our filter field components ----------------------------------
 vi.mock('../FilterField', () => ({
   FilterField: ({ label, value, onChange }: any) => (
     <div>
@@ -75,50 +75,40 @@ describe('<AdminPaymentFilters />', () => {
     onChange = vi.fn()
   })
 
-  it('affiche tous les filtres en version desktop', () => {
+  it('displays all filters in desktop view', () => {
     render(<AdminPaymentFilters filters={filters} onChange={onChange} />)
 
-    // Le premier Box est bien l’aside desktop
     const boxes = screen.getAllByTestId('Box')
     expect(boxes[0]).toBeInTheDocument()
 
-    // Filtre texte
     expect(screen.getByLabelText('filters.name')).toHaveValue('foo')
 
-    // Statut
     expect(screen.getByTestId('Select-filters.status_label')).toHaveValue('filters.status_pending')
 
-    // Méthode paiement
     expect(screen.getByTestId('Select-filters.payment_method_label')).toHaveValue('filters.payment_method_stripe')
 
-    // Per page
     expect(screen.getByTestId('Select-filters.per_page')).toHaveValue('10')
 
-    // Bouton reset
     expect(screen.getByText('filters.reset')).toBeInTheDocument()
   })
 
-  it('appelle onChange à chaque modification de champ', () => {
+  it('calls onChange on each field update', () => {
     render(<AdminPaymentFilters filters={filters} onChange={onChange} />)
 
-    // 1. Texte de recherche
     fireEvent.change(screen.getByLabelText('filters.name'), { target: { value: 'bar' } })
     expect(onChange).toHaveBeenCalledWith({ q: 'bar', page: 1 })
 
-    // 2. Statut
     fireEvent.change(screen.getByTestId('Select-filters.status_label'), { target: { value: 'filters.status_all' } })
     expect(onChange).toHaveBeenCalledWith({ status: '', page: 1 })
 
-    // 3. Méthode paiement
     fireEvent.change(screen.getByTestId('Select-filters.payment_method_label'), { target: { value: 'filters.payment_method_paypal' } })
     expect(onChange).toHaveBeenCalledWith({ payment_method: 'paypal', page: 1 })
 
-    // 4. Per page
     fireEvent.change(screen.getByTestId('Select-filters.per_page'), { target: { value: '25' } })
     expect(onChange).toHaveBeenCalledWith({ per_page: 25, page: 1 })
   })
 
-  it('réinitialise tous les filtres sur clic Reset', () => {
+  it('resets all filters when Reset is clicked', () => {
     render(<AdminPaymentFilters filters={filters} onChange={onChange} />)
 
     fireEvent.click(screen.getByText('filters.reset'))
@@ -131,38 +121,32 @@ describe('<AdminPaymentFilters />', () => {
     })
   })
 
-  it('ouvre et ferme le Drawer en mobile', () => {
+  it('opens and closes the Drawer in mobile view', () => {
     render(<AdminPaymentFilters filters={filters} onChange={onChange} />)
 
-    // Ouvrir
     fireEvent.click(screen.getByRole('button', { name: 'filters.title' }))
     expect(screen.getByTestId('Drawer')).toBeInTheDocument()
 
-    // Fermer
     fireEvent.click(screen.getByText('close'))
     expect(screen.queryByTestId('Drawer')).toBeNull()
   })
 
-  it('ferme le Drawer en cliquant sur le bouton CloseIcon', () => {
+  it('closes the Drawer when CloseIcon is clicked', () => {
     render(<AdminPaymentFilters filters={filters} onChange={onChange} />)
 
-    // 1) Ouvre d’abord le Drawer
     fireEvent.click(screen.getByRole('button', { name: 'filters.title' }))
     expect(screen.getByTestId('Drawer')).toBeInTheDocument()
 
-    // 2) Clique sur le bouton de fermeture (CloseIcon)
     fireEvent.click(screen.getByRole('button', { name: 'filters.close' }))
 
-    // 3) Vérifie que le Drawer a disparu
     expect(screen.queryByTestId('Drawer')).toBeNull()
   })
 
-  it('affiche "all" quand la méthode de paiement n’est pas reconnue', () => {
+  it('displays "all" when payment method is unrecognized', () => {
     const badFilters = { ...filters, payment_method: 'applepay' as any }
     render(<AdminPaymentFilters filters={badFilters} onChange={onChange} />)
 
-    // Comme 'applepay' n'est pas dans ['','paypal','stripe','free'],
-    // la valeur du select retombe sur la première option: 'filters.payment_method_'
+    // Since 'applepay' isn’t in the known list, the select falls back to the first option
     expect(
       screen.getByTestId('Select-filters.payment_method_label')
     ).toHaveValue('filters.payment_method_')

@@ -45,29 +45,42 @@ interface CartState {
   items: CartItem[];
   guestCartId: string | null;
   cartId: string | null;
+  /** Fetch the current cart from the API and update state */
   loadCart: () => Promise<void>;
+  /** Add or update a cart item via API, then reload cart */
   addItem: (id: string, quantity: number, availableQuantity: number) => Promise<void>;
+  /** Remove all items from the cart via API, then reload cart */
   clearCart: () => Promise<void>;
+  /** Manually set the guest cart ID (persisted) */
   setGuestCartId: (id: string | null) => void;
+  /** Manually set the authenticated cart ID (persisted) */
   setCartId: (id: string | null) => void;
+  /** Whether the cart is locked (e.g. during payment) */
   isLocked: boolean;
+  /** Lock the cart to disable further modifications */
   lockCart: () => void;
+  /** Unlock the cart to re-enable modifications */
   unlockCart: () => void;
 }
 
+/**
+ * Zustand store for managing the shopping cart.
+ * - Fetches cart items from the API
+ * - Allows adding/removing items
+ * - Persists guest and authenticated cart IDs
+ */
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => {
-      // Crée une instance Axios
+      // Create a dedicated Axios instance for cart operations
       const axiosInstance: AxiosInstance = axios.create({
         baseURL: API_BASE_URL,
         timeout: Number(import.meta.env.VITE_AXIOS_TIMEOUT) || 5000,
         headers: { 'Content-Type': 'application/json' },
       });
 
-      // Intercepteur de requêtes
+      // Request interceptor to attach auth or guest cart headers
       axiosInstance.interceptors.request.use((config) => {
-        // Récupère le token depuis le store Zustand
         const token = useAuthStore.getState().authToken;
         const lang = useLanguageStore.getState().lang;
         config.headers!['Accept-Language'] = lang;
@@ -75,7 +88,7 @@ export const useCartStore = create<CartState>()(
         if (token) {
           config.headers!['Authorization'] = `Bearer ${token}`;
         } else {
-          // Si pas de token, on envoie l’UUID du panier invité (s’il existe)
+          // For anonymous users, include the guest cart ID header if set
           const guestCartId = get().guestCartId;
           if (guestCartId) {
             config.headers!['X-Guest-Cart-ID'] = guestCartId;
@@ -84,7 +97,7 @@ export const useCartStore = create<CartState>()(
         return config;
       });
 
-      // Synchronise guestCartId depuis meta.guest_cart_id
+      // Update persisted guestCartId from API metadata
       const syncGuestCartId = (meta: any) => {
         const apiId = meta?.guest_cart_id;
         if (apiId && apiId !== get().guestCartId) {
@@ -92,7 +105,7 @@ export const useCartStore = create<CartState>()(
         }
       };
 
-      // Synchronise cartId depuis data.id
+      // Update persisted cartId from API payload
       const syncCartId = (resData: any) => {
         if (resData?.id != null) {
           const apiCartId = String(resData.id);
@@ -102,6 +115,7 @@ export const useCartStore = create<CartState>()(
         }
       };
 
+      // Determine if current user is admin/employee (they should not have a cart)
       const isPrivilegedUser = () => {
         const role = useAuthStore.getState().role;
         return role === 'admin' || role === 'employee';
@@ -134,14 +148,13 @@ export const useCartStore = create<CartState>()(
             const payload = res.data;
             if (payload) {
               if (payload.meta) {
-                // Met à jour le guestCartId si l'API en retourne un (ou remet à jour le TTL)
                 syncGuestCartId(res.data?.meta);
               }
               if (payload.data) {
                 syncCartId(payload.data);
               }
             }
-            // Mappe les RawCartItem vers CartItem
+            // Convert API raw items to our CartItem shape
             const raw: RawCartItem[] = res.data?.data?.cart_items ?? [];
             const items: CartItem[] = raw
               .filter((ci) => ci.in_stock)
@@ -183,8 +196,8 @@ export const useCartStore = create<CartState>()(
             logError('addItem', err);
             throw err;
           }
-          // Tente de recharger le panier sans bloquer sur l’erreur
           try {
+            // Reload cart in background (errors are logged but not thrown)
             await get().loadCart();
           } catch (warn) {
             logWarn('addItem → loadCart', warn);
@@ -210,8 +223,8 @@ export const useCartStore = create<CartState>()(
             throw err;
           }
           set({ items: [] });
-          // Tente de recharger le panier sans bloquer sur l’erreur
           try {
+            // Reload cart in background
             await get().loadCart();
           } catch (warn) {
             logWarn('clearCart → loadCart', warn);
@@ -221,6 +234,7 @@ export const useCartStore = create<CartState>()(
     },
     {
       name: 'cart-storage',
+      // Persist only guestCartId and cartId in localStorage
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ guestCartId: state.guestCartId, cartId: state.cartId }),
     }

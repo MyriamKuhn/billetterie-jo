@@ -12,23 +12,34 @@ import type { ProductFormData } from '../../types/admin';
 import { ProductForm } from '../ProductForm';
 
 interface Props {
-  open: boolean;
-  productId: number | null;
-  lang: string;
-  onClose: () => void;
-  onRefresh: () => void;
+  open: boolean;              // Controls visibility of the modal
+  productId: number | null;   // ID of the product to duplicate
+  lang: string;               // Current UI language (not used directly here)
+  onClose: () => void;        // Callback to close the modal
+  onRefresh: () => void;      // Callback to refresh parent data on success
 }
 
+/**
+ * Modal component to duplicate an existing product, preserving multi-language data.
+ *
+ * - Fetches original product translations when opened.
+ * - Shows loader and error states as needed.
+ * - Initializes the duplication form with fetched values.
+ * - Submits a new product via FormData payload (including optional image).
+ */
 export function AdminProductDuplicationModal({ open, productId, onClose, onRefresh }: Props) {
   const { t } = useTranslation('adminProducts');
   const { notify } = useCustomSnackbar();
   const createProduct = useCreateProduct();
 
-  // Charge les traductions
+  // Load translations for the product only when modal is open
   const { data: allTranslations, loading, error } =
     useProductDetailsMultiLang(open ? productId : null, ['fr','en','de']);
 
-  // Prépare les valeurs initiales du form
+  /**
+   * Prepare the initial form values based on the English translation.
+   * The imageFile is reset so a new upload can be provided.
+   */
   const initialValues = useMemo<ProductFormData | null>(() => {
     if (!allTranslations) return null;
     const en = allTranslations.en;
@@ -69,27 +80,36 @@ export function AdminProductDuplicationModal({ open, productId, onClose, onRefre
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      {/* Header showing duplication title and product ID */}
       <DialogTitle>
         {t('products.duplication', { id: productId })}
       </DialogTitle>
 
-      {/* Loader / Erreur */}
+      {/* Show loader while fetching translations */}
       {loading && <Box textAlign="center" py={4}><OlympicLoader/></Box>}
+      {/* Show error display if fetch fails */}
       {error && <ErrorDisplay title={t('errors.title')} message={t('errors.not_found')} />}
 
-      {/* Formulaire */}
+      {/* Render the form when data is ready */}
       {!loading && !error && initialValues && (
         <ProductForm
           initialValues={initialValues}
           saving={saving}
+          /**
+           * Handle form submission:
+           * - Assemble FormData payload with core fields and translations
+           * - Attach image file if provided
+           * - Invoke createProduct to duplicate the product
+           * - Notify user and trigger onRefresh on success/failure
+           */
           onSubmit={async data => {
             setSaving(true);
-            // Reconstruis ton FormData à partir de `data`
             const body = new FormData();
-            // Champs globaux
+            // Append core product fields
             body.append('price', data.price.toString());
             body.append('sale',  data.sale.toString());
             body.append('stock_quantity', data.stock_quantity.toString());
+            // Append each language's translation fields
             (['fr','en','de'] as LangCode[]).forEach(code => {
               const tr = data.translations[code];
               body.append(`translations[${code}][name]`, tr.name);
@@ -100,9 +120,11 @@ export function AdminProductDuplicationModal({ open, productId, onClose, onRefre
               body.append(`translations[${code}][product_details][location]`, tr.product_details.location);
               body.append(`translations[${code}][product_details][category]`, tr.product_details.category);
             });
+            // Attach image if the user uploaded one
             if (data.imageFile) {
               body.append('image', data.imageFile, data.imageFile.name);
             }
+            // Create the duplicated product
             const ok = await createProduct(body);
             setSaving(false);
             if (ok) {

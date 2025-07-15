@@ -1,7 +1,10 @@
 import { NavLink, type NavLinkProps } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 
-// Variante simple : un <NavLink> stylé
+/**
+ * A styled NavLink that applies MUI theme colors and spacing,
+ * and highlights when active.
+ */
 const StyledNavLink = styled(NavLink)(({ theme }) => ({
   color: theme.palette.text.primary,
   textDecoration: 'none',
@@ -13,8 +16,11 @@ const StyledNavLink = styled(NavLink)(({ theme }) => ({
   }
 }));
 
+/**
+ * Wraps react-router’s NavLink with our styled version.
+ * NavLink will add the "active" class when the route matches.
+ */
 function ActiveLink(props: NavLinkProps) {
-  // NavLink injecte automatiquement la class "active" quand la route matche
   return <StyledNavLink {...props} />;
 }
 

@@ -12,17 +12,24 @@ export type SortField = string;
 export type SortOrder = 'asc' | 'desc';
 
 interface SortControlProps<F extends SortField> {
-  /** liste des champs à trier */
+  /** Array of fields the user can sort by */
   fields: Array<{ value: F; label: React.ReactNode }>;
-  /** champ actuellement sélectionné */
+  /** Currently selected sort field */
   sortBy: F;
-  /** ordre actuel */
+  /** Current sort order ('asc' or 'desc') */
   order: SortOrder;
-  /** callback quand on change soit le champ, soit l’ordre */
+  /** Callback invoked when either the field or order changes */
   onSortChange: (sortBy: F, order: SortOrder) => void;
+  /** Label text displayed above the control */
   label: String;
 }
 
+/**
+ * SortControl:
+ * - Renders a group of toggle buttons for selecting the sort field.
+ * - Renders a second group for choosing ascending or descending order.
+ * - Calls `onSortChange` with updated values when user interacts.
+ */
 export function SortControl<F extends SortField>({
   fields,
   sortBy,
@@ -31,20 +38,25 @@ export function SortControl<F extends SortField>({
   label
 }: SortControlProps<F>) {
   const { t } = useTranslation();
+
+  // Handler when the sort field changes
   const handleField = (_: React.MouseEvent<HTMLElement>, newField: F) => {
     if (newField) onSortChange(newField, order);
   };
+
+  // Handler when the sort order changes
   const handleOrder = (_: React.MouseEvent<HTMLElement>, newOrder: SortOrder) => {
     if (newOrder) onSortChange(sortBy, newOrder);
   };
 
   return (
     <FormControl component="fieldset" fullWidth>
+      {/* Legend / label for the control */}
       <FormLabel component="legend" sx={{ mb: 1 }}>
         {label}
       </FormLabel>
       <Box sx={{ display: 'flex', gap: 1 }}>
-        {/* Groupe Champs (personnalisable) */}
+        {/* Toggle buttons for selecting the sort field */}
         <ToggleButtonGroup
           value={sortBy}
           exclusive
@@ -60,7 +72,7 @@ export function SortControl<F extends SortField>({
           ))}
         </ToggleButtonGroup>
 
-        {/* Groupe Ordre (toujours le même) */}
+        {/* Toggle buttons for selecting ascending/descending order */}
         <ToggleButtonGroup
           value={order}
           exclusive

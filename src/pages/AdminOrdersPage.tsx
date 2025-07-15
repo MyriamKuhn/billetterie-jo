@@ -14,12 +14,17 @@ import { AdminTicketsFilters } from '../components/AdminTicketsFilters'
 import { AdminTicketGrid } from '../components/AdminTicketGrid'
 import { AdminTicketCreateModal } from '../components/AdminTicketCreateModal'
 
+/**
+ * AdminOrdersPage component displays a list of orders (tickets) for admin users.
+ * It includes filters for status and user, pagination, and the ability to create free tickets.
+ * It handles loading states, errors, and validation errors from the backend.
+ */
 export default function AdminOrdersPage() {
   const { t } = useTranslation('orders');
   const token = useAuthStore((state) => state.authToken);
   const statusUpdate = useTicketStatusUpdate();
 
-  // État des filtres initiaux
+  // Initial filter state
   const [filters, setFilters] = useState<Filters>({
     status: '',
     user_id: undefined,
@@ -31,6 +36,7 @@ export default function AdminOrdersPage() {
 
   const [createFreeOpen, setCreateFreeOpen] = useState(false);
 
+  // Clear invalid user_id when backend returns validation errors
   useEffect(() => {
     if (validationErrors) {
       const cleanup: Partial<Filters> = {};
@@ -41,6 +47,7 @@ export default function AdminOrdersPage() {
     }
   }, [validationErrors]);
 
+  // Show error page on fetch failure
   if (error) {
     return (
       <PageWrapper>
@@ -60,15 +67,16 @@ export default function AdminOrdersPage() {
   return (
     <>
       <Seo title={t('seo.title')} description={t('seo.description')} />
+      {/* Main layout without card wrapper */}
       <PageWrapper disableCard>
         <Typography variant="h4" sx={{ px:2 }}>
           {t('orders.title')}
         </Typography>
         <Box sx={{ display:'flex', flexDirection:{ xs:'column', md:'row' }, gap:2, p:2 }}>
-          {/* Sidebar filtres */}
+          {/* Filters sidebar */}
           <AdminTicketsFilters filters={filters} onChange={upd=>setFilters(f=>({...f,...upd}))}/>
 
-          {/* Contenu principal */}
+          {/* Main content area */}
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
@@ -84,6 +92,8 @@ export default function AdminOrdersPage() {
                   onCreate={() => setCreateFreeOpen(true)}
                 />
               }
+
+            {/* Pagination controls */}
             {!loading && tickets.length>0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination
@@ -97,6 +107,7 @@ export default function AdminOrdersPage() {
         </Box>
       </PageWrapper>
 
+      {/* Modal for creating free ticket */}
       <AdminTicketCreateModal
         open={createFreeOpen}
         onClose={() => setCreateFreeOpen(false)}

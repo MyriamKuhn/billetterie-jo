@@ -14,27 +14,39 @@ import type { AdminReportsFilters } from '../../types/admin'
 import { SortControl } from '../SortControl'
 
 interface Props {
-  filters: AdminReportsFilters
-  onChange: (f: Partial<AdminReportsFilters>) => void
+  filters: AdminReportsFilters      // Current filter values
+  onChange: (f: Partial<AdminReportsFilters>) => void   // Callback to update filters
 }
 
+/**
+ * AdminReportsFilter
+ *
+ * Renders filtering controls for the admin reports screen:
+ * - SortControl to pick sort field and direction
+ * - FilterSelect to choose items per page
+ * - Reset button to restore defaults
+ * 
+ * Displays as a sticky sidebar on desktop, and within a Drawer on mobile.
+ */
 export function AdminReportsFilter({ filters, onChange }: Props) {
   const { t } = useTranslation('reports')
   const theme = useTheme()
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false) // Tracks mobile drawer open state
 
-  // Liste des champs de tri pour le SortControl
+  // Define available sort fields (value + label)
   const sortFields = [
     { value: 'sales_count' as const,  label: t('filters.sales_count') },
   ];
 
+  // Shared content for both desktop and mobile views
   const content = (
     <Box sx={{ width: 260, py: 2, px: 1 }}>
+      {/* Section title */}
       <Typography variant="h6" gutterBottom>
         {t('filters.title')}
         </Typography>
       <Stack spacing={2} sx={{ mx: 1 }}>
-        {/* Tri (SortControl générique) */}
+        {/* Generic sort control */}
         <SortControl
           fields={sortFields}
           sortBy={filters.sort_by}
@@ -45,7 +57,7 @@ export function AdminReportsFilter({ filters, onChange }: Props) {
           label={t('filters.sort_by')}
         />
 
-        {/* Par page */}
+        {/* Items per page selector */}
         <FilterSelect<string>
           label={t('filters.per_page')}
           value={String(filters.per_page)}
@@ -56,7 +68,7 @@ export function AdminReportsFilter({ filters, onChange }: Props) {
           }}
         />
 
-        {/* Réinitialiser */}
+        {/* Reset button restores default filter values */}
         <Button
           variant="outlined"
           fullWidth
@@ -77,7 +89,7 @@ export function AdminReportsFilter({ filters, onChange }: Props) {
 
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop sidebar (hidden on xs) */}
       <Box
         component="aside"
         sx={{
@@ -93,13 +105,15 @@ export function AdminReportsFilter({ filters, onChange }: Props) {
         {content}
       </Box>
 
-      {/* Mobile */}
+      {/* Mobile: menu icon + Drawer */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 2 }}>
         <IconButton onClick={() => setOpen(true)} aria-label={t('filters.title')}>
           <MenuIcon />
         </IconButton>
+        {/* Drawer containing the same content */}
         <Drawer open={open} onClose={() => setOpen(false)} keepMounted>
           <Box sx={{ position: 'relative' }}>
+            {/* Close button inside Drawer */}
             <IconButton
               onClick={() => setOpen(false)}
               size="small"

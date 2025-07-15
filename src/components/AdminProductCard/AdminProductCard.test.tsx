@@ -5,10 +5,9 @@ import type { Product } from '../../types/products';
 import userEvent from '@testing-library/user-event';
 import { formatCurrency } from '../../utils/format'
 
-// Mock i18n translation
+// Mock translation to return keys or simple pluralization
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string, opts?: any) => {
-    // simple passthrough or basic mapping
     if (opts && opts.count !== undefined) {
       return key.includes('places')
         ? `${opts.count} ${opts.count === 1 ? 'place' : 'places'}`
@@ -18,13 +17,13 @@ vi.mock('react-i18next', () => ({
   }}),
 }));
 
-// Mock custom snackbar
+// Mock snackbar notify
 const notifyMock = vi.fn();
 vi.mock('../../hooks/useCustomSnackbar', () => ({
   useCustomSnackbar: () => ({ notify: notifyMock }),
 }));
 
-// Mock utility functions
+// Mock formatting utilities
 vi.mock('../../utils/format', () => ({
   formatCurrency: (value: number) => `${value.toFixed(2)} €`,
   formatDate: (date: string) => date,
@@ -69,14 +68,14 @@ describe('AdminProductCard', () => {
       />
     );
 
-    // on cherche ici "ID 1 - Test Event", ou au moins "Test Event"
+    // Name, date, time, location and places
     expect(screen.getByText(/Test Event/)).toBeInTheDocument()
     expect(screen.getByText(/2024-07-26/)).toBeInTheDocument()
     expect(screen.getByText(/18:00/)).toBeInTheDocument()
-    // on tolère les espaces autour du tiret
     expect(
       screen.getByText(/Paris Arena\s*-\s*2 places/)
     ).toBeInTheDocument();
+    // Editable fields: price, sale percent, stock quantity
     expect(screen.getByDisplayValue('100')).toBeTruthy();
     expect(screen.getByDisplayValue('20')).toBeTruthy();
     expect(screen.getByDisplayValue('50')).toBeTruthy();
@@ -98,15 +97,14 @@ describe('AdminProductCard', () => {
     onSave.mockResolvedValue(true);
     render(<AdminProductCard product={defaultProduct} lang="en" onViewDetails={onViewDetails} onSave={onSave} onRefresh={onRefresh} onDuplicate={onDuplicate} />);
 
-    // change price
+    // Change price, sale and stock
     fireEvent.change(screen.getByLabelText('products.price'), { target: { value: '120' } });
-    // change sale percent
     fireEvent.change(screen.getByLabelText('products.sale'), { target: { value: '30' } });
-    // change stock
     fireEvent.change(screen.getByLabelText('products.stock'), { target: { value: '60' } });
 
     fireEvent.click(screen.getByText('products.save'));
 
+    // Expect onSave called with parsed values and a success notification
     await waitFor(() => expect(onSave).toHaveBeenCalledWith(1, {
       price: 120,
       sale: 0.3,
@@ -131,13 +129,11 @@ describe('AdminProductCard', () => {
       />
     );
 
-    // rendre le formulaire « dirty » pour activer le bouton Save
+    // Make form dirty to enable save button
     fireEvent.change(screen.getByLabelText('products.price'), { target: { value: '110' } });
-
-    // cliquer sur Save
     fireEvent.click(screen.getByText('products.save'));
 
-    // attendre la notification d’erreur et s’assurer que onRefresh n’a PAS été appelé
+    // Expect error notification and no refresh call
     await waitFor(() => {
       expect(notifyMock).toHaveBeenCalledWith('errors.save_failed', 'error');
       expect(onRefresh).not.toHaveBeenCalled();
@@ -177,27 +173,30 @@ describe('AdminProductCard – sale & stock interactions', () => {
     return props
   }
 
-  test('changing sale input updates salePercent, sale state and UI', async () => {
+  it('updates sale percent and recalculates price display', async () => {
     setup()
 
     const saleInput = screen.getByRole('spinbutton', { name: /sale/i })
     await userEvent.clear(saleInput)
     await userEvent.type(saleInput, '50')
 
+    // Sale input value, sale chip, and discounted price recalculation
     expect(saleInput).toHaveValue(50)
     expect(screen.getByText('–50%')).toBeInTheDocument()
     expect(screen.getByText(formatCurrency(100, 'en', 'EUR'))).toBeInTheDocument()
   })
 
-  test('non-numeric sale input falls back to 0 and no chip is shown', () => {
+  it('handles non-numeric sale input by resetting to 0', () => {
     setup()
 
     const saleInput = screen.getByRole('spinbutton', { name: /sale/i })
     fireEvent.change(saleInput, { target: { value: '' } })
 
+    // Expect value reset and no sale chip
     expect(saleInput).toHaveValue(0)
     expect(screen.queryByText(/–0%/)).toBeNull()
 
+    // Original prices remain without strikethrough
     const origPrices = screen.getAllByText(formatCurrency(200, 'en', 'EUR'))
     expect(origPrices).toHaveLength(2)
     origPrices.forEach(priceEl => {
@@ -205,7 +204,7 @@ describe('AdminProductCard – sale & stock interactions', () => {
     })
   })
 
-  test('changing stock input updates stock state', async () => {
+  it('updates stock input value correctly', async () => {
     setup()
 
     const stockInput = screen.getByRole('spinbutton', { name: /stock/i })
@@ -215,7 +214,7 @@ describe('AdminProductCard – sale & stock interactions', () => {
     expect(stockInput).toHaveValue(7)
   })
 
-  test('non-numeric sale input falls back to 0 and no chip is shown', () => {
+  it('non-numeric sale input falls back to 0 and no chip is shown', () => {
     setup()
 
     const saleInput = screen.getByRole('spinbutton', { name: /sale/i })
@@ -234,7 +233,7 @@ describe('AdminProductCard – sale & stock interactions', () => {
     })
   })
 
-  test('changing stock input updates stock state', async () => {
+  it('changing stock input updates stock state', async () => {
     setup()
 
     const stockInput = screen.getByRole('spinbutton', { name: /stock/i })

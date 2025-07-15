@@ -16,20 +16,30 @@ interface State {
   reloadKey: number;
 }
 
+/**
+ * ErrorBoundary is a React component that catches JavaScript errors in its child component tree,
+ * logs those errors, and displays a fallback UI with options to retry or go back to the home page.
+ * It uses the `withTranslation` HOC to provide translation capabilities.
+ * It also includes SEO metadata for better search engine indexing.
+ */
 class ErrorBoundaryInner extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
+    // Initialize state: no error yet, reloadKey = 0
     this.state = { hasError: false, reloadKey: 0 };
   }
 
+  // React lifecycle: if an error is thrown in children, set hasError=true
   static getDerivedStateFromError(_: Error): Pick<State, 'hasError'> {
     return { hasError: true };
   }
 
+  // React lifecycle: log the error details for debugging/monitoring
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     logError('ErrorBoundary', { error, info });
   }
 
+  // Handler for the "Retry" button: clear error and increment reloadKey
   handleReload = () => {
     this.setState(({ reloadKey }) => ({
       hasError: false,
@@ -39,10 +49,13 @@ class ErrorBoundaryInner extends React.Component<Props, State> {
 
   render() {
     const { t, children } = this.props;
+    // If an error occurred, render the fallback UI
     if (this.state.hasError) {
       return (
         <>
+          {/* SEO tags for the error page */}
           <Seo title={t('errors.seoTitle')} description={t('errors.seoDescription')} />
+          {/* Layout wrapper */}
           <PageWrapper>
             <Box sx={{ p: 4, textAlign: 'center' }}>
               <Typography variant="h4" gutterBottom>
@@ -54,6 +67,7 @@ class ErrorBoundaryInner extends React.Component<Props, State> {
               <Button variant="contained" onClick={this.handleReload}>
                 {t('errors.retry')}
               </Button>
+              {/* Home button: navigate to root */}
               <Button
                 variant="text"
                 onClick={() => (window.location.href = '/')}
@@ -67,7 +81,8 @@ class ErrorBoundaryInner extends React.Component<Props, State> {
       );
     }
 
-    // On donne une nouvelle key quand on recharge pour « reset » les enfants
+    // No error: clone children with a key based on reloadKey so that
+    // when reloadKey increments, they remount from scratch
     return React.Children.map(children, (child) =>
       React.isValidElement(child)
         ? React.cloneElement(child, { key: `reload-${this.state.reloadKey}` })
@@ -76,6 +91,6 @@ class ErrorBoundaryInner extends React.Component<Props, State> {
   }
 }
 
-// on wrappe avec withTranslation pour injecter `t`
+// Wrap withTranslation HOC to inject the `t` function as a prop
 export const ErrorBoundary = withTranslation()(ErrorBoundaryInner);
 export { ErrorBoundaryInner };

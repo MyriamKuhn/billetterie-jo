@@ -19,16 +19,24 @@ interface Props {
   onRefresh: () => void;
 }
 
+/**
+ * Modal for editing existing product details in multiple languages.
+ *
+ * - Fetches current data when opened.
+ * - Shows loader or error states appropriately.
+ * - Initializes form with fetched data.
+ * - Submits updates as FormData, including translations and optional image.
+ */
 export function AdminProductDetailsModal({ open, productId, onClose, onRefresh }: Props) {
   const { t } = useTranslation('adminProducts');
   const { notify } = useCustomSnackbar();
   const updateProductDetails = useUpdateProductDetails();
 
-  // Charge les traductions
+  // Fetch translations only when modal is open
   const { data: allTranslations, loading, error } =
     useProductDetailsMultiLang(open ? productId : null, ['fr','en','de']);
 
-  // Prépare les valeurs initiales du form
+  // Prepare initial form values once data is available
   const initialValues = useMemo<ProductFormData | null>(() => {
     if (!allTranslations) return null;
     const en = allTranslations.en;
@@ -49,27 +57,36 @@ export function AdminProductDetailsModal({ open, productId, onClose, onRefresh }
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      {/* Title with interpolated product ID */}
       <DialogTitle>
         {t('products.modification', { id: productId })}
       </DialogTitle>
 
-      {/* Loader / Erreur */}
+      {/* Show loader when fetching data */}
       {loading && <Box textAlign="center" py={4}><OlympicLoader/></Box>}
+      {/* Show error display if fetch failed */}
       {error && <ErrorDisplay title={t('errors.title')} message={t('errors.not_found')} />}
 
-      {/* Formulaire */}
+      {/* Render form once data loaded and no error */}
       {!loading && !error && initialValues && (
         <ProductForm
           initialValues={initialValues}
           saving={saving}
+          /**
+           * Handle form submission:
+           * - Build FormData payload with basic fields and translations
+           * - Append optional image file
+           * - Call updateProductDetails hook
+           * - Notify user and refresh on success or failure
+           */
           onSubmit={async data => {
             setSaving(true);
-            // Reconstruis ton FormData à partir de `data`
             const body = new FormData();
-            // Champs globaux
+            // Append global fields
             body.append('price', data.price.toString());
             body.append('sale',  data.sale.toString());
             body.append('stock_quantity', data.stock_quantity.toString());
+            // Append translations for each language code
             (['fr','en','de'] as LangCode[]).forEach(code => {
               const tr = data.translations[code];
               body.append(`translations[${code}][name]`, tr.name);
@@ -80,6 +97,7 @@ export function AdminProductDetailsModal({ open, productId, onClose, onRefresh }
               body.append(`translations[${code}][product_details][location]`, tr.product_details.location);
               body.append(`translations[${code}][product_details][category]`, tr.product_details.category);
             });
+            // Include image if provided
             if (data.imageFile) {
               body.append('image', data.imageFile, data.imageFile.name);
             }

@@ -17,22 +17,30 @@ import { formatCurrency, formatDate } from '../utils/format';
 import { useAddToCart } from '../hooks/useAddToCart';
 import { useCartStore } from '../stores/useCartStore';
 
+/**
+ * ProductsPage
+ * Shows a list of products with filters, pagination, and details modal.
+ * It integrates with the cart system to allow adding products.
+ */
 export default function ProductsPage() {
   const { t } = useTranslation('ticket');
   const lang = useLanguageStore(s => s.lang);
   const cartItems = useCartStore(s => s.items);
   const addToCart = useAddToCart();
 
-  // --- États ---
+  // Filter state
   const [filters, setFilters] = useState<Filters>({
     name:'', category:'', location:'', date:'', places:0,
     sortBy:'name', order:'asc', perPage:15, page:1,
   });
 
+  // Fetch products based on filters
   const { products, total, loading, error, validationErrors } = useProducts(filters, lang);
 
+  // Selected product for details modal
   const [detailsId, setDetailsId] = useState<number | null>(null);
 
+  // Reset invalid filters on validation errors
   useEffect(() => {
   if (validationErrors) {
     const cleanup: Partial<Filters> = {};
@@ -48,11 +56,11 @@ export default function ProductsPage() {
   }
 }, [validationErrors]);
 
-  // --- Helpers de format ---
+  // Format helpers
   const fmtCur = (v: number)   => formatCurrency(v, lang, 'EUR');
-
   const fmtDate = (iso?: string) => formatDate(iso, lang);
 
+  // Error state
   if (error) {
     return (
       <PageWrapper>
@@ -69,19 +77,20 @@ export default function ProductsPage() {
   );
 }
   
-  // --- Rendu normal loader / grille / pagination ---
+  // Render the products page
   return (
     <>
+      {/* SEO meta tags */}
       <Seo title={t('tickets.seo_title')} description={t('tickets.seo_description')} />
       <PageWrapper disableCard>
         <Typography variant="h4" sx={{ px:2 }}>
           {t('tickets.title')}
         </Typography>
         <Box sx={{ display:'flex', flexDirection:{ xs:'column', md:'row' }, gap:2, p:2 }}>
-          {/* Sidebar filtres */}
+          {/* Filters sidebar */}
           <ProductsFilters filters={filters} onChange={upd=>setFilters(f=>({...f,...upd}))}/>
 
-          {/* Contenu principal */}
+          {/* Main content area */}
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
@@ -102,6 +111,8 @@ export default function ProductsPage() {
                     if (ok) setDetailsId(null);}}
                 />
               }
+
+            {/* Pagination */} 
             {!loading && products.length>0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination
@@ -115,6 +126,7 @@ export default function ProductsPage() {
         </Box>
       </PageWrapper>
 
+      {/* Product details modal */}
       <ProductDetailsModal
         open={detailsId !== null}
         productId={detailsId}

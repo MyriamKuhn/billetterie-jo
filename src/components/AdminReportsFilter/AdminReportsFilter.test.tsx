@@ -6,7 +6,7 @@ import {
 } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 
-// Mock des dépendances MUI et des icônes
+// ——— Mock MUI components to simplify rendering and focus on logic ———
 vi.mock('@mui/material/Box', () => ({
   __esModule: true,
   default: ({ children, ...props }: any) => (
@@ -37,18 +37,19 @@ vi.mock('@mui/material/IconButton', () => ({
     <button data-testid="IconButton" {...props}>{children}</button>
   ),
 }));
-// ======== On change le mock de Drawer pour utiliser onClose via un click ========
+// ——— Replace Drawer mock so that clicking the open drawer element calls onClose ———
 vi.mock('@mui/material/Drawer', () => ({
   __esModule: true,
   default: ({ open, children, onClose, ...props }: any) => (
     open
-      // quand open=true on rend un div clickable qui déclenche onClose
+      // When open=true, render a div that triggers onClose when clicked
       ? <div data-testid="Drawer-open" onClick={onClose} {...props}>{children}</div>
+      // When closed, render a div indicating closed state
       : <div data-testid="Drawer-closed" {...props}/>
   ),
 }));
-// ===========================================================================
 
+// ——— Theme and Icon mocks ———
 vi.mock('@mui/material/styles', () => ({
   useTheme: () => ({
     mixins: { toolbar: { minHeight: 64 } },
@@ -64,7 +65,7 @@ vi.mock('@mui/icons-material/Close', () => ({
   default: () => <span data-testid="CloseIcon">×</span>,
 }));
 
-// Mock des composants enfants
+// ——— Mock child filter/sort components to control their behavior ———
 vi.mock('../FilterSelect', () => ({
   __esModule: true,
   FilterSelect: ({ label, value, options, onChange }: any) => (
@@ -90,6 +91,7 @@ vi.mock('../SortControl', () => ({
   }: any) => (
     <div data-testid="SortControl">
       <span>{label}</span>
+      {/* Clicking toggles between desc/asc on the first field */}
       <button
         data-testid="SortButton"
         onClick={() => {
@@ -104,7 +106,7 @@ vi.mock('../SortControl', () => ({
   ),
 }));
 
-// Mock i18n
+// ——— Mock translation to return keys directly ———
 vi.mock('react-i18next', () => ({
   __esModule: true,
   useTranslation: () => ({
@@ -112,7 +114,7 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-// Import sous test
+// ——— Component under test ———
 import { AdminReportsFilter } from './AdminReportsFilter';
 import type { AdminReportsFilters } from '../../types/admin';
 
@@ -121,6 +123,7 @@ describe('AdminReportsFilter', () => {
   let onChange: Mock;
 
   beforeEach(() => {
+    // Initialize filter state and spy before each test
     filters = {
       sort_by: 'sales_count',
       sort_order: 'desc',
@@ -130,34 +133,35 @@ describe('AdminReportsFilter', () => {
     onChange = vi.fn();
   });
 
-  it('affiche le contenu desktop et mobile sans drawer ouvert', () => {
+  it('renders both desktop and mobile UI when drawer is closed', () => {
     render(<AdminReportsFilter filters={filters} onChange={onChange} />);
-
+    // Check title, sort control, and per-page select are visible
     expect(screen.getByText('filters.title')).toBeInTheDocument();
     expect(screen.getByTestId('SortControl')).toBeInTheDocument();
     expect(screen.getByTestId('FilterSelect')).toBeInTheDocument();
     expect(screen.getByText('filters.reset')).toBeInTheDocument();
 
+    // Menu icon and closed drawer indicator should appear
     expect(screen.getByTestId('MenuIcon')).toBeInTheDocument();
     expect(screen.getByTestId('Drawer-closed')).toBeInTheDocument();
   });
 
-  it('ouvre et ferme le drawer en mobile (via onClose en click)', async () => {
+  it('opens and closes the mobile drawer via clicks', async () => {
     render(<AdminReportsFilter filters={filters} onChange={onChange} />);
 
-    // Ouvre le drawer
+    // Open drawer by clicking the icon button
     fireEvent.click(screen.getByTestId('IconButton'));
     await waitFor(() => {
       expect(screen.getByTestId('Drawer-open')).toBeInTheDocument();
     });
 
-    // Ferme via le click qui appelle onClose
+    // Close drawer by clicking on the open-drawer area (onClose)
     fireEvent.click(screen.getByTestId('Drawer-open'));
     await waitFor(() => {
       expect(screen.getByTestId('Drawer-closed')).toBeInTheDocument();
     });
 
-    // Rouvre, puis ferme via le bouton CloseIcon
+    // Re-open then close via the CloseIcon button
     fireEvent.click(screen.getByTestId('IconButton'));
     await waitFor(() => {
       expect(screen.getByTestId('Drawer-open')).toBeInTheDocument();
@@ -168,9 +172,11 @@ describe('AdminReportsFilter', () => {
     });
   });
 
-  it('déclenche onChange quand on change le tri via SortControl', () => {
+  it('triggers onChange when sorting is toggled', () => {
     render(<AdminReportsFilter filters={filters} onChange={onChange} />);
+    // Simulate clicking the sort toggle button
     fireEvent.click(screen.getByTestId('SortButton'));
+    // Expect onChange called with updated sort order and reset page
     expect(onChange).toHaveBeenCalledWith({
       sort_by: 'sales_count',
       sort_order: 'asc',
@@ -178,20 +184,24 @@ describe('AdminReportsFilter', () => {
     });
   });
 
-  it('déclenche onChange quand on change le nombre par page via FilterSelect', () => {
+  it('triggers onChange when per-page selection changes', () => {
     render(<AdminReportsFilter filters={filters} onChange={onChange} />);
+    // Change the select to '25'
     fireEvent.change(screen.getByTestId('FilterSelect'), {
       target: { value: '25' },
     });
+    // Expect onChange with new per_page and reset page
     expect(onChange).toHaveBeenCalledWith({
       per_page: 25,
       page: 1,
     });
   });
 
-  it('réinitialise les filtres quand on clique sur Reset', () => {
+  it('resets all filters when clicking Reset', () => {
     render(<AdminReportsFilter filters={filters} onChange={onChange} />);
+    // Click the reset button
     fireEvent.click(screen.getByText('filters.reset'));
+    // Expect onChange with default per_page and reset page
     expect(onChange).toHaveBeenCalledWith({
       sort_by: 'sales_count',
       sort_order: 'desc',
