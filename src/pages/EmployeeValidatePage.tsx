@@ -28,27 +28,41 @@ interface TicketInfo {
   ticket_token: string;
 }
 
+/**
+ * EmployeeValidatePage component allows employees to validate tickets either by scanning a QR code or entering a token manually.
+ * It displays ticket information, handles validation errors, and provides a reset functionality.
+ * This page is designed for internal use by employees to manage ticket validation efficiently.
+ * It includes features such as:
+ * - Manual token entry for ticket validation
+ * - Displaying ticket details after validation
+ * - Error handling for validation issues
+ * - Reset functionality to clear the form and start over
+ */
 export default function EmployeeValidatePage() {
   const { t } = useTranslation('employee');
   const authToken = useAuthStore((state) => state.authToken);
   const lang = useLanguageStore(state => state.lang);
 
+  // Local state: manual input, fetched info, error and flags
   const [manualToken, setManualToken] = useState("");
   const [ticketInfo, setTicketInfo] = useState<TicketInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [validating, setValidating] = useState(false);
   const [validated, setValidated] = useState(false);
 
+  // Send validation request to server
   const validateTicket = () => {
     setValidating(true);
     setValidated(false);
     axios
       .post(`${API_BASE_URL}/api/tickets/scan/${manualToken}`, {}, { headers: { 'Authorization': `Bearer ${authToken}`, 'Accept-Language': lang } })
       .then((res) => {
+        // On success mark as validated
         setTicketInfo((prev) => ({ ...prev!, ...res.data }));
         setValidated(true);
       })
       .catch((_e) => {
+        // Handle conflict vs generic error
         if (_e.response?.status === 409) {
           setTicketInfo(_e.response.data);
         } else {
@@ -59,7 +73,7 @@ export default function EmployeeValidatePage() {
         setValidating(false));
   };
 
-  // 3) handleReset va simplement remettre tes états et relancer le scanner
+  // Reset to initial state for new validation
   const handleReset = () => {
     setTicketInfo(null);
     setError(null);
@@ -68,6 +82,7 @@ export default function EmployeeValidatePage() {
     setValidating(false);
   };
 
+  // Show error screen
   if (error) {
     return (
       <PageWrapper>
@@ -86,12 +101,13 @@ export default function EmployeeValidatePage() {
     );
   }
 
+  // Main render: either manual input form or validation result
   return (
     <>
       <Seo title={t("seo.title_validate")} description={t("seo.description_validate")} />
       <PageWrapper disableCard>
         <Card sx={{ p:2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {/* Affichage du champs pour l'entrée manuelle */}
+          {/* Manual token entry */}
           {!ticketInfo && !error && (
             <>
               <Typography variant="h4" gutterBottom>
@@ -128,7 +144,7 @@ export default function EmployeeValidatePage() {
             </>
           )}
 
-          {/* Affichage des infos du ticket scanné */}
+          {/* Display validation results */}
           {ticketInfo && (
             <>
               <Typography variant="h4" gutterBottom>
@@ -148,12 +164,14 @@ export default function EmployeeValidatePage() {
                   <Typography variant="h5">
                     {t("scan.validated_message", { dt: formatDate(ticketInfo.used_at, lang) })}
                   </Typography>
-                  {/* Bouton de remise à zéro */}
+                  {/* Reset Button */}
                   <Button variant="contained" onClick={handleReset} sx={{ mt: 5 }}>
                     {t("validate.reset_button")}
                   </Button>
                 </Box>
               )}
+
+              {/* If not validated, show ticket details */}
               {!validated && (
                 <>
                   <CheckCircleIcon

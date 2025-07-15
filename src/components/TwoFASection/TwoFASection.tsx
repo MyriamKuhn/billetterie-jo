@@ -28,6 +28,10 @@ interface TwoFASectionProps {
   onToggle: (enabled: boolean) => void;
 }
 
+/**
+ * Component for the Two-Factor Authentication (2FA) section in the user dashboard.
+ * It allows users to enable or disable 2FA, and manage the setup process including QR code generation, OTP confirmation, and recovery codes.
+ */
 export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Element {
   const { t } = useTranslation('userDashboard');
   const token = useAuthStore((state) => state.authToken);
@@ -39,24 +43,25 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Dialog générique pour enable ou disable ou confirm
+  // Dialog states and modes: preparing, confirming, disabling, or showing success
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogMode, setDialogMode] = useState<"enable_prepare"|"enable_confirm"|"disable"|"enable_success">("enable_prepare");
 
-  // Pour activation : données de préparation
+  // For enabling: QR code URL and secret key
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
 
-  // Pour saisie OTP lors de confirm activation ou disable
+  // For OTP or recovery code input
   const [otpCode, setOtpCode] = useState<string>('');
   const [dialogErrorMsg, setDialogErrorMsg] = useState<string | null>(null);
 
-  // Pour afficher recovery codes après confirmation
+  // For display of recovery codes after successful enable
   const [recoveryCodes, setRecoveryCodes] = useState<string[] | null>(null);
 
-  // Pour gérer la désactivation avec un OTP ou un code de récupération
+  // Toggle between OTP and recovery code for disabling
   const [codeType, setCodeType] = useState<"otp"|"recovery">("otp");
 
+  // Handle expansion/collapse of the accordion
   const handleAccordionChange = () => {
     if (expanded) {
       setErrorMsg(null);
@@ -65,6 +70,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
     setExpanded(prev => !prev);
   };
 
+  // Handle clicking the enable/disable switch
   const handleToggleClick = async () => {
     setErrorMsg(null);
     setSuccessMsg(null);
@@ -77,13 +83,11 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
     }
 
     if (!enabled) {
-      // Début de l'activation : étape 1 = préparation
+      // Start enabling: request QR code and secret
       setLoading(true);
       try {
         const resp = await enableTwoFA(token);
-        // suppose status 200 et data { qrCodeUrl, secret, expires_at }
         if (resp.status === 200 && resp.data.qrCodeUrl) {
-          // On ouvre le dialog en mode prepare
           setQrCodeUrl(resp.data.qrCodeUrl);
           setSecret(resp.data.secret || null);
           setDialogMode("enable_prepare");
@@ -101,7 +105,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
         setLoading(false);
       }
     } else {
-      // Désactivation : ouvrir dialog en mode disable
+      // Start disabling: open dialog in disable mode
       setDialogMode("disable");
       setCodeType("otp");
       setOtpCode('');
@@ -110,6 +114,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
     }
   };
 
+  // Handle confirmation actions in the dialog
   const handleConfirm = async () => {
     setDialogErrorMsg(null);
 
@@ -118,14 +123,13 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
       return;
     }
 
-    // Validation locale : OTP requis
+    // Input validation
     if (dialogMode === "enable_confirm") {
       if (!otpCode) {
         setDialogErrorMsg(t('errors.otpRequired'));
         return;
       }
     } else if (dialogMode === "disable") {
-      // Selon codeType, on exige otpCode non vide
       if (!otpCode) {
         setDialogErrorMsg(
           codeType === "otp"
@@ -140,22 +144,19 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
     try {
       switch (dialogMode) {
         case "enable_prepare":
-          // Après avoir affiché QR+secret, on passe à la saisie OTP
+          // Move to OTP confirmation step
           setDialogMode("enable_confirm");
           setOtpCode('');
           break;
 
         case "enable_confirm":
+          // Confirm enabling with OTP
           {
-            // Appel confirm
             const resp = await confirmTwoFA(token, otpCode);
             if (resp.status === 200 && resp.data?.recovery_codes) {
-              // Activation réussie
               onToggle(true);
               setSuccessMsg(t('dashboard.2faEnabled'));
               setRecoveryCodes(resp.data.recovery_codes);
-              // on peut fermer le dialog ou afficher recovery codes dedans
-              // Ici on garde le dialog ouvert et on affiche la liste
               setDialogErrorMsg(null);
               setDialogMode("enable_success");
             } else {
@@ -165,10 +166,10 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
           break;
 
         case "disable":
+          // Disable two-factor with OTP or recovery code
           {
             const resp = await disableTwoFA(token, otpCode);
             if (resp.status === 204) {
-              // Désactivation réussie
               onToggle(false);
               setSuccessMsg(t('dashboard.2faDisabled'));
               setDialogOpen(false);
@@ -182,10 +183,8 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
           break;
       }
     } catch (err: any) {
-      // Gestion des erreurs réseau ou backend
       if (axios.isAxiosError(err) && err.response?.data?.code) {
         const errCode = err.response.data.code;
-        // Pour disable, si invalid code, on peut différencier le message selon codeType
         if (dialogMode === "disable" && errCode === 'twofa_invalid_code') {
           setDialogErrorMsg(
             codeType === "otp"
@@ -203,6 +202,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
     }
   };
 
+  // Close the dialog and reset temporary state
   const handleDialogClose = () => {
     setDialogOpen(false);
     setOtpCode('');
@@ -210,7 +210,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
     setQrCodeUrl(null);
     setSecret(null);
     setRecoveryCodes(null);
-    // Si on fermet en plein flow d'activation, on désactive le switch car non confirmé
+    // If user exits mid-enable flow, revert toggle
     if (dialogMode === "enable_prepare" || dialogMode === "enable_confirm") {
       onToggle(false);
     }
@@ -219,6 +219,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
 
   return (
     <>
+      {/* Accordion section for 2FA */}
       <Accordion expanded={expanded} onChange={handleAccordionChange}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', gap: { xs: 1, sm: 0 } }}>
@@ -244,6 +245,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
         </AccordionDetails>
       </Accordion>
 
+      {/* Dialog for enabling/disabling 2FA */}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>
           {dialogMode === "disable" && t('dashboard.disable2faTitle')}
@@ -251,7 +253,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
           {dialogMode === "enable_confirm" && t('dashboard.confirm2faTitle')}
         </DialogTitle>
         <DialogContent>
-          {/* Activation : étape préparation */}
+          {/* Preparation step: show QR code and secret */}
           {dialogMode === "enable_prepare" && qrCodeUrl && (
             <Box sx={{ textAlign: 'center', mb: 2 }}>
               <Typography variant="body2" gutterBottom>
@@ -275,7 +277,8 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
               </Typography>
             </Box>
           )}
-          {/* Activation : étape confirmation OTP */}
+
+          {/* Confirmation step: enter OTP */}
           {dialogMode === "enable_confirm" && (
             <Box>
               <Typography variant="body2" gutterBottom>
@@ -300,7 +303,8 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
               {dialogErrorMsg && <Typography color="error" sx={{ mt: 1 }}>{dialogErrorMsg}</Typography>}
             </Box>
           )}
-          {/* Si activation réussie, affiche recovery codes */}
+          
+          {/* Success step: display recovery codes */}
           {dialogMode === "enable_success" && recoveryCodes && (
             <Box>
               <Typography variant="subtitle2" gutterBottom>
@@ -316,7 +320,8 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
               </Typography>
             </Box>
           )}
-          {/* Désactivation */}
+          
+          {/* Disable step: choose OTP or recovery code */}
           {dialogMode === "disable" && (
             <Box>
               {/* Instruction change selon type */}
@@ -326,7 +331,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
                 : t('dashboard.enterRecoveryCodeToDisable')}
               </Typography>
 
-              {/* Boutons pour choisir le type de code */}
+              {/* Toggle between OTP and recovery code */}
               <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
                 <Button
                   variant={codeType === "otp" ? "contained" : "outlined"}
@@ -348,7 +353,7 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
                 </Button>
               </Box>
 
-              {/* Champ de saisie, label et placeholder selon type */}
+              {/* Code input field */}
               <TextField
                 label={
                   isMobile
@@ -373,6 +378,8 @@ export function TwoFASection({ enabled, onToggle }: TwoFASectionProps): JSX.Elem
             </Box>
           )}
         </DialogContent>
+
+        {/* Dialog action buttons */}
         <DialogActions>
           <Button onClick={handleDialogClose} disabled={loading}>
             {t('dashboard.cancel')}

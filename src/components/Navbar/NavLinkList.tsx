@@ -17,11 +17,14 @@ interface Props {
   toggleDrawer?: () => void;
 }
 
+/**
+ * Renders navigation links as a list: in mobile a drawer-style ListItemButtons with icons and text; in desktop a simple button row.
+ */
 export function NavLinkList({ isMobile, toggleDrawer }: Props) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // Stores & helpers pour le logout
+  // Auth and cart stores for logout logic
   const clearAuthToken = useAuthStore((s) => s.clearToken);
   const clearGuestCartId = useCartStore((s) => s.setGuestCartId);
   const loadCart = useCartStore((s) => s.loadCart);
@@ -29,6 +32,7 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
   const authToken = useAuthStore((s) => s.authToken);
   const role      = useAuthStore((s) => s.role);
 
+  // Logout handler: clear stores, reload cart, navigate to login
   const handleLogout = async () => {
     toggleDrawer?.();
     await logout(
@@ -40,7 +44,7 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
     );
   };
 
-  // Filtrer les items 
+  // Filter nav items into sections
   const publicItems = navItems.filter(i => i.group==='public');
   const loginItems = navItems.filter(i => i.group==='login' && !authToken);
   const forgotPasswordItem = navItems.find(i => i.group === 'password' && !authToken);
@@ -53,9 +57,9 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
   return (
     <List>
       {isMobile ? (
-        // ────────── MOBILE ──────────
+        /* ────────── MOBILE VIEW ────────── */
         <>
-          {/* 1) Public */}
+          {/* 1) Public links */}
           {publicItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -76,7 +80,7 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
 
           <Divider sx={{ my: 1 }} />
 
-          {/* 2) Login / Signup, seulement si non connecté */}
+          {/* 2) Login/Signup when not authenticated */}
           {!authToken &&
             loginItems.map((item) => {
               const Icon = item.icon;
@@ -95,7 +99,7 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
             })
           }
 
-          {/* 3) Dashboard, User, Employee, Admin */}
+          {/* 3) Dashboard entry for authenticated users */}
           {authToken && 
             dashboardItems.map((item) => {
               const Icon = item.icon;
@@ -118,7 +122,7 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
 
           <Divider sx={{ my: 1 }} />
 
-          {/* ForgotPassword */}
+          {/* 4) Forgot password link */}
           {!authToken && forgotPasswordItem && (
             <ListItemButton
               key={forgotPasswordItem.key}
@@ -132,7 +136,7 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
             </ListItemButton>
           )}
 
-          {/* 2) Auth */}
+          {/* 5) Authenticated action links */}
           {authToken &&
             authItems.map((item) => {
               const Icon = item.icon;
@@ -153,7 +157,7 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
             })
           }
 
-          {/* 3) Logout */}
+          {/* 6) Logout button */}
           {authToken && logoutItem && (
             <>
               <Divider sx={{ my: 1 }} />
@@ -168,8 +172,9 @@ export function NavLinkList({ isMobile, toggleDrawer }: Props) {
           )}
         </>
       ) : (
-        // ────────── DESKTOP ──────────
+        /* ────────── DESKTOP VIEW ────────── */
         <>
+          {/* Only show public items as buttons */}
           {publicItems.map((item) => (
             <Button
               key={item.key}

@@ -17,6 +17,11 @@ const sections: readonly [string, string][] = [
   ['subtitleLastUpdate', 'lastUpdate'],
 ];
 
+/**
+ * Legal Mentions Page
+ * This page contains the legal mentions of the website.
+ * It is structured using the LegalPageLayout component.
+ */
 export default function LegalMentionsPage() {
   return (
     <LegalPageLayout

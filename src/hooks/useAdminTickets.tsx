@@ -11,6 +11,18 @@ export interface Filters {
   page: number;
 }
 
+/**
+ * Fetches tickets for admin view with pagination, filtering by status and optional user.
+ *
+ * @param filters Query settings: status, optional user_id, per_page, page.
+ * @param token   Bearer token for authentication.
+ * @returns An object containing:
+ *   - tickets: list of retrieved AdminTicket objects
+ *   - total: total count of matching tickets
+ *   - loading: true while request is in progress
+ *   - error: error code on failure
+ *   - validationErrors: field-specific validation errors (HTTP 422)
+ */
 export function useAdminTickets(filters: Filters, token: string) {
   const [tickets, setTickets] = useState<AdminTicket[]>([]);
   const [total, setTotal] = useState(0);
@@ -23,6 +35,7 @@ export function useAdminTickets(filters: Filters, token: string) {
     setError(null);
     setValidationErrors(null);
 
+    // Build request query parameters
     const params: Record<string, any> = {
       per_page: Math.max(1, filters.per_page),
       page:    filters.page,
@@ -39,18 +52,21 @@ export function useAdminTickets(filters: Filters, token: string) {
         if (axios.isAxiosError(err)) {
           const status = err.response?.status;
           if (status === 422) {
-          setValidationErrors(err.response!.data.errors as Record<string,string[]>);
-          return;
+            // Validation errors from the API
+            setValidationErrors(err.response!.data.errors as Record<string,string[]>);
+            return;
+          }
+          if (status === 404) {
+            // No tickets found
+            setTickets([]);
+            setTotal(0);
+            return;
+          }
         }
-        if (status === 404) {
-          setTickets([]);
-          setTotal(0);
-          return;
-        }
-      }
-      setError(err.code);
-    })
-    .finally(() => setLoading(false));
+        // Other errors (network, unexpected)
+        setError(err.code);
+      })
+      .finally(() => setLoading(false));
   }, [filters]);
 
   return { tickets, total, loading, error, validationErrors };

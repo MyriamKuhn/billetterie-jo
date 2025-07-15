@@ -13,6 +13,16 @@ export interface RegisterPayload {
   accept_terms: boolean;
 };
 
+/**
+ * Log in a user (including optional 2FA).
+ * @param email        User email
+ * @param password     User password
+ * @param remember     "Remember me" flag
+ * @param twofa_code   Two-factor code (empty if not used)
+ * @param lang         Language for Accept-Language header
+ * @param guestCartId  ID of guest cart, if any
+ * @returns            Parsed API response
+ */
 export async function loginUser(
   email: string,
   password: string,
@@ -36,6 +46,11 @@ export async function loginUser(
   return response.data;
 }
 
+/**
+ * Resend the verification email to a given address.
+ * @param email  User email
+ * @param lang   Language for Accept-Language header
+ */
 export async function resendVerificationEmail(
   email: string,
   lang: string
@@ -56,9 +71,8 @@ export async function resendVerificationEmail(
 };
 
 /**
- * Révoque le token côté serveur.
- *
- * @param token     Token JWT à révoquer
+ * Log out the current user by revoking their token.
+ * @param token  JWT to revoke
  */
 export async function logoutUser(
   token: string
@@ -79,10 +93,9 @@ export async function logoutUser(
 };
 
 /**
- * Enregistre un nouvel utilisateur.
- *
- * @param payload   Données du formulaire d'inscription
- * @param lang      Code de langue pour l'en-tête Accept-Language
+ * Register a new user account.
+ * @param payload  Registration form data
+ * @param lang     Language for Accept-Language header
  */
 export async function registerUser(
   payload: RegisterPayload,
@@ -105,6 +118,11 @@ export async function registerUser(
   };
 }
 
+/**
+ * Initiate a password reset (forgot password) flow.
+ * @param email  User email
+ * @param lang   Language for Accept-Language header
+ */
 export async function passwordForgottenDemand(
   email: string,
   lang: string
@@ -124,6 +142,14 @@ export async function passwordForgottenDemand(
   };
 };
 
+/**
+ * Complete the password reset using a token from email.
+ * @param token                   Reset token from email link
+ * @param email                   User email
+ * @param password                New password
+ * @param password_confirmation   Confirmation of new password
+ * @param lang                    Language for Accept-Language header
+ */
 export async function resetPassword(
   token: string,
   email: string,

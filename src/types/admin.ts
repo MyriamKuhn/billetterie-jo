@@ -1,8 +1,10 @@
 import type { ProductDetails } from './products';
 import type { TicketStatus } from './tickets';
 
+/** ISO language codes supported by the application */
 export type LanguageCode = 'fr' | 'en' | 'de';
 
+/** Raw entry for a translation before form submission */
 export interface TranslationEntry {
   name: string;
   product_details: {
@@ -17,11 +19,13 @@ export interface TranslationEntry {
   };
 }
 
+/** A fully parsed translation for a given language */
 export interface Translation {
   name: string;
   product_details: ProductDetails;
 }
 
+/** Represents a product in the admin catalog, including all translations */
 export interface AdminProduct {
   id: number;
   price: number;
@@ -38,6 +42,7 @@ export interface AdminProduct {
   };
 }
 
+/** Payload for creating or updating a product via form data */
 export interface ProductFormData {
   price: number;
   sale: number;
@@ -46,8 +51,10 @@ export interface ProductFormData {
   translations: Record<LanguageCode, TranslationEntry>;
 }
 
+/** Possible statuses for an administrator-triggered payment */
 export type AdminPaymentsStatus = 'pending' | 'paid' | 'failed' | 'refunded' | '';
 
+/** Represents a payment record in the admin panel */
 export interface AdminPayments {
   uuid: string;
   invoice_link: string;
@@ -78,6 +85,7 @@ export interface AdminPayments {
   updated_at: string;
 }
 
+/** Represents a ticket record in the admin panel */
 export interface AdminTicket {
   id: number;
   token: string;
@@ -113,6 +121,7 @@ export interface AdminTicket {
   updated_at: string;
 }
 
+/** Filters available for the admin tickets list */
 export interface AdminTicketFilters {
   status: TicketStatus;
   user_id?: number;
@@ -120,6 +129,7 @@ export interface AdminTicketFilters {
   page: number;
 }
 
+/** Filters available for the admin payments list */
 export interface AdminPaymentFilters {
   q: string;
   status: AdminPaymentsStatus;
@@ -128,16 +138,19 @@ export interface AdminPaymentFilters {
   page: number;
 }
 
+/** Entry for product sales report */
 export interface ReportProductSales {
   product_id: number;
   product_name: string;
   sales_count: number;
 }
 
+/** Response shape for reports API (list of product sales) */
 export interface AdminReportsResponse {
   data: ReportProductSales[];
 }
 
+/** Filters available for the admin reports list */
 export interface AdminReportsFilters {
   sort_by: 'sales_count';
   sort_order: 'asc' | 'desc';

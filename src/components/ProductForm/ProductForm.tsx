@@ -18,7 +18,7 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 
-// Définition des langues supportées (mêmes codes que hook)
+// Supported languages with their locale code and flag country code
 const LANGUAGES = [
   { code: 'fr', country: 'FR' as CountryCode },
   { code: 'en', country: 'US' as CountryCode },
@@ -34,6 +34,9 @@ interface ProductFormProps {
   onCancel: () => void;
 }
 
+/**
+ * A multi-language product form for admins, with tabs for each locale, image upload, date picker, and global settings.
+ */
 export function ProductForm({
   initialValues,
   saving,
@@ -41,28 +44,34 @@ export function ProductForm({
   onCancel,
 }: ProductFormProps) {
   const { t } = useTranslation('adminProducts');
-  // Etat interne du formulaire
+  // Form state
   const [formData, setFormData] = useState<ProductFormData>(initialValues);
+  // Active language tab index
   const [tabIndex, setTabIndex] = useState(0);
   const activeLang = useMemo(() => LANGUAGES[tabIndex].code as LangCode, [tabIndex]);
 
-  // Réinitialise le formulaire quand les valeurs initiales changent
+   // Reset form when initialValues change
   useEffect(() => {
     setFormData(initialValues);
     setTabIndex(0);
   }, [initialValues]);
 
+  // Track dirty state (any changes from initial)
   const [isDirty, setIsDirty] = useState(false);
   useEffect(() => {
     setIsDirty(JSON.stringify(formData) !== JSON.stringify(initialValues));
   }, [formData, initialValues]);
 
+  // Determine if all required fields are filled
   const allFilled = useMemo(() => {
+    // Must have an image either new or existing
     const hasImage = Boolean(formData.imageFile) || Boolean(formData.translations.en.product_details.image);
     if (!hasImage) return false;
-    // Check every translation and every primitive field:
+    // Check global numeric fields
     if (formData.price <= 0) return false;
     if (formData.stock_quantity < 0) return false;
+
+    // Check each locale translation
     for (const code of ['fr','en','de'] as const) {
       const tr = formData.translations[code];
       if (!tr.name) return false;
@@ -76,12 +85,12 @@ export function ProductForm({
     return true;
   }, [formData]);
 
-  // Changement d'onglet
+  // Handle tab change
   const handleTabChange = (_: React.SyntheticEvent, idx: number) => {
     setTabIndex(idx);
   };
 
-  // Submit
+  // Save handler
   const handleSave = async () => {
     const ok = await onSubmit(formData);
     if (ok) onCancel();
@@ -89,8 +98,9 @@ export function ProductForm({
 
   return (
     <>
+      {/* Dialog content area */}
       <DialogContent dividers>
-        {/* Champs globaux */}
+        {/* Global fields: price, sale percent, stock */}
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
           <TextField
             label={t('products.price')}
@@ -129,7 +139,7 @@ export function ProductForm({
           />
         </Box>
 
-        {/* Dropzone */}
+        {/* Image upload dropzone */}
         <Box sx={{ mb: 2 }}>
           <ImageDropzone
             previewUrl={
@@ -144,7 +154,7 @@ export function ProductForm({
           />
         </Box>
 
-        {/* Onglets de langue */}
+        {/* Language tabs */}
         <Tabs
           value={tabIndex}
           onChange={handleTabChange}
@@ -161,12 +171,13 @@ export function ProductForm({
           ))}
         </Tabs>
 
-        {/* Formulaire langue active */}
+        {/* Active-language form */}
         {(() => {
           const code = activeLang;
           const tr = formData.translations[code];
           return (
             <Box component="form" noValidate sx={{ mt: 2 }}>
+              {/* Name */}
               <TextField
                 fullWidth
                 label={t('products.name')}
@@ -182,7 +193,7 @@ export function ProductForm({
                 }
                 sx={{ mb: 2 }}
               />
-
+              {/* Description */}
               <TextField
                 fullWidth
                 multiline
@@ -203,7 +214,7 @@ export function ProductForm({
                 }
                 sx={{ mb: 2 }}
               />
-
+              {/* Date, time, places */}
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>
                 <TextField
                   label={t('products.place')}
@@ -267,6 +278,7 @@ export function ProductForm({
                 />
               </Box>
 
+              {/* Location and category */}
               <TextField
                 fullWidth
                 label={t('products.location')}
@@ -308,6 +320,7 @@ export function ProductForm({
         })()}
       </DialogContent>
 
+      {/* Action buttons */}
       <DialogActions>
         <Button onClick={onCancel}>{t('products.close')}</Button>
         <Button

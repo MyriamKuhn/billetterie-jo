@@ -3,6 +3,18 @@ import type { Invoice, InvoiceApiResponse, InvoiceFilters } from '../types/invoi
 import { getInvoices } from '../services/billingService'
 import { useAuthStore } from '../stores/useAuthStore'
 
+/**
+ * Hook to fetch user invoices with filtering, pagination and error handling.
+ *
+ * @param filters - Filtering and pagination options.
+ * @param lang - Language code for Accept-Language header (if needed).
+ * @returns An object containing:
+ *   - invoices: the fetched list of invoices
+ *   - total: total number of invoices matching the filters
+ *   - loading: whether the request is in progress
+ *   - error: a general Error if the request failed (excluding validation errors)
+ *   - validationErrors: errors returned by a 422 response, if any
+ */
 export function useInvoices(filters: InvoiceFilters, lang: string) {
   const token = useAuthStore(s => s.authToken)
   const [invoices, setInvoices] = useState<Invoice[]>([])
@@ -15,13 +27,13 @@ export function useInvoices(filters: InvoiceFilters, lang: string) {
     let cancelled = false
 
     const fetchInvoices = async () => {
-      // On réinitialise les états d’erreur avant la requête
+      // Reset loading and errors before starting
       setLoading(true)
       setError(null)
       setValidationErrors(null)
 
       if (!token) {
-        // Pas de token = pas authentifié
+        // No auth token means user is not authenticated
         setError(new Error('User not authenticated'))
         setInvoices([])
         setTotal(0)
@@ -30,21 +42,22 @@ export function useInvoices(filters: InvoiceFilters, lang: string) {
       }
 
       try {
-        // Si tu veux passer lang comme header Accept-Language, tu peux surcharger getInvoices
+        // Fetch invoices from API
+        // Optionally, modify getInvoices to send Accept-Language header using `lang`
         const resp: InvoiceApiResponse = await getInvoices(filters, token)
         if (cancelled) return
 
-        // resp.data est InvoiceResponse
-        // InvoiceResponse.data est Invoice[]
+        // Update state with the fetched data
         setInvoices(resp.data.data)
         setTotal(resp.data.meta.total)
       } catch (err: any) {
         if (cancelled) return
 
-        // Si c'est une erreur de validation 422
         if (err.response?.status === 422) {
+          // Validation errors (unprocessable entity)
           setValidationErrors(err.response.data.errors)
         } else {
+          // General/network error
           setError(err instanceof Error ? err : new Error('Unknown error'))
         }
       } finally {
@@ -57,14 +70,10 @@ export function useInvoices(filters: InvoiceFilters, lang: string) {
     fetchInvoices()
 
     return () => {
-      // À la destruction ou avant un nouveau fetch, on marque annulé
+      // Mark as cancelled to avoid state updates after unmount or filters change
       cancelled = true
     }
-    // Dépendances :
-    // - JSON.stringify(filters) si tu veux comparer le contenu. 
-    //   Attention : ça peut déclencher souvent si l'ordre des clés change ou si filters est reconstruit à chaque render.
-    //   Si filters vient d'un state/setState et que tu changes uniquement par setFilters, 
-    //   tu peux directement utiliser [filters, token, lang].
+    // stringify filters to trigger effect only when contents change
   }, [JSON.stringify(filters), token, lang])
 
   return { invoices, total, loading, error, validationErrors }

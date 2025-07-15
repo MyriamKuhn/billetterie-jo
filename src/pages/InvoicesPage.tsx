@@ -13,10 +13,17 @@ import type { InvoiceFilters } from '../types/invoices'
 import OlympicLoader from '../components/OlympicLoader'
 import { useTranslation } from 'react-i18next'
 
+/**
+ * InvoicesPage component displays a list of invoices with filters and pagination.
+ * It fetches invoices based on the selected filters and language.
+ * It handles loading states, errors, and validation of filters.
+ * It also provides a retry mechanism in case of errors.  
+ */
 export default function InvoicesPage() {
   const lang = useLanguageStore(s => s.lang)
   const { t } = useTranslation('invoices')
 
+  // Initial filters state
   const [filters, setFilters] = useState<InvoiceFilters>({
     status: '',
     date_from: '',
@@ -28,12 +35,10 @@ export default function InvoicesPage() {
   })
   const { invoices, total, loading, error, validationErrors } = useInvoices(filters, lang)
 
-  // reset invalid filters
+  // When validation errors come back, reset invalid filter fields to defaults
   useEffect(() => {
     if (!validationErrors) return
 
-    // Pour chaque champ, si validationErrors[field] est truthy,
-    // on ajoute { field: valeurParDéfaut } dans newFilters.
     const newFilters: Partial<InvoiceFilters> = {
       ...(validationErrors.status     && { status:     ''             }),
       ...(validationErrors.date_from  && { date_from:  ''             }),
@@ -44,10 +49,11 @@ export default function InvoicesPage() {
       ...(validationErrors.page       && { page:       1              }),
     }
 
-    // On merge ensuite
+    // Merge cleaned filters back into state
     setFilters(f => ({ ...f, ...newFilters }))
   }, [validationErrors])
 
+  // Show error screen if loading failed
   if (error) {
     return (
       <PageWrapper>
@@ -72,12 +78,17 @@ export default function InvoicesPage() {
           {t('invoices.title')}
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, p: 2 }}>
+          {/* Filters sidebar */}
           <InvoicesFilters filters={filters} onChange={upd => setFilters(f => ({ ...f, ...upd }))} />
+
+          {/* Main content */}
           <Box component="main" flex={1}>
             {loading
               ? <Box textAlign="center" py={8}><OlympicLoader/></Box>
               : <InvoiceGrid invoices={invoices} />
             }
+
+            {/* Pagination */}
             {!loading && invoices.length > 0 && (
               <Box textAlign="center" mt={4}>
                 <Pagination

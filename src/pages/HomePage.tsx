@@ -23,15 +23,20 @@ const events: Event[] = [
   { id: 4, imageUrl: judoImg }, 
 ];
 
+/**
+ * HomePage component
+ * Displays the homepage with a hero section, history, call to action, and events.
+ * Uses Material-UI for styling and layout.
+ */
 export default function HomePage() {
   const { t } = useTranslation('home');
 
   return (
     <>
-      {/* SEO */}
+      {/* SEO metadata */}
       <Seo />
 
-      {/* Hero */}
+      {/* Hero section */}
       <Box
         component="section"
         sx={{
@@ -44,7 +49,7 @@ export default function HomePage() {
           justifyContent: 'center',
         }}
       >
-        {/* Overlay semi-transparent */}
+        {/* Dark overlay */}
         <Box
           sx={{
             position: 'absolute',
@@ -53,7 +58,7 @@ export default function HomePage() {
           }}
         />
 
-        {/* Contenu centré */}
+        {/* Centered text */}
         <Box sx={{ position: 'relative', textAlign: 'center', px: 2 }}>
           <Typography
             variant="h2"
@@ -82,7 +87,7 @@ export default function HomePage() {
         </Box>
       </Box>
 
-      {/* Historique */}
+      {/* History section */}
       <Box
         component="section"
         sx={{ maxWidth: 800, mx: 'auto', mb: 8, px: 2 }}
@@ -95,14 +100,14 @@ export default function HomePage() {
         </Typography>
       </Box>
 
-      {/* CTA */}
+      {/* Call-to-action button */}
       <Box textAlign="center" mb={6}>
         <Button variant="contained" size="large" href="/tickets">
           {t('cta.title')}
         </Button>
       </Box>
 
-      {/* Événements */}
+      {/* Events gallery */}
       <Box component="section" sx={{ maxWidth: 800, mx: 'auto', mb: 4, px: 2 }}>
         <Typography variant="h3" gutterBottom>
           {t('events.title')}
@@ -135,6 +140,7 @@ export default function HomePage() {
                 flexDirection: 'column',
               }}
             >
+              {/* Event image */}
               <Box
                 component="img"
                 src={evt.imageUrl}
@@ -142,6 +148,7 @@ export default function HomePage() {
                 loading="lazy"
                 sx={{ width: '100%', height: 180, objectFit: 'cover' }}
               />
+              {/* Event title & description */}
               <Stack spacing={1} sx={{ p: 2, flexGrow: 1 }}>
                 <Typography variant="h6">
                   {t(`events.item${evt.id}.title`)}

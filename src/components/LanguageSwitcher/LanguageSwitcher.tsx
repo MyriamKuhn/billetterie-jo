@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import FlagIcon, { type CountryCode } from '../FlagIcon';
 
+// Supported languages with their locale code, country flag code, and label
 const languages: Array<{
   lang: string;
   country: CountryCode;
@@ -16,11 +17,17 @@ const languages: Array<{
   { lang: "de", country: "DE", label: "Deutsch" },
 ];
 
+/**
+ * A dropdown to switch the app’s language, displaying country flags and language labels.
+ * This component uses the `useLanguageStore` to manage the current language state.
+ * It renders a select input with options for each language, showing the corresponding flag icon.
+ */
 function LanguageSwitcher() {
   const { t } = useTranslation();
   const lang = useLanguageStore(state => state.lang);
   const setLang = useLanguageStore(state => state.setLang);
 
+  // Handler for Select change events
   const handleChange = (e: SelectChangeEvent<string>) => {
     setLang(e.target.value as typeof lang);
   };
@@ -32,6 +39,7 @@ function LanguageSwitcher() {
       size="small"
       aria-label={t('navbar.language')}
       renderValue={value => {
+        // Render the flag of the selected language in the closed state
         const cfg = languages.find(l => l.lang === value);
         return cfg ? <FlagIcon code={cfg.country} /> : null;
       }}
@@ -39,7 +47,9 @@ function LanguageSwitcher() {
     >
       {languages.map(({ lang, country, label }) => (
         <MenuItem key={lang} value={lang}>
+          {/* Flag icon with spacing */}
           <FlagIcon code={country} style={{ marginRight: 8 }} />
+          {/* Language label */}
           {label}
         </MenuItem>
       ))}

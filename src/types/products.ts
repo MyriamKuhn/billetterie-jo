@@ -1,3 +1,6 @@
+/**
+ * Detailed information about a product/event.
+ */
 export interface ProductDetails {
   places: number;
   description: string;
@@ -8,6 +11,9 @@ export interface ProductDetails {
   category: string;
 }
 
+/**
+ * Basic representation of a product or event.
+ */
 export interface Product {
   id: number;
   name: string;

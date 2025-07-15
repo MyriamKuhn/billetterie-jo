@@ -4,6 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { PageWrapper } from '../components/PageWrapper';
 import Seo from '../components/Seo';
 
+/**
+ * UnauthorizedPage component renders a page that informs the user
+ * they do not have permission to access a certain resource.
+ * It provides a button to navigate back to the home page.
+ */
 export default function UnauthorizedPage() {
   const navigate = useNavigate();
   const { t } = useTranslation('unauthorized');

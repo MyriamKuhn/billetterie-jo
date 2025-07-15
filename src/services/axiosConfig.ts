@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useAuthStore } from '../stores/useAuthStore';
 
+// Endpoints that don’t require auth-based redirects
 const PUBLIC_PATHS = [
   '/api/auth/login',
   '/api/auth/register',
@@ -9,6 +10,9 @@ const PUBLIC_PATHS = [
   '/api/auth/password/reset',
 ];
 
+/**
+ * Extracts the request pathname from an axios config object.
+ */
 export function getPathnameFromConfig(config: any): string {
   const url = config.url ?? '';
   const base = config.baseURL;
@@ -27,6 +31,7 @@ export function getPathnameFromConfig(config: any): string {
   }
 }
 
+/** Clear auth and redirect to login on 401 */
 function handle401() {
   const authStore = useAuthStore.getState();
   authStore.clearToken();
@@ -36,12 +41,14 @@ function handle401() {
   }
 }
 
+/** Redirect to unauthorized page on 403 */
 function handle403() {
   if (window.location.pathname !== '/unauthorized') {
     window.location.href = '/unauthorized';
   }
 }
 
+// Attach a response interceptor
 axios.interceptors.response.use(
   response => response,
   error => {
@@ -50,14 +57,12 @@ axios.interceptors.response.use(
     const path = getPathnameFromConfig(config);
 
     if (status === 401) {
-      // Si path est un endpoint public, ne pas rediriger automatiquement
+      // Only auto-redirect if not a public endpoint
       const isPublic = PUBLIC_PATHS.some(prefix => path.startsWith(prefix));
       if (!isPublic) {
         handle401();
       }
-      // Sinon, on laisse le code appelant gérer l’erreur (ex.: afficher "identifiants incorrects")
     } else if (status === 403) {
-      // Redirige vers /unauthorized
       handle403();
     }
     return Promise.reject(error);

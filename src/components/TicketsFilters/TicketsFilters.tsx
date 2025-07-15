@@ -19,12 +19,15 @@ interface Props {
   onChange: (f: Partial<TicketFilters>) => void
 }
 
+/**
+ * A responsive filter sidebar/drawer for ticket listings, including status select, event date range, items per page, and reset button.
+ */
 export function TicketsFilters({ filters, onChange }: Props) {
   const { t } = useTranslation('tickets')
   const theme = useTheme()
   const [open, setOpen] = useState(false)
 
-  // Options de statut : adapter selon vos statuts exacts
+  // Map ticket statuses to their localized labels
   const statusToLabel: Record<TicketStatus, string> = {
     '': t('filters.status_all'),
     issued: t('filters.status_issued'),
@@ -33,6 +36,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
     cancelled: t('filters.status_cancelled'),
   }
   
+  // Reverse map from label back to status code
   const labelToStatus: Record<string, TicketStatus> = Object.entries(statusToLabel).reduce(
       (acc, [code, label]) => {
         acc[label] = code as TicketStatus
@@ -43,13 +47,16 @@ export function TicketsFilters({ filters, onChange }: Props) {
     const statusOptionsLabels = Object.values(statusToLabel)
     const currentStatusLabel = statusToLabel[filters.status]
 
+  // Shared content for both desktop sidebar and mobile drawer
   const content = (
     <Box sx={{ width: 260, py: 2, px: 1 }}>
       <Typography variant="h6" gutterBottom>
         {t('filters.title')}
         </Typography>
+
+      {/* Stack of filter controls */}
       <Stack spacing={2} sx={{ mx: 1 }}>
-        {/* Filtre par statut */}
+        {/* Status dropdown */}
         <FilterSelect<string>
           label={t('filters.status_label')}
           value={currentStatusLabel}
@@ -60,7 +67,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
           }}
         />
 
-        {/* Date événement du */}
+        {/* Event date "from" picker */}
         <DatePicker
           label={t('filters.event_date_from')}
           value={filters.event_date_from ? dayjs(filters.event_date_from) : null}
@@ -70,7 +77,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
           slotProps={{ textField: { size: 'small', fullWidth: true } }}
         />
 
-        {/* Date événement au */}
+        {/* Event date "to" picker */}
         <DatePicker
           label={t('filters.event_date_to')}
           value={filters.event_date_to ? dayjs(filters.event_date_to) : null}
@@ -80,7 +87,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
           slotProps={{ textField: { size: 'small', fullWidth: true } }}
         />
 
-        {/* Par page */}
+        {/* Items per page dropdown */}
         <FilterSelect<string>
           label={t('filters.per_page')}
           value={String(filters.per_page)}
@@ -91,7 +98,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
           }}
         />
 
-        {/* Réinitialiser */}
+        {/* Reset button to clear all filters */}
         <Button
           variant="outlined"
           fullWidth
@@ -113,7 +120,7 @@ export function TicketsFilters({ filters, onChange }: Props) {
 
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop sidebar (visible on md and up) */}
       <Box
         component="aside"
         sx={{
@@ -129,13 +136,16 @@ export function TicketsFilters({ filters, onChange }: Props) {
         {content}
       </Box>
 
-      {/* Mobile */}
+      {/* Mobile drawer (visible on xs only) */}
       <Box sx={{ display: { xs: 'block', md: 'none' }, mb: 2 }}>
+        {/* Button to open the filter drawer */}
         <IconButton onClick={() => setOpen(true)} aria-label={t('filters.title')}>
           <MenuIcon />
         </IconButton>
+        {/* Drawer containing the same filter content */}
         <Drawer open={open} onClose={() => setOpen(false)} keepMounted>
           <Box sx={{ position: 'relative' }}>
+            {/* Close button inside drawer */}
             <IconButton
               onClick={() => setOpen(false)}
               size="small"

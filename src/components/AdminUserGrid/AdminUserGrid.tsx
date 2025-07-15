@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography';
 import { useTranslation } from 'react-i18next';
 import { CreateEmployeeCard } from '../CreateEmployeeCard';
 
+// Props interface defines the expected properties for the AdminUserGrid component.
 interface Props {
   lang: string;
   users: User[];
@@ -23,9 +24,16 @@ interface Props {
   onCreate: () => void;
 }
 
+/**
+ * AdminUserGrid component displays a grid of user cards for admin management.
+ * It allows viewing user details, saving changes, refreshing the list, and creating new employees.
+ * @param {Props} props - The properties for the component.
+ * @return {JSX.Element} The rendered component.
+ */
 export function AdminUserGrid({ lang, users, onViewDetails, onSave, onRefresh, isEmployee, onCreate }: Props) {
   const { t } = useTranslation('users');
 
+  // If no users are passed, show a friendly 'not found' message
   if (users.length === 0) {
     return (
       <Typography variant="h4" sx={{ textAlign: 'center' }}>
@@ -36,9 +44,11 @@ export function AdminUserGrid({ lang, users, onViewDetails, onSave, onRefresh, i
 
   return (
     <Box sx={{ display: 'flex', gap: 4, justifyContent: { xs: 'center', md: 'flex-start' }, flexWrap: { xs: 'wrap', md: 'nowrap' }, flexDirection: { xs: 'row', md: 'column' }}}>
+      {/* Optionally include create-card when managing employees */}
       {isEmployee && (
         <CreateEmployeeCard onCreate={onCreate} />
       )}
+      {/* Render a card for each user in the list */}
       {users.map(user => (
         <AdminUserCard
           lang={lang}

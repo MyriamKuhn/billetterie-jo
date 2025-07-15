@@ -17,44 +17,51 @@ import { logError } from '../utils/logger';
 import PasswordWithConfirmation from '../components/PasswordWithConfirmation';
 import { isStrongPassword } from '../utils/validation';
 
+/**
+ * Page for resetting user password.
+ * Expects 'token' and 'email' in URL query parameters.
+ * Validates password strength and confirmation match.
+ * Displays success or error messages based on the outcome.
+ */
 export default function PasswordResetPage() {
   const { t } = useTranslation('passwordReset');
   const navigate = useNavigate();
   const lang = useLanguageStore.getState().lang;
 
-  // Récupère token & email depuis l'URL
+  // Extract token & email from URL
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token') ?? '';
   const emailFromUrl = searchParams.get('email') ?? '';
 
-  // états des champs
+  // Form state
   const [email] = useState(emailFromUrl);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [touched, setTouched] = useState(false);
 
-  // UI
+  // UI flags
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Valide format & match
+  // Validation checks
   const pwStrong = isStrongPassword(password);
   const pwsMatch = password === confirmPassword;
 
-  // Si on arrive sans token ou email, on renvoie vers login
+  // Redirect if missing token/email
   useEffect(() => {
     if (!token || !email) {
       navigate('/login', { replace: true });
     }
   }, [token, email, navigate]);
 
+  // Submit new password
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
     setSuccessMsg(null);
     setTouched(true);
-
+    // Local validation
     if (!pwStrong) {
       setErrorMsg(t('errors.passwordNotStrong'));
       return;
@@ -80,6 +87,7 @@ export default function PasswordResetPage() {
         throw new Error('Unexpected status');
       }
     } catch (err: any) {
+      // Backend error handling
       if (err.response && err.response.data?.code) {
         setErrorMsg(getErrorMessage(t, err.response.data.code));
       } else if (err.isAxiosError) {
@@ -95,7 +103,9 @@ export default function PasswordResetPage() {
 
   return (
     <>
+      {/* SEO */}
       <Seo title={t('seo.title')} description={t('seo.description')} />
+      {/* Form container */}
       <PageWrapper disableCard>
         <Box
           component="form"
@@ -111,6 +121,7 @@ export default function PasswordResetPage() {
             border: (theme) => `1px solid ${theme.palette.divider}`,
           }}
         >
+          {/* Title & description */}
           <Typography variant="h4" gutterBottom align="center">
             {t('passwordReset.title')}
           </Typography>
@@ -118,6 +129,7 @@ export default function PasswordResetPage() {
             {t('passwordReset.description')}
           </Typography>
 
+          {/* Status message */}
           {(errorMsg || successMsg) && (
             <Box aria-live="polite" sx={{ mb: 2 }}>
               <AlertMessage
@@ -127,6 +139,7 @@ export default function PasswordResetPage() {
             </Box>
           )}
 
+          {/* Reset form */}
           {!successMsg && (
             <Stack spacing={2}>
               <PasswordWithConfirmation
@@ -138,6 +151,7 @@ export default function PasswordResetPage() {
                 onBlur={() => setTouched(true)}
               />
 
+              {/* Submit button */}
               <Button
                 type="submit"
                 variant="contained"
@@ -158,6 +172,7 @@ export default function PasswordResetPage() {
                   : t('passwordReset.button')}
               </Button>
 
+              {/* Back to login link */}
               <Box sx={{ textAlign: 'center', mt: 1 }}>
                 <Link
                   component="button"
@@ -170,6 +185,7 @@ export default function PasswordResetPage() {
             </Stack>
           )}
 
+          {/* On success, show link to login */}
           {successMsg && (
             <Box sx={{ textAlign: 'center', mt: 2 }}>
               <Button

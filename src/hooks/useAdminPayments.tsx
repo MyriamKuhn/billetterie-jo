@@ -11,6 +11,18 @@ export interface Filters {
   page: number;
 }
 
+/**
+ * Custom hook to fetch and manage a paginated list of payments for admin.
+ *
+ * @param filters Query filters: search term, status, payment method, pagination.
+ * @param token   Bearer token for API authentication.
+ * @returns An object containing:
+ *  - payments: array of payment records
+ *  - total: total number of matching records
+ *  - loading: whether the request is in progress
+ *  - error: network or unexpected error code
+ *  - validationErrors: server-side validation errors (422)
+ */
 export function useAdminPayments(filters: Filters, token: string) {
   const [payments, setPayments] = useState<AdminPayments[]>([]);
   const [total, setTotal] = useState(0);
@@ -23,6 +35,7 @@ export function useAdminPayments(filters: Filters, token: string) {
     setError(null);
     setValidationErrors(null);
 
+    // Build query parameters, only including non-empty filters
     const params: Record<string, any> = {
       per_page: Math.max(1, filters.per_page),
       page:    filters.page,
@@ -33,6 +46,7 @@ export function useAdminPayments(filters: Filters, token: string) {
 
     axios.get(`${API_BASE_URL}/api/payments`, { params, headers: { 'Authorization': `Bearer ${token}` }})
       .then(res => {
+        // Success: update data and total count
         setPayments(res.data.data);
         setTotal(res.data.meta.total);
       })
@@ -40,18 +54,21 @@ export function useAdminPayments(filters: Filters, token: string) {
         if (axios.isAxiosError(err)) {
           const status = err.response?.status;
           if (status === 422) {
-          setValidationErrors(err.response!.data.errors as Record<string,string[]>);
-          return;
+            // Validation errors from server
+            setValidationErrors(err.response!.data.errors as Record<string,string[]>);
+            return;
+          }
+          if (status === 404) {
+            // No records found
+            setPayments([]);
+            setTotal(0);
+            return;
+          }
         }
-        if (status === 404) {
-          setPayments([]);
-          setTotal(0);
-          return;
-        }
-      }
-      setError(err.code);
-    })
-    .finally(() => setLoading(false));
+        // Other errors: store error code
+        setError(err.code);
+      })
+      .finally(() => setLoading(false));
   }, [filters]);
 
   return { payments, total, loading, error, validationErrors };

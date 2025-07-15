@@ -8,6 +8,9 @@ export interface TicketStatusUpdate {
   status: TicketStatus;
 }
 
+/**
+ * Hook to update the status of an admin ticket.
+ */
 export function useTicketStatusUpdate() {
   const token = useAuthStore(s => s.authToken);
 

@@ -30,12 +30,19 @@ interface TicketInfo {
   ticket_token: string;
 }
 
+/**
+ * EmployeeScanPage is the page where employees can scan tickets or enter them manually.
+ * It allows employees to validate tickets by scanning QR codes or entering the ticket token manually.
+ * It fetches ticket information from the server and displays it, allowing employees to validate the ticket status.
+ * It also handles errors and provides a reset functionality to clear the state and restart the scanning process.
+ */
 export default function EmployeeScanPage() {
   const { t } = useTranslation('employee');
   const authToken = useAuthStore((state) => state.authToken);
   const lang = useLanguageStore(state => state.lang);
   const qrRegionId = "qr-reader";
 
+  // Local state for token input, fetched ticket, errors and flags
   const [manualToken, setManualToken] = useState("");
   const [ticketInfo, setTicketInfo] = useState<TicketInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +50,7 @@ export default function EmployeeScanPage() {
   const [validating, setValidating] = useState(false);
   const [validated, setValidated] = useState(false);
 
+  // Initialize QR scanner
   const { start: startScanner, stop: stopScanner } = useQrScanner(
     "qr-reader",
     (decoded) => {
@@ -52,13 +60,14 @@ export default function EmployeeScanPage() {
     () => setError(t("scan.camera_error"))
   );
 
-  // ➡️ STOPPE la caméra quand on quitte la page
+  // Stop camera on unmount
   useEffect(() => {
     return () => {
       stopScanner();
     };
   }, [stopScanner]);
 
+  // Fetch ticket details by token
   const fetchTicketInfo = (scannedToken: string) => {
     setFetching(true);
     setValidated(false);
@@ -77,10 +86,11 @@ export default function EmployeeScanPage() {
     })
     .finally(() => {
       setFetching(false);
-      setManualToken(""); // Réinitialise le champ manuel après un scan
+      setManualToken(""); 
     });
   };
 
+  // Handle manual token submission
   const handleManualSubmit = () => {
     if (manualToken.trim()) {
       stopScanner();
@@ -88,6 +98,7 @@ export default function EmployeeScanPage() {
     }
   };
 
+  // Send validation request
   const validateTicket = () => {
     setValidating(true);
     setValidated(false);
@@ -104,7 +115,7 @@ export default function EmployeeScanPage() {
         setValidating(false));
   };
 
-  // 3) handleReset va simplement remettre tes états et relancer le scanner
+  // Reset to initial scan state
   const handleReset = () => {
     setFetching(false);
     setTicketInfo(null);
@@ -115,6 +126,7 @@ export default function EmployeeScanPage() {
     startScanner();
   };
 
+  // Show error page
   if (error) {
     return (
       <PageWrapper>
@@ -133,6 +145,7 @@ export default function EmployeeScanPage() {
     );
   }
 
+  // Show loader while fetching ticket info
   if (fetching) {
     return (
       <PageWrapper disableCard>
@@ -146,12 +159,13 @@ export default function EmployeeScanPage() {
     );
   }
 
+  // Main render: either scanner/manual input or ticket details
   return (
     <>
       <Seo title={t("seo.title")} description={t("seo.description")} />
       <PageWrapper disableCard>
         <Card sx={{ p:2, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          {/* Affichage du scanner et du champs pour l'entrée manuelle */}
+          {/* Scanner & manual entry */}
           {!ticketInfo && !error && (
             <>
               <Typography variant="h4" gutterBottom>
@@ -203,7 +217,7 @@ export default function EmployeeScanPage() {
             </>
           )}
 
-          {/* Affichage des infos du ticket scanné */}
+          {/* Ticket details & validation */}
           {ticketInfo && (
             <>
               <Typography variant="h4" gutterBottom>
@@ -223,12 +237,14 @@ export default function EmployeeScanPage() {
                   <Typography variant="h5">
                     {t("scan.validated_message", { dt: formatDate(ticketInfo.used_at, lang) })}
                   </Typography>
-                  {/* Bouton de remise à zéro */}
+                  {/* Reset button */}
                   <Button variant="contained" onClick={handleReset} sx={{ mt: 5 }}>
                     {t("scan.reset_button")}
                   </Button>
                 </Box>
               )}
+
+              {/* Ticket details when not validated */}
               {!validated && (
                 <>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -259,6 +275,7 @@ export default function EmployeeScanPage() {
                       {t("scan.token", { token: ticketInfo.token })}
                     </Typography>
 
+                    {/* Display used date if ticket is already used */}
                     {ticketInfo.status === "issued" ? (
                       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                         <Button

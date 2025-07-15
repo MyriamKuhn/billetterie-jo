@@ -12,6 +12,11 @@ const sections: readonly [string, string][] = [
   ['subtitleChanges', 'changes'],
 ];
 
+/**
+ * Legal Mentions Page Component
+ * This component renders the legal mentions page with a layout that includes
+ * various sections related to privacy policies.
+ */
 export default function LegalMentionsPage() {
   return (
     <LegalPageLayout

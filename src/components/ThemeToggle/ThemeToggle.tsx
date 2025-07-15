@@ -8,6 +8,11 @@ interface ThemeToggleProps {
   toggleMode: () => void;
 }
 
+/**
+ * ThemeToggle:
+ * Renders an icon button that shows a moon icon when in light mode (to switch to dark),
+ * and a sun icon when in dark mode (to switch to light), with translated ARIA labels.
+ */
 function ThemeToggle({ mode, toggleMode }: ThemeToggleProps) {
   const { t } = useTranslation();
   return (

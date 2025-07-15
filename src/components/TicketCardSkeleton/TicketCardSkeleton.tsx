@@ -4,9 +4,13 @@ import CardContent from '@mui/material/CardContent'
 import Skeleton from '@mui/material/Skeleton'
 import { useTheme } from '@mui/material/styles'
 
+/**
+ * Display a skeleton placeholder for a ticket card.
+ * This component is used to show a loading state while the actual ticket data is being fetched. 
+ */
 export function TicketCardSkeleton() {
   const theme = useTheme()
-  // Dimensions similaires à TicketCard pour garder la même structure
+  // Wrapper box matching the flex sizing of TicketCard
   return (
     <Box sx={{ flex: { xs: '1 1 calc(33% - 32px)', md: '1 1 100%' }, minWidth: { xs: 280, md: 'auto' }, maxWidth: { xs: 320, md: '100%' } }}>
       <Card
@@ -18,7 +22,7 @@ export function TicketCardSkeleton() {
           gap: 1,
         }}
       >
-        {/* Zone QR skeleton */}
+        {/* Skeleton placeholder for the QR code area */}
         <Skeleton
           variant="rectangular"
           sx={{
@@ -28,22 +32,22 @@ export function TicketCardSkeleton() {
           }}
         />
 
-        {/* Contenu principal skeleton */}
+        {/* Skeleton placeholders for the main content */}
         <CardContent sx={{ flexGrow: 1 }}>
-          {/* Titre */}
+          {/* Title line */}
           <Skeleton variant="text" width="60%" height={32} />
-          {/* Espace pour token */}
+          {/* Token placeholder */}
           <Skeleton variant="text" width="40%" sx={{ mt: 1, mb: 1 }} />
-          {/* Lignes date / lieu */}
+          {/* Date/location lines */}
           <Skeleton variant="text" width="50%" sx={{ mt: 1 }} />
           <Skeleton variant="text" width="70%" sx={{ mt: 0.5 }} />
-          {/* Ligne places */}
+          {/* Places line */}
           <Skeleton variant="text" width="30%" sx={{ mt: 0.5 }} />
-          {/* Chip statut placeholder */}
+          {/* Status chip placeholder */}
           <Skeleton variant="rectangular" width={80} height={24} sx={{ mt: 2, borderRadius: 1 }} />
         </CardContent>
 
-        {/* Actions skeleton */}
+        {/* Skeleton placeholders for action buttons */}
         <Box
           sx={{
             display: 'flex',

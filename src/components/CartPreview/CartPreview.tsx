@@ -23,22 +23,27 @@ import { useStockChangeNotifier } from '../../hooks/useStockChangeNotifier';
 import { useCustomSnackbar } from '../../hooks/useCustomSnackbar';
 import { useAuthStore } from '../../stores/useAuthStore';
 
+/**
+ * CartPreview component displays a summary of the user's cart.
+ * It shows the number of items, total price, and allows adjusting item quantities.
+ * The cart can be opened in a popover for quick access.
+ */
 export default function CartPreview() {
   const { t } = useTranslation(['common', 'cart']);
   const { notify } = useCustomSnackbar();
   const lang = useLanguageStore(s => s.lang);
   const role = useAuthStore(s => s.role);
 
-  // Reload logic extracted
+  // Reload logic for cart preview
   const { loading, hasError, reload, isReloading } = useReloadCart();
 
-  // Items from store
+  // Cart items and state from store
   const items = useCartStore(s => s.items);
   useStockChangeNotifier(items, isReloading);
   const addItem = useCartStore.getState().addItem;
   const isLocked = useCartStore(s => s.isLocked);
 
-  // Popover state
+  // Popover anchoring and open/close handlers
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const open = Boolean(anchorEl);
   const id = open ? 'cart-popover' : undefined;
@@ -49,10 +54,11 @@ export default function CartPreview() {
   const handleOpen = useCallback((e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
     reload();
-  }, [reload]);
+  }, [reload]); // Refresh items when opening
 
   const handleClose = useCallback(() => setAnchorEl(null), []);
 
+  // Adjust quantity with validation and notifications
   const adjustQty = useCallback(
     async (item: CartItem, delta: number) => {
       if (isLocked) {
@@ -93,6 +99,7 @@ export default function CartPreview() {
 
   return (
     <>
+      {/* Cart icon button with badge */}
       <IconButton
         aria-describedby={id}
         onClick={handleOpen}
@@ -108,6 +115,7 @@ export default function CartPreview() {
         </Badge>
       </IconButton>
 
+      {/* Popover showing cart preview */}
       <Popover
         id={id}
         open={open}
@@ -124,6 +132,8 @@ export default function CartPreview() {
             </Typography>
           </Box>
         )}
+
+        {/* Loading, error, admin restriction, empty, or items list */}
         {loading ? (
           <Box sx={{ p: 2, textAlign: 'center' }}>
             <OlympicLoader />
@@ -160,9 +170,9 @@ export default function CartPreview() {
                           </IconButton>
                         </span>
                       </Tooltip>
-
+                      {/* Quantity display */}
                       <Typography sx={{ mx: 0.5 }}>{item.quantity}</Typography>
-
+                      {/* Add one */}
                       <Tooltip
                         title={
                           isLocked
@@ -193,7 +203,7 @@ export default function CartPreview() {
                 </ListItem>
               ))}
             </List>
-
+            {/* Total and view cart button */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
               <Typography variant="subtitle1">
                 {t('cart:cart.total')} : {formatCurrency(total, lang, 'EUR')}

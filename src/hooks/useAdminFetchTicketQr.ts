@@ -5,6 +5,16 @@ import { useCustomSnackbar } from './useCustomSnackbar'
 import { useTranslation } from 'react-i18next'
 import { logError } from '../utils/logger'
 
+/**
+ * Hook to fetch a ticket QR code blob URL for admin users.
+ *
+ * - Re-fetches when `qrFilename` changes.
+ * - Revokes any previous object URL to avoid memory leaks.
+ * - Handles authentication, loading state, and error notifications.
+ *
+ * @param qrFilename Filename or path of the QR image to fetch; if null, does nothing.
+ * @returns { qrUrl: string | null, loading: boolean }
+ */
 export function useAdminFetchTicketQr(qrFilename: string | null) {
   const token = useAuthStore(s => s.authToken)
   const { notify } = useCustomSnackbar()
@@ -14,7 +24,7 @@ export function useAdminFetchTicketQr(qrFilename: string | null) {
 
   useEffect(() => {
     let canceled = false
-    // Nettoyage de l’URL précédente
+    // Clean up any previous QR URL
     if (qrUrl) {
       URL.revokeObjectURL(qrUrl)
       setQrUrl(null)
@@ -27,17 +37,21 @@ export function useAdminFetchTicketQr(qrFilename: string | null) {
       return
     }
 
+    // Extract just the filename
     const filename = qrFilename.replace(/^.*[\\/]/, '')
 
     const fetchQr = async () => {
       setLoading(true)
       try {
+        // Fetch the QR blob
         const blob = await getAdminQr(filename, token)
         if (canceled) return
+        // Create object URL and store it
         const url = URL.createObjectURL(blob)
         setQrUrl(url)
       } catch (err: any) {
         logError('useAdminFetchTicketQr', err)
+        // Determine error message
         let msg = t('errors.qr_fetch_failed')
         if (err.response?.status === 404) {
           msg = t('errors.qr_not_found')

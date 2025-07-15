@@ -24,17 +24,22 @@ export interface UserProfile {
   twoFAEnabled: boolean;
 }
 
+/**
+ * AdminDashboardPage component
+ * Displays the admin dashboard with user profile management features.
+ * Fetches user data and allows updating name, email, password, and two-factor authentication settings.
+ */
 export default function AdminDashboardPage(): JSX.Element {
   const { t } = useTranslation('userDashboard');
   const token = useAuthStore((state) => state.authToken);
 
-  // États initiaux: charger les données utilisateur existantes
+  // Local state for user profile data
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loadingUser, setLoadingUser] = useState<boolean>(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
-    // Si pas de token, on réinitialise et on stoppe le chargement
+    // If not authenticated, skip fetching
     if (!token) {
       setUser(null);
       setLoadingUser(false);
@@ -48,11 +53,12 @@ export default function AdminDashboardPage(): JSX.Element {
       setLoadingUser(true);
       setErrorMsg(null);
       try {
-        // Passer le signal à fetchUser afin que la requête puisse être annulée
+        // Fetch user profile, abortable via signal
         const response = await fetchUser(token, { signal });
         if (signal.aborted) return;
         const { status, data } = response;
         if (status === 200 && data.user) {
+          // Map API response to our local UserProfile
           setUser({
             firstname: data.user.firstname,
             lastname: data.user.lastname,
@@ -60,11 +66,13 @@ export default function AdminDashboardPage(): JSX.Element {
             twoFAEnabled: data.user.twofa_enabled,
           });
         } else {
+          // Non-200 without exception
           setErrorMsg(t('errors.fetchProfile'));
         }
       } catch (err: any) {
         if (signal.aborted) return;
         if (axios.isAxiosError(err) && err.response) {
+          // Use error code from response if available
           const respData = err.response.data;
           const code = respData?.code;
           setErrorMsg(getErrorMessage(t, code ?? 'generic_error'));
@@ -72,17 +80,21 @@ export default function AdminDashboardPage(): JSX.Element {
           setErrorMsg(getErrorMessage(t, 'network_error'));
         }
       } finally {
+        // Only update loading if not aborted
         if (!signal.aborted) {
           setLoadingUser(false);
         }
       }
     };
     loadUser();
+
     return () => {
+      // Cancel fetch on unmount or token change
       controller.abort();
     };
   }, [token, t]);
 
+  // Show loader while fetching user
   if (loadingUser) {
     return (
       <>
@@ -94,6 +106,7 @@ export default function AdminDashboardPage(): JSX.Element {
     );
   }
 
+  // Show error UI if retrieval failed
   if (errorMsg) {
     return (
       <PageWrapper>
@@ -112,10 +125,12 @@ export default function AdminDashboardPage(): JSX.Element {
     );
   }
 
+  // Redirect to login if not authenticated or no user data
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
+  // Main dashboard UI
   return (
     <>
       <Seo title={t('seo.title_admin')} description={t('seo.description_admin')} />
@@ -128,9 +143,13 @@ export default function AdminDashboardPage(): JSX.Element {
             {t('dashboard.subtitle_admin')}
           </Typography>
           <Stack spacing={2}>
+            {/* Section to update name */}
             <NameSection user={user} onUpdate={(vals) => setUser(prev => ({ ...prev!, ...vals }))}/>
+              {/* Section to update email */}
             <EmailSection currentEmail={user.email} onUpdate={(newEmail) => setUser(prev => ({ ...prev!, email: newEmail }))}/>
+            {/* Section to change password */}
             <PasswordSection />
+            {/* Section to enable/disable two-factor auth */}
             <TwoFASection enabled={user.twoFAEnabled} onToggle={(enabled) => setUser(prev => ({ ...prev!, twoFAEnabled: enabled }))} />
           </Stack>
         </Box>

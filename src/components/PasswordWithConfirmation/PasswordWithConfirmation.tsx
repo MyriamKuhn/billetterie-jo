@@ -19,6 +19,10 @@ export interface PasswordWithConfirmationProps {
   onBlur: () => void;
 }
 
+/**
+ * A composite component rendering a “new password” and “confirm password” pair of inputs,
+ * with password strength criteria and visibility toggle.
+ */
 export default function PasswordWithConfirmation({
   password,
   onPasswordChange,
@@ -31,7 +35,7 @@ export default function PasswordWithConfirmation({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm]   = useState(false);
 
-  // critères de robustesse
+  // Compute strength criteria: length ≥ 15, uppercase, lowercase, digit, special char
   const criteria = useMemo(() => ({
     length: password.length >= 15,
     upper:  /[A-Z]/.test(password),
@@ -45,7 +49,7 @@ export default function PasswordWithConfirmation({
 
   return (
     <Box>
-      {/* Mot de passe */}
+      {/* New Password Field */}
       <TextField
         required fullWidth
         type={showPassword ? 'text' : 'password'}
@@ -77,7 +81,7 @@ export default function PasswordWithConfirmation({
         }}
       />
 
-      {/* Checklist de critères */}
+      {/* Strength Criteria Checklist */}
       <Box sx={{ pl: 1, mt: 1 }}>
         {Object.entries(criteria).map(([key, ok]) => (
           <Box
@@ -95,7 +99,7 @@ export default function PasswordWithConfirmation({
         ))}
       </Box>
 
-      {/* Confirmation */}
+      {/* Confirm Password Field */}
       <TextField
         required fullWidth sx={{ mt: 2 }}
         type={showConfirm ? 'text' : 'password'}

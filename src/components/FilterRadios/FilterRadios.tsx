@@ -11,12 +11,21 @@ interface FilterRadiosProps<T extends string> {
   onChange: (v: T) => void;
 }
 
+/**
+ * 
+ * A reusable radio-button group wrapped in MUI FormControl, allowing selection among provided options.
+ * 
+ */
 export function FilterRadios<T extends string>({
   legend, value, options, onChange
 }: FilterRadiosProps<T>) {
+
   return (
     <FormControl component="fieldset">
+      {/* Legend for the group */}
       <FormLabel component="legend">{legend}</FormLabel>
+
+      {/* Radio buttons laid out in a row */}
       <RadioGroup
         row
         value={value}

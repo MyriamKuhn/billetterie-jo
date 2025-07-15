@@ -2,18 +2,18 @@ import { render, screen, fireEvent, within } from '@testing-library/react';
 import { UsersFilters, type UsersFiltersProps } from './UsersFilters';
 import { vi } from 'vitest';
 
-// 1) Mocks avant d'importer MUI et le composant
+// mock translations
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-// stub useTheme pour que le CSS breakpoints ne casse pas la présence dans le DOM
+// mock theme
 vi.mock('@mui/material/styles', () => ({
   __esModule: true,
   useTheme: () => ({ mixins: { toolbar: { minHeight: 64 } }, palette: { divider: '#ccc' } }),
 }));
 
-// stub FilterField + FilterSelect pour pouvoir tester facilement le onChange
+// stub FilterField
 vi.mock('../FilterField', () => ({
   FilterField: ({ label, value, onChange }: any) => (
     <div>
@@ -26,7 +26,7 @@ vi.mock('../FilterField', () => ({
     </div>
   ),
 }));
-
+// stub FilterSelect
 vi.mock('../FilterSelect', () => ({
   FilterSelect: ({ label, value, onChange }: any) => (
     <div>
@@ -43,7 +43,7 @@ vi.mock('../FilterSelect', () => ({
     </div>
   ),
 }));
-
+// stub Drawer
 vi.mock('@mui/material/Drawer', () => ({
   __esModule: true,
   default: ({ open, onClose, children }: any) => (
@@ -67,69 +67,55 @@ describe('UsersFilters', () => {
     onChange = vi.fn();
   });
 
-  it('rend tous les champs (desktop sidebar)', () => {
+  it('renders all fields in desktop sidebar', () => {
     render(<UsersFilters role="user" filters={baseFilters} onChange={onChange} />);
-
-    // on isole la sidebar desktop
     const sidebar = screen.getByRole('complementary');
     const utils = within(sidebar);
 
-    // Titre
     expect(utils.getByText('filters.title')).toBeInTheDocument();
-
-    // firstname via testid
     expect(utils.getByTestId('field-filters.firstname')).toHaveValue('A');
-    // lastname
     expect(utils.getByTestId('field-filters.lastname')).toHaveValue('B');
-    // email
     expect(utils.getByTestId('field-filters.email')).toHaveValue('c@ex.com');
-    // perPage
     expect(utils.getByTestId('select-filters.user_per_page')).toHaveValue('15');
-
-    // reset
     expect(utils.getByRole('button', { name: 'filters.reset' })).toBeInTheDocument();
   });
 
-  it('appelle onChange({ firstname, page:1 }) sur modification du firstname', () => {
+  it('calls onChange with firstname and page=1 when firstname changes', () => {
     render(<UsersFilters role="employee" filters={baseFilters} onChange={onChange} />);
     const input = screen.getAllByTestId('field-filters.firstname')[0];
     fireEvent.change(input, { target: { value: 'NewFirst' } });
     expect(onChange).toHaveBeenCalledWith({ firstname: 'NewFirst', page: 1 });
   });
 
-  it('appelle onChange({ lastname, page:1 }) sur modification du lastname', () => {
+  it('calls onChange with lastname and page=1 when lastname changes', () => {
     render(<UsersFilters role="employee" filters={baseFilters} onChange={onChange} />);
     const input = screen.getAllByTestId('field-filters.lastname')[0];
     fireEvent.change(input, { target: { value: 'NewLast' } });
     expect(onChange).toHaveBeenCalledWith({ lastname: 'NewLast', page: 1 });
   });
 
-  it('appelle onChange({ email, page:1 }) sur modification du email', () => {
+  it('calls onChange with email and page=1 when email changes', () => {
     render(<UsersFilters role="employee" filters={baseFilters} onChange={onChange} />);
     const input = screen.getAllByTestId('field-filters.email')[0];
     fireEvent.change(input, { target: { value: 'x@y.com' } });
     expect(onChange).toHaveBeenCalledWith({ email: 'x@y.com', page: 1 });
   });
 
-  it('appelle onChange({ perPage, page:1 }) sur modification du perPage', () => {
+  it('calls onChange with perPage and page=1 when perPage changes', () => {
     render(<UsersFilters role="user" filters={baseFilters} onChange={onChange} />);
     const select = screen.getAllByTestId('select-filters.user_per_page')[0];
     fireEvent.change(select, { target: { value: '20' } });
     expect(onChange).toHaveBeenCalledWith({ perPage: 20, page: 1 });
   });
 
-  it('appelle onChange avec les valeurs par défaut sur reset (desktop sidebar)', () => {
+  it('resets filters to defaults when reset clicked', () => {
     render(<UsersFilters role="user" filters={baseFilters} onChange={onChange} />);
-
-    // On isole la sidebar desktop
     const sidebar = screen.getByRole('complementary');
     const utils = within(sidebar);
 
-    // On clique sur SON bouton Reset
     const resetBtn = utils.getByRole('button', { name: 'filters.reset' });
     fireEvent.click(resetBtn);
 
-    // Vérifie l’appel correct
     expect(onChange).toHaveBeenCalledWith({
       firstname: '',
       lastname: '',
@@ -139,34 +125,26 @@ describe('UsersFilters', () => {
     });
   });
 
-  it('ouvre et ferme le drawer mobile', () => {
+  it('opens and closes mobile drawer via icon buttons', () => {
     render(
       <UsersFilters role="user" filters={baseFilters} onChange={onChange} />
     );
-    // bouton menu
     const menuBtn = screen.getByLabelText('filters.title');
     fireEvent.click(menuBtn);
-    // close icon devient visible dans drawer
     const closeBtn = screen.getByLabelText('filters.close');
     expect(closeBtn).toBeInTheDocument();
     fireEvent.click(closeBtn);
-    // après fermeture, le bouton close reste dans le DOM mais drawer fermé
-    // (on ne peut pas interroger l’état visuel facilement, mais on sait que setOpen(false) a été appelé)
-    // On considère la fermeture ok si le bouton est toujours présent
     expect(screen.getByLabelText('filters.close')).toBeInTheDocument();
   });
 
-  it('ouvre le Drawer et ferme via onClose', () => {
+  it('toggles drawer open and closed on stub clicks', () => {
     render(<UsersFilters role="user" filters={baseFilters} onChange={onChange} />);
 
-    // 1) Au lancement, le Drawer est fermé → stub rend <div data-testid="drawer-false">
     expect(screen.getByTestId('drawer-false')).toBeInTheDocument();
 
-    // 2) On clique sur l’IconButton menu pour ouvrir → open passe à true
     fireEvent.click(screen.getByLabelText('filters.title'));
     expect(screen.getByTestId('drawer-true')).toBeInTheDocument();
 
-    // 3) On clique sur le drawer (notre stub) → appelle onClose() et repasse open à false
     fireEvent.click(screen.getByTestId('drawer-true'));
     expect(screen.getByTestId('drawer-false')).toBeInTheDocument();
   });

@@ -11,7 +11,13 @@ export interface CustomSnackbarProps {
   onClose: () => void;
 }
 
-// On enveloppe dans forwardRef pour passer le ref à SnackbarContent
+/**
+ * 
+ * Custom Snackbar component that displays a message with a specific severity level.
+ * It uses MUI's SnackbarContent for styling and includes a close button.
+ * Wrap in forwardRef to pass ref through to the underlying SnackbarContent
+ * 
+ */
 export const CustomSnackbar = React.forwardRef<HTMLDivElement, CustomSnackbarProps>(
   ({ message, severity, onClose }, ref) => {
     const theme = useTheme();
@@ -20,17 +26,19 @@ export const CustomSnackbar = React.forwardRef<HTMLDivElement, CustomSnackbarPro
 
     return (
       <SnackbarContent
-        ref={ref}                           
+        ref={ref}    // Forwarded ref
         style={{
           backgroundColor: bgColor,
           color: textColor,
           borderRadius: theme.shape.borderRadius,
         }}
+        // Use Typography inside message prop for consistent text styling
         message={
           <Typography variant="body2" sx={{ color: textColor }}>
             {message}
           </Typography>
         }
+        // Close action button on the right
         action={
           <IconButton size="small" onClick={onClose} sx={{ color: textColor }}>
             <CloseIcon fontSize="small" />
@@ -41,7 +49,7 @@ export const CustomSnackbar = React.forwardRef<HTMLDivElement, CustomSnackbarPro
   }
 );
 
-// Pour le displayName dans les devtools
+// Set displayName for better DevTools identification
 CustomSnackbar.displayName = 'CustomSnackbar';
 
 
